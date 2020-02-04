@@ -1,0 +1,20 @@
+Package: educer
+Type: Package
+Title: A Collection of Tutorials on Using R in Data Science
+Version: 0.0.0.9000
+Author@R: person("Stephan", "Koenig", email = "stephan.koenig@gmail.com",
+  role = c("aut", "cre"))
+Description: This package was created by the Experiential Data Science for
+    Undergraduate Cross-disciplinary Education (EDUCE) initiative at the
+    University of British Columbia. It contains learnr tutorials to be used in
+    flipped-classroom settings to introduce basic concepts as a pre-class
+    activity before they are explored more in-depth in class.
+License: GPL-3 + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    cowplot,
+    dplyr,
+    ggplot2,
+    learnr,
+    readr

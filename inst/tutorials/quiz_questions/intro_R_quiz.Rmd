@@ -1,0 +1,49 @@
+---
+title: "Intro to R quiz"
+author: "Andrew Wilson"
+date: "20/01/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1. Which of the following is a good variable name?
+  * x
+  * 1st_pass
+  * sum
+  * _raw_saanich_otus_
+
+2. What is the name of the pane in RStudio where you should write most of your code?
+  * Console
+  * _Script_
+  * Environment
+  * Files
+
+3. Which `dplyr` function can you use to select rows based on values in a column?
+  * select
+  * slice
+  * mutate
+  * _filter_
+
+4. Which `col_names` argument in read_csv will break?
+  * c("column_1", "column_2", "column_3", "column_4")
+  * TRUE
+  * FALSE
+  * _c(1, 2, 4, 5)_
+  
+5. Adding which line to the beginning of the script would fix this error?
+```{r, eval = TRUE, warning=TRUE, error=TRUE}
+saanich_abund <- read_csv("../../../MICB301/data/Saanich_abund.txt")
+```
+  * _library(tidyverse)_
+  * dim(saanich_abund)
+  * setwd("~")
+  * colnames(saanich_abund)
+
+6. What are the main benefits of R projects?
+  * Creates a virtual environment for R
+  * Collects all of your data, outputs, and scripts in the same working directory
+  * They are units of shareable code, containing functions that enhance analysis
+  * They are like applications for your phone

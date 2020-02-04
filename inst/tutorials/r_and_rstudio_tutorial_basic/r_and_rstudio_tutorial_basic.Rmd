@@ -1,0 +1,273 @@
+---
+title: "Introduction to R and RStudio"
+author: "Michelle Kang (adapted from Dr. Kim Dill-McFarland)"
+date: "version `r format(Sys.time(), '%B %d, %Y')`"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+library(dplyr)
+library(readr)
+```
+
+## Learning objectives
+
+### By the end of this tutorial you should be able to:
+- Identify the different components of RStudio
+- Declare variables in R
+- Recognize and use functions
+- Install and load R packages
+- Load and subset tabular data using tidyverse
+- Use the 'help' function in R console to troubleshoot given a new function
+
+
+
+## A Tour of RStudio
+
+When you start RStudio, you will see something like the following window appear:
+
+![](images/rstudio.png){width=100%}
+
+Notice that the window has three "panes":
+
+- Console (lower left side): this is your view of the R engine. You can type in R commands here and see the output printed by R. (To tell them apart, your input is in blue, and the output is black.) There are several editing conveniences available: use up and down arrow keys to go back to previously entered commands, which you then can edit and re-run; TAB for completing the name before the cursor; see more in [online docs](http://www.rstudio.com/ide/docs/using/keyboard_shortcuts).
+
+- Environment/History (tabbed in the upper right): view current user-defined objects and previously-entered commands, respectively.
+
+- Files/Help/Plots/Packages (tabbed in the lower right): as their names suggest, you can view the contents of the current directory, the built-in help pages, and the graphics you created, as well as manage R packages.
+
+To change the look of RStudio, you can go to Tools &rarr; Global Options &rarr; Appearance and select colours, font size, etc. If you plan to be working for longer periods, we suggest choosing a dark background colour scheme to save your computer battery and your eyes.
+
+
+
+## RStudio Projects
+
+Projects are a great feature of RStudio. When you create a project, RStudio creates an ".Rproj" file that links all of your files and outputs to the project directory. When you import data from a file, R automatically looks for it in the project directory instead of you having to specify a full file path on your computer like "/Users/username/Desktop/". R also automatically saves any output to the project directory. Finally, projects allow you to save your R environment in ".RData" so that when you close RStudio and then re-open it, you can start right where you left off without re-importing any data or re-calculating any intermediate steps.
+
+RStudio has a simple interface to create and switch between projects, accessed from the button in the top-right corner of the RStudio window. (Labelled "Project: (None)", initially.)
+
+Let's create a project to work in for this tutorial. Start by clicking the "Project" button in the upper right or going to the "File" menu. Select "New Project", and the following will appear:
+
+![](images/create_project.png){width=75%}
+
+
+Choose "New Directory" followed by "New Project" and click on "Browse...". Navigate to your Desktop, and name the directory "\<course_name\> R"(replace \<course_name\> with the name of your class, e.g. "MICB301") for this project.
+
+After your project is created, navigate to its directory using your Finder/File explorer or the integrated Terminal in RStudio. You will see the ".RProj" file has been created.
+
+You can open this project in the future in one of three ways:
+
+- In your Finder/file browser, simply double-click on the ".RProj" file 
+- In an open RStudio window, choose "File" &rarr; "Open Project"
+- Switch among projects by clicking on the R project symbol in the upper left
+corner of RStudio
+
+
+
+## Variables in R
+
+We use variables to store data that we want to access or manipulate later. Variables must have unique names.  
+
+Without declaring a variable the sum of these two numbers will be printed to console but cannot be accessed for future use:
+```{r}
+2 + 2 
+```
+
+To declare a variable, follow the pattern of: `variable <- value`. Let's declare a variable `total` as the sum of two numbers.
+```{R}
+total <- 2 + 2
+```
+
+We access the value of `total`:
+```{R}
+total
+```
+
+We can use the value stored in `total`:
+```{R}
+total - 1
+```
+
+After declaring a variable, we can perform operations to change the value stored in the variable:
+```{r}
+total <- total - 1
+```
+
+Now `total` stores a new value:
+```{r}
+total
+```
+
+
+
+## Functions
+Functions are one of the basic units in programming. Generally speaking, a function takes some input and generates some output. Every R function follows the same basic syntax, where `function` is the name of the function and `arguments` are the different parameters you can specify (i.e. your input):
+
+`function(argument1 = ..., argument2 = ..., ...)`
+
+You can treat functions as a black box and do not necessarily need to know how it works under the hood as long as your provided input conforms to a specific shape.
+
+![](images/function.png){width=75%}
+
+For example, the function `sum` expects numbers:
+```{r}
+sum(3, 5, 9, 18)
+```
+
+If you instead pass text as arguments to `sum` you will receive an error:
+```{r error=TRUE}
+sum("Sum", "does", "not", "accept", "text!")
+```
+
+
+## R packages
+
+The first functions we will look at are used to install and load R packages. R packages are units of shareable code, containing functions that facilitate and enhance analyses. In simpler terms, think of R packages as iPhone Applications. Each App has specific capabilities that can be accessed when we install and then open the application. The same holds true for R packages. To use the functions contained in a specific R package, we first need to install the package, then each time we want to use the package we need to "open" the package by loading it.
+
+### Installing Packages
+
+In this tutorial, we will be using the "tidyverse" package. This package contains a versatile set of functions designed for easy manipulation of data.
+
+You should have already installed the "tidyverse" package using RStudio's graphical interface. Packages can also be installed by entering the function `install.packages` in the console (to install a different package just replace "tidyverse" with the name of the desired package):
+
+**For R v3.4 or newer**
+```{r eval=FALSE}
+install.packages("tidyverse")
+```
+
+**For R v3.3 or older**  
+Unfortunately, tidyverse does not work on older versions of R. Instead, you will need to individually install each package within the tidyverse.
+```{r eval=FALSE}
+install.packages("tibble")
+install.packages("readr")
+install.packages("dplyr")
+install.packages("tidyr")
+install.packages("ggplot2")
+install.packages("stringr")
+install.packages("purrr")
+install.packages("forcats")
+```
+
+### Loading packages
+
+After installing a package, and *everytime* you open a new RStudio session, you need to first load (open) the packages you want to use with the `library` function. This tells R to access the package's functions and prevents RStudio from lags that would occur if it automatically loaded every downloaded package every time you opened it.
+
+Packages can be loaded like this:
+```{r eval=FALSE}
+library(tidyverse)
+```
+
+
+
+## Working with data
+
+### Data description
+
+The data used throughout this module were collected as part of an on-going oceanographic time-series program in Saanich Inlet, a seasonally anoxic fjord on the East coast of Vancouver Island, British Columbia.
+
+The data that you will use in R are 16S amplicon profiles of microbial communities at several depths in Saanich Inlet from one time-point in this series (August 2012). These ~300 bp sequences were processed using [mothur](https://www.mothur.org/wiki/Main_Page) to yield 97% (approximately species-level) operational taxonomic units (OTUs). 
+
+`Saanich_OTU_metadata.csv` is a comma-delimited table of counts of four OTUs in each sample, normalized to 100,000 sequences per sample and the corresponding conditions of each sample (Depth, NO2, NO3 etc.). 
+
+For a brief introduction to these data, see Hallam SJ et al. 2017. Monitoring microbial responses to ocean deoxygenation in a model oxygen minimum zone. Sci Data 4: 170158 [doi:10.1038/sdata.2017.158](https://www.nature.com/articles/sdata2017158).
+
+### Loading tabular data
+
+Data tables can be loaded into R using the tidyverse `read_*` function. 
+
+For example, we can load our Saanich data into R with `read_csv` for a comma-separated file and specify the arguments that describe our data as follows:
+
+- `file`: the name of the file you want to load
+- `col_names`: can take either the value `TRUE` or `FALSE` and tells R if the first row contains column names
+
+```{r}
+read_csv(file="data/Saanich_OTU_metadata.csv", col_names = TRUE)
+```
+
+### Save data in the environment
+
+Since we want to do more with our data after reading it in, we need to save it as a variable in R as we did previously with the `<-` operator. You can choose to name the object whatever you like, though this module assumes the names used below.
+```{r}
+OTU_metadata_table <- read_csv(file="data/Saanich_OTU_metadata.csv", col_names = TRUE)
+```
+
+### Data exploration
+
+Let's explore the data that we've imported into R.
+
+Using different functions, we can look at the dimensions of our data, number of rows, and number of columns:
+```{r}
+#number of rows followed by number of columns
+dim(OTU_metadata_table)
+
+#number of rows
+nrow(OTU_metadata_table)
+
+#number of columns
+ncol(OTU_metadata_table)
+```
+
+We can list the column names using `colnames`:
+```{R}
+colnames(OTU_metadata_table)
+```
+
+We can select to work with only specific columns/variables from our table using the `select` function:
+```{R}
+restricted_columns <- select(OTU_metadata_table, sample, Otu0001, Otu0002, Otu0004, Depth_m)
+```
+
+We can filter for specific rows based on a column value using the `filter` function. Here we restrict for rows where the value for "depth" is < 135. 
+
+```{r}
+above_135_depth <- filter(OTU_metadata_table, Depth_m < 135)
+```
+
+We can also only choose to work with specific rows based on their position in our data table using the `slice()` function. 
+
+```{r}
+first_five_rows <- slice(OTU_metadata_table, 1:5)
+```
+
+## Getting Help
+You can get help with any function in R by inputting `?function_name` into the Console. This will open a window in the bottom right under the Help tab with information on that function, including input options and example code.
+
+```{r}
+?read_delim
+```
+
+The **Description** section tells us that `read_delim` is a general case of the function we used, `read_csv`, and `read_tsv`.  
+
+The **Usage** section tells us the inputs that need to be specified and default inputs of read_delim:
+
+- "file" and "delim" need to be specified as they are not followed by "="
+- all other parameters have a default value eg(quote = "\"") and do not have to be specified to run the function.
+
+The **Arguments** Section describes the requirements of each input argument in detail.   
+
+The **Examples** Section has examples of the function that can be directly copy and pasted into your terminal and ran. 
+
+
+## R Scripts
+
+R script files are the primary way in which R facilitates reproducible research. They contain the code that loads your raw data, cleans it, performs the analyses, and creates and saves visualizations. R scripts maintain a record of everything that is done to the raw data to reach the final result. That way, it is very easy to write up and communicate your methods because you have a document listing the precise steps you used to conduct your analyses. This is one of R's primary advantages compared to traditional tools like Excel, where it may be unclear how to reproduce the results. 
+
+Generally, if you are testing an operation (*e.g.* what would my data look like if I applied a log-transformation to it?), you should do it in the console (left pane of RStudio). If you are committing a step to your analysis (*e.g.* I want to apply a log-transformation to my data and then conduct the rest of my analyses on the log-transformed data), you should add it to your R script so that it is saved for future use. 
+
+Additionally, you should annotate your R scripts with comments. In each line of code, any text preceded by the `#` symbol will not execute. Comments can be useful to remind yourself and to tell other readers what a specific chunk of code does. 
+
+Let's create an R script (File > New File > R Script) and save it as `tidyverse.R` in your main project directory. If you again look to the project directory on your computer, you will see `tidyverse.R` is now saved there.
+
+We can copy and paste the previous commands in this tutorial and aggregate it in our R script.
+
+
+
+## Office Hours
+Office hours start Jan 20 and end Apr 24, 2020:
+
+- Tuesday, 4&ndash;5 pm in LSC1510
+- Wednesday, 10&ndash;11 am in LSK121
+- Thursday, 4&ndash;5 pm in LSC1410 (except Mar 5 and Apr 2: LSC West Atrium)

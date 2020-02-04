@@ -1,0 +1,48 @@
+---
+title: "Tidyverse Quiz"
+author: "Andrew Wilson"
+date: "20/01/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Which dplyr function performs an operation on one column and preserves it?
+  
+  * mutate
+  * summarize
+  * transmute
+  * select
+
+---------
+
+The `iris` dataset in R contains measurements of 3 different species of irises (flowers). It is a tidy dataset that is good for practicing data wrangling.
+
+```{r}
+head(iris)
+```
+Based on the information above, what format does the `iris` dataset have?
+
+  * Wide
+  * _Long_
+  * Tall
+  * Skinny
+
+How many rows would the following dataframe have?
+
+```{r, eval = FALSE}
+iris_summary <- group_by(iris, Species)%>%
+  summarize(Mean.Sepal.Width = mean(Sepal.Width, na.rm = TRUE))
+```
+  * 1
+  * 150
+  * 3
+  * 50
+  
+How many columns? 
+  
+  * 5
+  * 2
