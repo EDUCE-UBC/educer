@@ -21,7 +21,7 @@ library(readr)
 - Recognize and use functions
 - Install and load R packages
 - Load and subset tabular data using tidyverse
-- Use the 'help' function in R console to troubleshoot given a new function
+- Use the `help` function in R console to troubleshoot given a new function
 
 
 
