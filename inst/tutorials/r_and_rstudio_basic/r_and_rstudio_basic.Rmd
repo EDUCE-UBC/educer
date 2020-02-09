@@ -183,15 +183,27 @@ For example, we can load our Saanich data into R with `read_csv` for a comma-sep
 - `file`: the name of the file you want to load
 - `col_names`: can take either the value `TRUE` or `FALSE` and tells R if the first row contains column names
 
-```{r}
+```{r eval=FALSE}
 read_csv(file="data/Saanich_OTU_metadata.csv", col_names = TRUE)
 ```
+
+```{r echo=FALSE, include=FALSE}
+data(meta)
+meta
+```
+
 
 ### Save data in the environment
 
 Since we want to do more with our data after reading it in, we need to save it as a variable in R as we did previously with the `<-` operator. You can choose to name the object whatever you like, though this module assumes the names used below.
-```{r}
+
+
+```{r eval=FALSE}
 OTU_metadata_table <- read_csv(file="data/Saanich_OTU_metadata.csv", col_names = TRUE)
+```
+
+```{r echo=FALSE}
+OTU_metadata_table <- meta
 ```
 
 ### Data exploration
@@ -216,7 +228,7 @@ colnames(OTU_metadata_table)
 ```
 
 We can select to work with only specific columns/variables from our table using the `select` function:
-```{R}
+```{r}
 restricted_columns <- select(OTU_metadata_table, sample, Otu0001, Otu0002, Otu0004, Depth_m)
 ```
 
