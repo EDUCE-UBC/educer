@@ -8,23 +8,33 @@
 The educer package was created by the Experiential Data Science for
 Undergraduate Cross-disciplinary Education (EDUCE) initiative at the
 University of British Columbia. It contains learnr tutorials introducing
-basic data processing and wrangling operation as a pre-class activity.
+basic data processing and wrangling operation as a pre-class activity. The
+tutorials use data sets for the water column chemistry and environmental
+sequence information of samples collected in the Saanich Inlet, a seasonally
+anoxic fjord on the coast of Vancouver Island British Columbia.
 }
 \section{Tutorials}{
+ Tutorials are started using
+  \code{learnr::run_tutorial(name, package = "educer")}, where \code{name}
+  can take the following values to start the corresponding tutorial:
+  \itemize{
+    \item\code{r_and_rstudio_basic}: Introduction to R and RStudio
+    \item\code{tidyverse_intermediate}: Working with data
+    \item\code{statistics_intermediate}: Introduction to \emph{t}-test, ANOVA
+    and linear regression
+    \item\code{ggplot_basic}: Basic plotting
+    \item\code{ggplot_intermediate}: Advanced plotting
+  }
+}
 
-Tutorials are started using
-\code{learnr::run_tutorial(name, package = "educer")}, where the following
-\code{name}s start the corresponding tutorial:
+\section{Data sets}{
 
-\code{r_and_rstudio_basic}: Introduction to R and RStudio
-
-\code{tidyverse_intermediate}: Working with data
-
-\code{statistics_intermediate}: Introduction to *t*-test, ANOVA and linear
-regression
-
-\code{ggplot_basic}: Basic plotting
-
-\code{ggplot_intermediate}: Advanced plotting
+  \itemize{
+    \item\link[=geochemicals]{Full geochemical data set from Saanich Inlet
+    2006 to 2014}
+    \item\link[=OTUs]{Abundance of OTUs for Saanich Inlet Cruise 72}
+    \item\link[=normalized_OTUs]{Normalized abundance of OTUs for Saanich
+    Inlet Cruise 72}
+  }
 }
 

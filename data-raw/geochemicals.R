@@ -1,4 +1,3 @@
-# Saved as geochemicals in internal data
 geochemicals <- readr::read_csv("data-raw/Saanich_TimeSeries_Chemical_DATA.csv",
                                 na = c("", "NA", "NAN", "NaN", "ND"))
 other_variables <- readr::read_csv("data-raw/Saanich_TimeSeries_CTD_DATA.csv",
@@ -18,4 +17,4 @@ geochemicals <- geochemicals %>%
                 Std_O2   = Std_o2) %>%
   dplyr::left_join(other_variables)
 
-usethis::use_data(geochemicals, overwrite = TRUE)
+usethis::use_data(geochemicals, overwrite = TRUE, compress = "bzip2")

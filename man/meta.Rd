@@ -15,11 +15,10 @@
   \item{NO3_uM}{Nitrate concentration in micromolar}
   \item{NO2_uM}{Nitrite concentration in micromolar}
   \item{N2O_uM}{Nitrous oxide concentration in micromolar}
-  \item{NH4_uM}{Ammonium concentration in micromolar}
-}}
+  \item{NH4_uM}{Ammonium concentration in micromolar} }}
 \source{
 Geochemical \url{https://www.nature.com/articles/sdata2017159} and
-Multi-omics \url{https://www.nature.com/articles/sdata2017160}
+  Multi-omics \url{https://www.nature.com/articles/sdata2017160}
 }
 \usage{
 meta
