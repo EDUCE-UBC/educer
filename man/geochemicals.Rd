@@ -45,12 +45,12 @@
 \source{
 For a brief introduction to the data, see Hallam SJ \emph{et al.}
   2017. Monitoring microbial responses to ocean deoxygenation in a model
-  oxygen minimum zone. Sci Data 4: 170158
-  \href{https://www.nature.com/articles/sdata2017158}{doi:10.1038/sdata.2017.158}.
+  oxygen minimum zone. Sci Data 4: 170158. doi:
+  \href{https://www.nature.com/articles/sdata2017158}{10.1038/sdata.2017.158}.
    More detailed information on the geochemical data can be found in
   Torres-Beltrán M \emph{et al.} 2017. A compendium of geochemical
-  information from the Saanich Inlet water column. Sci Data 4: 170159
-  \href{https://www.nature.com/articles/sdata2017159}{doi:10.1038/sdata.2017.159}
+  information from the Saanich Inlet water column. Sci Data 4: 170159. doi:
+  \href{https://www.nature.com/articles/sdata2017159}{10.1038/sdata.2017.159}
   (\href{https://datadryad.org/stash/dataset/doi:10.5061/dryad.nh035}{dataset}).
 }
 \usage{

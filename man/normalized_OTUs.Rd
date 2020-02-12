@@ -15,12 +15,12 @@
 \source{
 For a brief introduction to the data, see Hallam SJ \emph{et al.}
   2017. Monitoring microbial responses to ocean deoxygenation in a model
-  oxygen minimum zone. Sci Data 4: 170158
-  \href{https://www.nature.com/articles/sdata2017158}{doi:10.1038/sdata.2017.158}.
+  oxygen minimum zone. Sci Data 4: 170158. doi:
+  \href{https://www.nature.com/articles/sdata2017158}{10.1038/sdata.2017.158}.
    More detailed information on the mutli-omic microbial data can be found in
   Hawley AK *et al*. 2017. A compendium of multi-omic sequence information
-  from the Saanich Inlet water column. Sci Data 4: 170160.
-  \href{https://www.nature.com/articles/sdata2017160}{doi:10.1038/sdata.2017.160}.
+  from the Saanich Inlet water column. Sci Data 4: 170160. doi:
+  \href{https://www.nature.com/articles/sdata2017160}{10.1038/sdata.2017.160}.
 }
 \usage{
 normalized_OTUs
