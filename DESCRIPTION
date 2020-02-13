@@ -18,5 +18,6 @@ Imports:
     ggplot2,
     here,
     learnr,
-    readr
+    readr,
+    shiny
 RoxygenNote: 7.0.2

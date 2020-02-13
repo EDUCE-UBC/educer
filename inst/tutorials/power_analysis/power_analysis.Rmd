@@ -1,0 +1,127 @@
+---
+title: "Power Analysis"
+author: "Michelle Kang and Dr. Stephan Koenig, adapted from https://cran.r-project.org/web/packages/pwr/vignettes/pwr-vignette.html"
+date: "12/01/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Variables
+
+### In context of an experiment
+
+Variables are categorized into **independent** and **dependent** variables.
+
+-  An **independent** variable is changed or controlled in the experiment to test the effects on the dependent variable.
+
+-  A **dependent** variable is the variable being tested and measured in a scientific experiment. As the name suggests it is 'dependent' on the independent variable.
+
+### Types of variables
+
+Two main types of data:
+
+**Categorical Variables**
+
+- Describe groups or categories of data
+- Example 1: fast food chains (McDonalds, Burger King, KFC etc)
+- Example 2: answer to "yes" or "no" questions
+
+**Numerical Variables**
+
+- Data that is represented in numbers
+- Discrete Data is described by integers (eg. number of students in this room)
+- Coninuous Data is infinite (eg. time, distance, area)
+  
+## Statistical Tests
+
+**Statistical Tests** are used to answer questions such as:
+
+- Correlation between two or more variables
+- Comparing the means and variance of two or more groups
+
+Statistical tests aim to disprove a null hypothesis
+
+A **null hypothesis** (H~0~) can be thought of as the opposite of H~1~. It claims that the correlation/effect stated in H~1~ does not exist, e.g. there is no correlation between oxygen concentration and species diversity
+
+An **experimental hypothesis** (H~1~) is a prediction made about your dataset of interest, e.g. oxygen concentration and species diversity is correlated. 
+
+We decide whether or not our statistical test reject the null hypothesis based on the values of **&alpha;** and the ***p*-value**.
+
+**&alpha;** is the probability of making the mistake of rejecting the null hypothesis when it is true. The value of &alpha; is chosen before a statistical test and is often 5% or 0.05. This means that there is a 5% chance of making a Type I error.
+
+The ***p*-value** is a calculated value that is determined by the statistical test. The p-value is interpreted as the probability of getting a result that is as extreme or more extreme when the null hypothesis is true. The null hypothesis can be rejected if the *p*-value is smaller than &alpha;, else we fail to reject the null hypothesis.
+
+The Statistical Tests we will focus on in this tutorial are:
+
+| Independent variable | Dependent variable | Statistical test | Purpose |
+| --- | ---| --- |  ---------------  |
+| Numerical | Continuous numerical | Linear model | Uses the equation $y = ax + b$ to explain the relationship of two variables. Predicts dependent variable given an independen variable |
+| Categorical | Numerical | *t*-test | Compares the mean between 2 groups/conditions | 
+| Categorical | Numerical | ANOVA | Compares the mean between 3 or more groups/conditions | 
+
+Two Types of Errors can result from a Statistical Test:
+
+- **Type I Error** : False Positive, the null hypothesis is rejected due to an optimistically small *p*-value and there is no significant effect. 
+- **Type II Error** : False Negative, the *p*-value is pessimistically large and the null hypothesis is rejected when it should not be.
+
+![](../../images/confusion_matrix.png){ width=50% }
+
+We can think of **&alpha;**, the significance level, as the **probability of making a Type I Error or a false positive**.
+
+**Statistical power** is the probability that a hypothesis test will correctly accept the alternate hypothesis and can be calculated by **1-(Type II error)**. The higher the statistical power for a given experiment, the lower the probability of making a Type II (false negative) error, a common value for statistical power is 0.8.
+
+Statistical power is part of a 4-piece puzzle that includes:
+
+- **Effect size** : the degree to which the null hypothesis is false. For simplicity of this tutorial we will refer to the table below for the value of effect size based on statistical test
+
+| Statistical test | Small | Medium | Large |
+| --- | --- | --- | --- |
+| Linear model     | 0.02  | 0.15   | 0.35  |
+| *t*-test         | 0.2   | 0.5    | 0.8   |
+| ANOVA            | 0.1   | 0.25   | 0.4   |
+ 
+
+- **Sample size** : The number of observations in the sample.
+  
+- **Significance** : The significance level (*p*-value) used in the statistical test
+  
+- **Statistical Power** : The probability of accepting H~1~ if it is true
+  
+
+A **power analysis** can be performed to:
+  
+- estimate the minimum sample size required for an experiment, given a desired significance level, effect size, and statistical power
+- estimate the statistical power of an experiment given a desired significance level, effect size  and sample size 
+  
+In short, **given 3 parts of the "Statistical Power Puzzle", the 4th can be estimated**.
+
+In a simple **example**:
+
+- We’re interested to know if there is a difference in the mean price of what male and female students pay at a library coffee shop. Let’s say we randomly observe 30 male and 30 female students check out from the coffee shop and calculate the mean purchase price for each gender. We’ll test for a difference in means using a two-sample t-test. How powerful is this experiment if we want to detect a “medium” effect in either direction with a significance level of 0.05?.
+
+    - **H~0~** : Our null hypothesis is that there is no difference between the mean purchase price between males and females.
+    - **H~1~** : Our alternative hypothesis is that there is a significant difference between the mean purchase price of males and females.
+
+Here is how we can determine the power of this experiment using the pwr.t.test function.
+```{r}
+#install.packages("pwr")
+library(pwr)
+
+pwr.t.test(n = 30, d = 0.5, sig.level = 0.05)
+```
+The power is about 48%, which means that given the means of purchase price of males and females are statistically different, the null hypothesis will be correctly rejected only about 48% of the time. 
+
+How many samples would we need for a power of 80%?
+```{r}
+pwr.t.test(power = 0.8, d = 0.5, sig.level = 0.05)
+```
+After rounding up, n = 64. We will need 64 samples in each group (male and female) to have a power of 80%
+
+the pwr package has the following functions for easy power analysis on different statistical tests
+
+ - pwr.t.test: **t-tests** (two-sample, one-sample and paired) 
+ - pwr.anova.test: **ANOVA** (one-way balanced)
+ - pwr.f2.test: **linear model**
