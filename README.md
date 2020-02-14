@@ -23,3 +23,17 @@ library(educer)
 ## basic example code
 ```
 
+## For developers
+
+- Place any images in the `inst/resources/images/` folder
+- If it does not exist yet, create an r setup code chunk in the tutorial.Rmd file right after the yaml header
+- Add the following line of code to the r setup code chunk:
+
+```
+library(educer)
+setup_resources()
+```
+
+- To add an image in tutorial.Rmd, you can now give the path to an `image.ext` in `inst/resources/images/` like so (you MUST include the first `/`):
+![](/images/image.ext)
+- You can learn more about the helper function `setup_resources` with `?setup_resources` and add other paths to resources (css is already established)
