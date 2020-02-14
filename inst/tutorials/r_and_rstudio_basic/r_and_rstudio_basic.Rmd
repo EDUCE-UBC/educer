@@ -2,7 +2,10 @@
 title: "Introduction to R and RStudio"
 author: "Michelle Kang (adapted from Dr. Kim Dill-McFarland)"
 date: "version `r format(Sys.time(), '%B %d, %Y')`"
-output: learnr::tutorial
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
 runtime: shiny_prerendered
 ---
 

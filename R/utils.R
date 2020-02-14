@@ -19,6 +19,6 @@
 #' @seealso \code{\link[shiny]{addResourcePath}()}
 setup_resources <- function(css    = "resources/css",
                             images = "resources/images") {
-  shiny::addResourcePath("images", here::here(images))
-  shiny::addResourcePath("css", here::here(css))
+  shiny::addResourcePath("images", system.file(images, package = "educer"))
+  shiny::addResourcePath("css", system.file(css, package = "educer"))
 }
