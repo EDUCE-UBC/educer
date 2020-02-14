@@ -7,10 +7,13 @@ runtime: shiny_prerendered
 ---
 
 ```{r setup, include=FALSE}
+library(learnr)
 knitr::opts_chunk$set(echo = TRUE, message = FALSE)
 library(dplyr)
 library(readr)
-shiny::addResourcePath("images", here::here("images"))
+library(educer)
+# Helper function to set path to images to "/images"
+setup_resources()
 ```
 
 ## Learning objectives
