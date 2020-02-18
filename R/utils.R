@@ -22,3 +22,14 @@ setup_resources <- function(css    = "resources/css",
   shiny::addResourcePath("images", system.file(images, package = "educer"))
   shiny::addResourcePath("css", system.file(css, package = "educer"))
 }
+
+#' Start tutorial in the educer package
+#'
+#' This wrapper runs learnr tutorials specifically in the educer package.
+#'
+#' @param name A string giving the name of the educer tutorial
+#'
+#' @seealso \code{\link[learnr]{run_tutorial}()}
+start_tutorial <- function(name) {
+  learnr::run_tutorial(name, package = "educer")
+}
