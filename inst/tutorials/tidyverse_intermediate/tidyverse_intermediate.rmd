@@ -1,0 +1,104 @@
+---
+title: "tidyverse_intermediate"
+author: "michelle kang"
+date: "05/02/2020"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(learnr)
+library(tidyverse)
+```
+
+## Intermediate tidyverse
+
+In this tutorial, we will be using the Saanich data set, lets load it into our environment:
+```{r message=FALSE}
+library(tidyverse)
+raw_dat <- read_csv("Saanich_Data.csv")
+```
+
+## Refresher: Filter and Select
+
+We can clean the data using the filter and select dplyr verbs like this:
+```{r}
+dat <- raw_dat
+dat <- select(dat, Cruise, Date, Depth, Temperature, WS_O2, WS_NO3, WS_H2S)
+dat <- filter(dat, !is.na(WS_O2))
+```
+
+## Rename
+
+We can use the `rename` function to assign new names to your variables. This can be very useful when your variable names are very long and tedious to type. Here, we remove the "WS_" prefixes from some of the variables and add units.
+```{r}
+dat <- rename(dat, O2_uM=WS_O2, NO3_uM=WS_NO3, H2S_uM=WS_H2S)
+```
+
+This is a good point to touch on best practices for units in data. It is best to either name the units in the variable name, such as O2_uM for oxygen in micromolar, or to create a separate column for units, such as O2 = 3.4 and O2_units = uM. You should *never* place the units in the same variable as the measurement because then you cannot plot the variable as a number!
+
+## Arrange
+
+Use `arrange(x)` to sort all the rows by the value of the variable x in 
+ascending order. `arrange(desc(x))` can be used to sort in descending order.
+
+For example, we can arrange the data in the order of ascending NO3 values.
+```{r}
+subset_dat <- slice(dat, 1:10)
+arrange(subset_dat, NO3_uM)
+```
+
+## Mutate
+
+Use `mutate(y=x)` to apply a transformation to some variable x and assign it to the variable name y. Here we multiply Depth by 1000 to convert its units from kilometers to meters.
+```{r}
+dat <- mutate(dat, Depth_m=Depth*1000)
+```
+
+## Piping with `%>%`
+
+Up until now we have learned the basic dplyr verb syntax:
+
+- input data frame in the first argument
+- other arguments can refer to variables as if they were local objects
+- output is another data frame
+
+Our geochemical data cleaning code continuously overwrites the `dat` object every time we call a dplyr verb. This is not ideal as we must run these steps in order and can easily get lost or make errors.
+
+Instead, we can chain commands together using the `%>%` (pipe) operator. This operator allows us to chain multiple dplyr (and other) verbs together to result in only the final `dat` object being saved to our R environment.
+
+`f(x) %>% g(y)` is the same as `g(f(x),y)`
+
+`select(dat, Cruise)` is the same as `dat %>% select(Cruise)`
+
+Piping works nicely to condense code and to improve readability. Dplyr syntax is very easy to read. Starting with the raw_data, we select the Cruise, Date, ..., WS_H2S variables, filter out oxygen NA data, rename the WS variables, and then multiply Depth by 1000 to convert to meters.
+```{r}
+dat <- 
+  raw_dat %>%
+  select(Cruise, Date, Depth, Temperature,
+         WS_O2, WS_NO3, WS_H2S) %>%
+  filter(!is.na(WS_O2)) %>%
+  rename(O2_uM=WS_O2, NO3_uM=WS_NO3, H2S_uM=WS_H2S) %>%
+  mutate(Depth_m=Depth*1000)
+```
+
+**So, this single function now completes everything we've done to the data so far!**
+
+## Factors
+
+A data structure we haven't utilized in R yet are factors, which are used to represent categorical variables. In general, categorical variables can take on fixed number of possible values. For example, `Cruise` is a numeric right now, but actually represents a category (i.e. each cruise just indicates a group of measurements). To convert a vector to factors we use the `as.factors()` function. 
+```{r}
+dat <- mutate(dat, Depth_m = as.factor(Depth_m),
+              Cruise = as.factor(Cruise))
+```
+
+Using the `%in%` binary operator we can filter for groups of values. Subset data to 3 depths in 7 cruises (i.e. specimens) in February:
+```{r}
+dat <- filter(dat, Depth_m %in% c(10, 100, 200),
+              # The cruises that took place in Februrary can be determined
+              # using the Date variable and functions that we won't discuss in
+              # these data science modules
+              Cruise %in% c(18, 30, 42, 54, 66, 80, 92))
+```
+
