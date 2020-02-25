@@ -1,0 +1,163 @@
+---
+title: "Intro to R - Advanced"
+author: "Andrew Wilson"
+date: "04/02/2020"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(learnr)
+library(tidyverse)
+```
+
+## Basic Data Types
+
+### Background
+In Canada, we use a latin alphabet to form our words and the arabic number system for math. Many of the operations that we perform on numbers make absolutely no sense when working with letters and vice versa.
+
+Similarly, R is able to perform different operations on different types of data. R accepts four main `types` of data:
+
+  * "character" 
+  * "double"
+  * "logical"
+  
+An object with type *character* is treated like a word. Anything can be stored as character, but that limits the operations you can perform on the data. You can assign a character by using either single or double quotation marks.
+
+Data with *double* type is simply non-rounded numeric data. You can assign data with type double by only putting numeric data to the right of the assignment operator.
+
+In most uses, *logical* data isn't saved to the environment. Instead, it is often used inside of function calls (we'll use logical data in filter() later on). Logical data takes either `TRUE` or `FALSE` as its value. 
+  
+You can check the `type` of an object using the function `typeof()`.
+```{r variable_assignment}
+# Assign a character
+my_char <- "Hello World!"
+
+# Assign a double
+my_doub <- 3.14
+
+# Assign a logical
+my_bool <- TRUE
+```
+Check the types:
+```{r check_types}
+typeof(my_char)
+typeof(my_doub)
+typeof(my_bool)
+```
+
+### Exercises
+
+Create 3 variables: One `double`, one `logical`, and one `character`. Try adding your variables together using the `+` operator.
+```{r initialize_types_exercise, exercise = TRUE, exercise.lines = 5}
+
+
+```
+
+```{r data_types_quiz, echo = FALSE}
+quiz(
+  question("What is the value of TRUE + 3?",
+           answer("4", correct = TRUE),
+           answer("3"),
+           answer("Error"),
+           answer("TRUE")
+           ),
+  question("If I initialize x with the code: x -> '3', what is the type of x?",
+           answer("'double'"),
+           answer("'integer'"),
+           answer("'numeric'"),
+           answer("'character'", correct = TRUE))
+)
+```
+
+## Data Structures
+
+### Vectors 
+The most basic data structure in R is called a *vector*. A vector contains multiple elements with the same type. You can assign a vector with the function `c()`.
+
+```{r vector_assignment}
+my_vect <- c(1, 2, 3, 4)
+```
+
+There are several functions which you can use to summarize the contents of objects in R.
+```{r vector_summaries}
+# Number entries in an array
+length(my_vect)
+
+# Summary statistics
+summary(my_vect)
+```
+
+You can add new elements to a vector using `c()` by including the vector as one of the elements.
+```{r extend vector}
+new_vect <- c(my_vect, 5, 6, 7)
+new_vect
+```
+### Matrices
+Matrices are like vectors but in 2 dimensions. You will probably not encounter matrices in most R courses, because they are difficult to work with. There are, however, some programs which require them, so it is important to know what they are.
+
+You can initialize a matrix using the `matrix()` function or by combining vectors with the functions row-wise or column-wise with `rbind()` and `cbind()` respectively.
+
+```{r matrix examples}
+v1 <- c(1,2,3)
+v2 <- c(1,3,4)
+v3 <- c(3,4,5)
+
+matrix(data = c(v1, v2, v3), nrow = 3)
+cbind(v1, v2, v3)
+rbind(v1, v2, v3)
+```
+
+### Data Frames
+These three classes are all composed of vectors with the same length, arranged as columns. Most of the time, you will create data frames by reading files in from your computer with the `read_*()` family of functions from the tidyverse.
+
+Just like with vectors, there are a few functions which are helpful when looking at a data frame for the first time. 
+
+```{r dataframe_summary}
+my_df <- read_tsv("../Saanich_metadata.txt")
+
+# Instead of length() use dim()
+dim(my_df)
+
+# But summary() still works
+summary(my_df)
+```
+
+
+If you have a series of vectors from other data frames and you want to put them into one, you can use the `data.frame()` function. For example:
+
+```{r de_novo_dataframe}
+new_df <- data.frame("vect1" = v1, "vect2" = v2, "vect3" = v3)
+new_df
+```
+
+
+## Changing Data Types
+One very common problem while coding in R is that the data is in the wrong format for the function you want to use. Sometimes data type issues break your code and are relatively easy to catch. Other times, however, your code will run without issue and cause unexpected results. 
+
+If you need to change the type of an object, you can use the `as.*()` family of functions. For example, if you want to convert the data.frame from the previous page to a matrix, you can use `as.matrix()`.
+
+```{r type_coersion}
+new_mat <- as.matrix(new_df)
+new_mat
+```
+
+## Subsetting
+Sometimes, you will want to look at just one column of a data frame or one element in a vector. 
+
+To subset a vector, you can use square brackets with the index of the element that you want to return. For example, if I wanted to return the 5th element of `new_vect`, I could run:
+
+```{r subsetting_vectors}
+new_vect[5]
+```
+
+You can subset data frames with the square brackets as well, using comma-separated values for row and column. If you wanted to take the 3rd item from the 2nd colum of `new_df`, you can run:
+```{r subsetting_df_1}
+new_df[3,2]
+```
+
+Perhaps a more common and useful way of subsetting a data frame is to return a column from the data frame as a vector. The operator to perform this function is `$`.
+```{r_subsetting_df_2}
+new_df$vect1
+```
