@@ -6,32 +6,17 @@ date: "version `r format(Sys.time(), '%B %d, %Y')`"
 output: learnr::tutorial
 runtime: shiny_prerendered
 ---
-<script>
-$(document).ready(function() {
-  $items = $('div#TOC li');
-  $items.each(function(idx) {
-    num_ul = $(this).parentsUntil('#TOC').length;
-    $(this).css({'text-indent': num_ul * 10, 'padding-left': 0});
-  });
-
-});
-</script>
-
-<style type="text/css">
-.figure {
-   margin-top: 16px;
-   margin-bottom: 16px;
-}
-</style>
 
 ```{r setup, include=FALSE}
 library(learnr)
 knitr::opts_chunk$set(echo = TRUE, message = FALSE)
 library(dplyr)
 library(readr)
+library(educer)
 
 raw_dat <- read_csv("Saanich_Data.csv")
 ```
+
 ## Overview
 In this tutorial, we will learn to manipulate real world data using packages in the [tidyverse](https://www.tidyverse.org/). We will cover some of the most commonly used functions in `dplyr` and then expand on these and additional tidyverse functions in our next class session. Here, we cover dplyr's:
 
@@ -51,7 +36,7 @@ library(tidyverse)
 ```
 
 **R v3.3 or older**
-```{r message=FALSE}
+```{r eval=FALSE}
 library(readr)
 library(dplyr)
 ```
@@ -62,10 +47,10 @@ The [tidyverse](https://www.tidyverse.org/) is a collection of R packages for da
 
 The main advantages of using the tidyverse to read in data over base R are:
 
-* Faster data processing
-* Seamless integration with other tidyverse functions
-* Automatic designation of data types
-* Data storage in tibble as opposed to data frames
+- Faster data processing
+- Seamless integration with other tidyverse functions
+- Automatic designation of data types
+- Data storage in tibble as opposed to data frames
     - Tibbles are data frames with an additional layer of formatting that causes them to print nicely in the console and always return a tibble in functions
     
     
@@ -116,12 +101,12 @@ We will then continually overwrite this object with `<-` as we clean it in R.
 
 You can use the `select` function to focus on a subset of variables (columns). Let's select the variables that we will need for this tutorial. Here, we will use our copied raw data `dat` and select the variables:
 
-* cruise #
-* date
-* depth in kilometers
-* oxygen (O~2~) in &micro;M
-* nitrate (NO~3~) in &micro;M
-* hydrogen sulfide (H~2~S) in &micro;M
+- Cruise #
+- Date
+- Depth in kilometers
+- Oxygen (O~2~) in &micro;M
+- Nitrate (NO~3~) in &micro;M
+- Hydrogen sulfide (H~2~S) in &micro;M
 
 ```{r}
 dat <- select(dat,

@@ -19,9 +19,7 @@ anoxic fjord on the coast of Vancouver Island British Columbia.
   can take the following values to start the corresponding tutorial:
   \itemize{
     \item\code{r_and_rstudio_basic}: Introduction to R and RStudio
-    \item\code{tidyverse_intro}: Introduction to tidyverse
     \item\code{tidyverse_intermediate}: Working with data
-    \item\code{tidyverse_advanced}: advanced tidyverse
     \item\code{statistics_intermediate}: Introduction to \emph{t}-test, ANOVA
     and linear regression
     \item\code{ggplot_basic}: Basic plotting
