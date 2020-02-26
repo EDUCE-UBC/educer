@@ -36,6 +36,6 @@ processed using the mothur_pipeline R Markdown file to bin the data into
 operational taxonomic units and determine their abundance
 (\link[=OTUs]{non-normalized data set}) and then normalized to 100,000
 sequences for each sample (seed = 4832).
-% Find way to link file
+% Find way to Rmd link file
 }
 \keyword{datasets}
