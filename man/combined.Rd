@@ -32,9 +32,9 @@ For a brief introduction to the data, see Hallam SJ \emph{et al.}
   information from the Saanich Inlet water column. Sci Data 4: 170159. doi:
   \href{https://www.nature.com/articles/sdata2017159}{10.1038/sdata.2017.159}
   (\href{https://datadryad.org/stash/dataset/doi:10.5061/dryad.nh035}{dataset}).
-  More detailed information on the mutli-omic microbial data can be found in
-  Hawley AK *et al*. 2017. A compendium of multi-omic sequence information
-  from the Saanich Inlet water column. Sci Data 4: 170160. doi:
+   More detailed information on the mutli-omic microbial data can be found in
+  Hawley AK \emph{et al.} 2017. A compendium of multi-omic sequence
+  information from the Saanich Inlet water column. Sci Data 4: 170160. doi:
   \href{https://www.nature.com/articles/sdata2017160}{10.1038/sdata.2017.160}.
 }
 \usage{
@@ -42,7 +42,7 @@ combined
 }
 \description{
 A subset of the \link[=geochemicals]{geochemical} and
-\link[=normalized_OTUs]{normalized OTU abundance}) data sets at 7 depths for
+\link[=normalized_OTUs]{normalized OTU abundance} data sets at 7 depths for
 Saanich Inlet Cruise 72.
 }
 \keyword{datasets}

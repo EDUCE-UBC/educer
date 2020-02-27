@@ -23,6 +23,30 @@ setup_resources <- function(css    = "resources/css",
   shiny::addResourcePath("css", system.file(css, package = "educer"))
 }
 
+#' List tutorials in the educer package
+#'
+#' This wrapper lists learnr tutorials specifically in the educer package.
+#'
+#' @seealso \code{\link[learnr]{available_tutorials}()}
+list_tutorials <- function() {
+  message(
+    paste(
+      paste0(
+        utils::capture.output(learnr::available_tutorials(package = "educer")),
+        collapse = "\n"
+      ),
+      "\n\n",
+      "Use the <name> on the left-hand side of the colon to start a tutorial ",
+      "by\n",
+      "entering the following command into the console:\n\n",
+      "start_tutorial(\"<name>\")\n\n",
+      "For example, use\n\n",
+      "start_tutorial(\"r_and_rstudio_basic\")\n\n",
+      "to start the \"Introduction to R and RStudio\" tutorial."
+    )
+  )
+}
+
 #' Start tutorial in the educer package
 #'
 #' This wrapper runs learnr tutorials specifically in the educer package.
@@ -31,5 +55,5 @@ setup_resources <- function(css    = "resources/css",
 #'
 #' @seealso \code{\link[learnr]{run_tutorial}()}
 start_tutorial <- function(name) {
-  learnr::run_tutorial(name, package = "educer")
+  learnr::safe(learnr::run_tutorial(!!name, package = "educer"))
 }
