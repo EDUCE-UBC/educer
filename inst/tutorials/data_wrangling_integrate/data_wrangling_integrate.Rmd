@@ -9,12 +9,10 @@ runtime: shiny_prerendered
 
 ```{r setup, include=FALSE}
 library(learnr)
-knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 library(readr)
 library(educer)
-
-raw_dat <- read_csv("Saanich_Data.csv")
 ```
 
 ## Overview
@@ -56,14 +54,16 @@ The main advantages of using the tidyverse to read in data over base R are:
     
     
 ## Data wrangling
+```{r}
+# Load data
+raw_dat <- geochemicals
+```
+
 The most basic and common type of data in R is the vector. In fact, a scalar (like the number 5) is simply a vector of length 1 and a data frame is a vector of vectors! So, our data `raw_dat` are contained in a vector of length `r ncol(raw_dat)` (columns) and each vector within this is length `r nrow(raw_dat)` (rows).
 
 Since a table is a vector of vectors, we can extract a single column (vector) using the `$` operator. 
 
 ```{r}
-# Load data
-raw_dat <- read_csv("Saanich_Data.csv")
-
 # Extract the Depth measurements
 ## View head() since there are 1605 observations
 head(raw_dat$Depth)
@@ -110,7 +110,7 @@ You can use the `select` function to focus on a subset of variables (columns). L
 
 ```{r}
 dat <- select(dat,
-              Cruise, Date, Depth, Temperature, WS_O2, WS_NO3, WS_H2S)
+              Cruise, Date, Depth, Temperature, Mean_O2, NO3, Mean_H2S)
 ```
 
 *Note that we can spread a single function across several lines as long as the preceding line ends with a comma.*
@@ -125,8 +125,8 @@ describe which variables to keep:
 We can use the `starts_with` helper function to quickly select all of the compounds that we will be using in this tutorial. Since we have just overwritten the dat object, we have to start over from the raw_dat object.
 
 ```{r}
-dat <- select(raw_dat, 
-              Cruise, Date, Depth, Temperature, starts_with("WS_"))
+# dat <- select(raw_dat, 
+#              Cruise, Date, Depth, Temperature, starts_with("WS_"))
 ```
 
 The full list of helper functions can be found by running `?select_helpers` in the console. 
@@ -190,43 +190,43 @@ Some examples working with our `subset_dat` data.
 
 `variable == value` returns rows where the variable matches the value
 ```{r}
-filter(subset_dat, WS_O2 == 204.259)
+filter(subset_dat, Mean_O2 == 204.259)
 ```
 
 `variable != value` returns rows where the variable does not match the value
 ```{r}
-filter(subset_dat, WS_O2 != 204.259)
+filter(subset_dat, Mean_O2 != 204.259)
 ```
 
 `variable > value` returns rows where the variable is greater than the value
 ```{r}
-filter(subset_dat, WS_O2 > 204.259)
+filter(subset_dat, Mean_O2 > 204.259)
 ```
 
 `variable %in% values` returns rows where the variable matches one of the given values.
 Values are provided as a vector `c(value1, value2, ...)`
 ```{r}
-filter(subset_dat, WS_O2 %in% c(40.745, 204.259))
+filter(subset_dat, Mean_O2 %in% c(40.745, 204.259))
 ```
 
 `is.na(variable)` returns rows where the variable is NA (Not Available)
 ```{r}
-filter(subset_dat, is.na(WS_O2))
+filter(subset_dat, is.na(Mean_O2))
 ```
 
 `!condition` returns rows where the condition is not fulfilled
 ```{r}
-filter(subset_dat, !is.na(WS_O2))
+filter(subset_dat, !is.na(Mean_O2))
 ```
 
 We can look for a range of values by finding the rows where the value of the variable is <= 120 **AND** >= 20
 ```{r}
-filter(subset_dat, WS_O2 <= 120 & WS_O2 >= 20)
+filter(subset_dat, Mean_O2 <= 120 & Mean_O2 >= 20)
 ```
 
 logical OR `|`. Find the rows where the value is <= 50 **OR** >= 150
 ```{r}
-filter(subset_dat, WS_O2 <= 50 | WS_O2 >= 150)
+filter(subset_dat, Mean_O2 <= 50 | Mean_O2 >= 150)
 ```
 
 ### Exercise: filter
@@ -244,8 +244,8 @@ For example, we can calculate the mean and standard deviation for oxygen at all 
 ```{r}
 dat %>%
   group_by(Depth) %>%
-  summarise(Mean_O2=mean(WS_O2, na.rm=TRUE),
-            SD_O2=sd(WS_O2, na.rm=TRUE))
+  summarise(Mean_O2 = mean(Mean_O2, na.rm = TRUE),
+            SD_O2 = sd(Mean_O2, na.rm = TRUE))
 ```
 
 ### Exercise: summarise
