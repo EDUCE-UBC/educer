@@ -16,7 +16,6 @@ Imports:
     cowplot,
     dplyr,
     ggplot2,
-    here,
     learnr,
     readr,
     shiny

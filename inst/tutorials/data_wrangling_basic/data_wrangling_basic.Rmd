@@ -1,0 +1,129 @@
+---
+title: "Tidyverse Intro"
+author: "michelle kang"
+date: "05/02/2020"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(learnr)
+library(tidyverse)
+```
+
+## Objectives:
+
+### By the end of this tutorial you should be able to
+
+- load and subset tabular data using tidyverse
+
+## R packages
+
+R packages are units of shareable code, containing functions that facilitate and enhance analyses. In simpler terms, think of R packages as iPhone Applications. Each App has specific functions and capabilities that can be accessed when we install then open the application. The same can be said about R packages. In order to use the functions for a specific R package, we first need to install the package, then each time we want to use the package we need to "open" the package. 
+
+In this tutorial we will be using the "tidyverse" package. This package contains a versatile set of functions designed for easy manipulation of data.
+
+### Installing Packages
+
+The tidyverse package can be installed like this (to install a different package just replace "tidyverse" with the name of the desired package):
+
+**For R v3.4 or newer**
+```{r eval=FALSE}
+install.packages("tidyverse")
+```
+
+**For R v3.3 or older**  
+Unfortunately, tidyverse does not work on older versions of R. Instead, you will need to individually install each package within the tidyverse.
+```{r eval=FALSE}
+install.packages("tibble")
+install.packages("readr")
+install.packages("dplyr")
+install.packages("tidyr")
+install.packages("ggplot2")
+install.packages("stringr")
+install.packages("purrr")
+install.packages("forcats")
+```
+
+## Loading packages:
+
+After installing a package, and *everytime* you open a new RStudio session, the packages you want to use need to be loaded (opened) into the R work-space with the `library` function. This tells R to access the package's functions and prevents RStudio from lags that would occur if it automatically loaded every downloaded package every time you opened it.
+
+Packages can be loaded like this:
+
+```{r eval=TRUE}
+library("tidyverse")
+```
+
+### Data description
+The data used throughout this module were collected as part of an on-going oceanographic time series program in Saanich Inlet, a seasonally anoxic fjord on the East coast of Vancouver Island, British Columbia.
+
+The data that you will use in R are 16S amplicon profiles of microbial communities at several depths in Saanich Inlet from one time point in this series (August 2012). These ~300 bp sequences were processed using [mothur](https://www.mothur.org/wiki/Main_Page) to yield 97% (approximately species-level) operational taxonomic units (OTUs). 
+
+The OTU_metadata_table (`Saanich_OTU_metadata.csv`) is a comma-delimited table of counts of four OTUs in each sample, normalized to 100,000 sequences per sample and the corresponding conditions of each sample (Depth, NO2, NO3 etc). 
+
+For a brief introduction to these data, see Hallam SJ et al. 2017. Monitoring microbial responses to ocean deoxygenation in a model oxygen minimum zone. Sci Data 4: 170158 [doi:10.1038/sdata.2017.158](https://www.nature.com/articles/sdata2017158).
+
+## Loading tabular data
+
+Every R function follows the following basic syntax, where `Function` is the name of the function and `arguments` are the different parameters you can specify.
+
+Function(argument1=..., argument2=..., ...)
+
+Data tables can be loaded into R using the tidyverse `read_*` function. 
+
+For example, we can load our Saanich data into R with `read_csv` for a comma separated file and specify the arguments that describe our data as follows.
+
+* col_names: tells R that the first row is column names, not data
+
+```{r}
+read_csv(file="Saanich_OTU_metadata.csv", col_names = TRUE)
+```
+
+### Save data in the environment
+Since we want to do more with our data after reading it in, we need to save it as a variable in R like we did previously with the `<-` operator. You can choose to name the object whatever you like, though this module assumes the names used below.
+```{r}
+OTU_metadata_table <- read_csv(file="Saanich_OTU_metadata.csv", col_names = TRUE)
+```
+
+## Data exploration
+
+Let's explore the data that we've imported into R.
+
+We can look at the dimensions of our data, number of rows, and number of columns.
+
+```{r}
+#number of rows followed by number of columns
+dim(OTU_metadata_table)
+#number of rows
+nrow(OTU_metadata_table)
+#number of columns
+ncol(OTU_metadata_table)
+```
+
+We can list the column names using `colnames()`. 
+
+```{R}
+colnames(OTU_metadata_table)
+```
+
+We can select to work with only specific columns from our table using the `select()` function. 
+
+```{R}
+restricted_columns <- select(OTU_metadata_table, sample, Otu0001, Otu0002, Otu0004, Depth_m)
+```
+
+We can filter our data based on a column value using the `filter()` function. Here we restrict for rows where the value for "depth" is < 135. 
+
+```{r}
+above_135_depth <- filter(OTU_metadata_table, Depth_m < 135)
+```
+
+We can also only choose to work with specific rows in our data table using the `slice()` function. 
+
+```{r}
+first_five_rows <- slice(OTU_metadata_table, 1:5)
+```
+
+

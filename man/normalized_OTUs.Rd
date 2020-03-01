@@ -18,8 +18,8 @@ For a brief introduction to the data, see Hallam SJ \emph{et al.}
   oxygen minimum zone. Sci Data 4: 170158. doi:
   \href{https://www.nature.com/articles/sdata2017158}{10.1038/sdata.2017.158}.
    More detailed information on the mutli-omic microbial data can be found in
-  Hawley AK *et al*. 2017. A compendium of multi-omic sequence information
-  from the Saanich Inlet water column. Sci Data 4: 170160. doi:
+  Hawley AK \emph{et al.} 2017. A compendium of multi-omic sequence
+  information from the Saanich Inlet water column. Sci Data 4: 170160. doi:
   \href{https://www.nature.com/articles/sdata2017160}{10.1038/sdata.2017.160}.
 }
 \usage{
@@ -36,6 +36,6 @@ processed using the mothur_pipeline R Markdown file to bin the data into
 operational taxonomic units and determine their abundance
 (\link[=OTUs]{non-normalized data set}) and then normalized to 100,000
 sequences for each sample (seed = 4832).
-% Find way to link file
+% Find way to Rmd link file
 }
 \keyword{datasets}
