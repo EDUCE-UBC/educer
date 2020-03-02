@@ -14,17 +14,9 @@ sequence information of samples collected in the Saanich Inlet, a seasonally
 anoxic fjord on the coast of Vancouver Island British Columbia.
 }
 \section{Tutorials}{
- Tutorials are started using
-  \code{learnr::run_tutorial(name, package = "educer")}, where \code{name}
-  can take the following values to start the corresponding tutorial:
-  \itemize{
-    \item\code{r_and_rstudio_basic}: Introduction to R and RStudio
-    \item\code{tidyverse_intermediate}: Working with data
-    \item\code{statistics_intermediate}: Introduction to \emph{t}-test, ANOVA
-    and linear regression
-    \item\code{ggplot_basic}: Basic plotting
-    \item\code{ggplot_intermediate}: Advanced plotting
-  }
+ Get a list of available tutorials with
+  \code{\link{list_tutorials}()} and then run them with
+  \code{\link{start_tutorial}(name)}.
 }
 
 \section{Data sets}{
@@ -35,6 +27,7 @@ anoxic fjord on the coast of Vancouver Island British Columbia.
     \item\link[=OTUs]{Abundance of OTUs for Saanich Inlet Cruise 72}
     \item\link[=normalized_OTUs]{Normalized abundance of OTUs for Saanich
     Inlet Cruise 72}
+    \item\link[=combined]{Combined data set of geochemicals and OTUabundance}
   }
 }
 

@@ -2,20 +2,27 @@
 title: "Introduction to R and RStudio"
 author: "Michelle Kang (adapted from Dr. Kim Dill-McFarland)"
 date: "version `r format(Sys.time(), '%B %d, %Y')`"
-output: learnr::tutorial
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
 runtime: shiny_prerendered
 ---
 
 ```{r setup, include=FALSE}
 library(learnr)
-knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+knitr::opts_chunk$set(echo = TRUE)
+library(educer)
 library(dplyr)
 library(readr)
+# Helper function to set path to images to "/images" etc.
+setup_resources()
 ```
 
 ## Learning objectives
 
-### By the end of this tutorial you should be able to:
+By the end of this tutorial you should be able to:
+
 - Identify the different components of RStudio
 - Declare variables in R
 - Recognize and use functions
@@ -29,7 +36,7 @@ library(readr)
 
 When you start RStudio, you will see something like the following window appear:
 
-![](images/rstudio.png){width=100%}
+![](/images/rstudio.png){width=100%}
 
 Notice that the window has three "panes":
 
@@ -51,7 +58,7 @@ RStudio has a simple interface to create and switch between projects, accessed f
 
 Let's create a project to work in for this tutorial. Start by clicking the "Project" button in the upper right or going to the "File" menu. Select "New Project", and the following will appear:
 
-![](images/create_project.png){width=75%}
+![](/images/create_project.png){width=75%}
 
 
 Choose "New Directory" followed by "New Project" and click on "Browse...". Navigate to your Desktop, and name the directory "\<course_name\> R"(replace \<course_name\> with the name of your class, e.g. "MICB301") for this project.
@@ -77,17 +84,17 @@ Without declaring a variable the sum of these two numbers will be printed to con
 ```
 
 To declare a variable, follow the pattern of: `variable <- value`. Let's declare a variable `total` as the sum of two numbers.
-```{R}
+```{r}
 total <- 2 + 2
 ```
 
 We access the value of `total`:
-```{R}
+```{r}
 total
 ```
 
 We can use the value stored in `total`:
-```{R}
+```{r}
 total - 1
 ```
 
@@ -110,7 +117,7 @@ Functions are one of the basic units in programming. Generally speaking, a funct
 
 You can treat functions as a black box and do not necessarily need to know how it works under the hood as long as your provided input conforms to a specific shape.
 
-![](images/function.png){width=75%}
+![](/images/function.png){width=75%}
 
 For example, the function `sum` expects numbers:
 ```{r}
@@ -118,7 +125,7 @@ sum(3, 5, 9, 18)
 ```
 
 If you instead pass text as arguments to `sum` you will receive an error:
-```{r error=TRUE}
+```{r, error=TRUE}
 sum("Sum", "does", "not", "accept", "text!")
 ```
 
@@ -134,13 +141,13 @@ In this tutorial, we will be using the "tidyverse" package. This package contain
 You should have already installed the "tidyverse" package using RStudio's graphical interface. Packages can also be installed by entering the function `install.packages` in the console (to install a different package just replace "tidyverse" with the name of the desired package):
 
 **For R v3.4 or newer**
-```{r eval=FALSE}
+```{r, eval=FALSE}
 install.packages("tidyverse")
 ```
 
 **For R v3.3 or older**  
 Unfortunately, tidyverse does not work on older versions of R. Instead, you will need to individually install each package within the tidyverse.
-```{r eval=FALSE}
+```{r, eval=FALSE}
 install.packages("tibble")
 install.packages("readr")
 install.packages("dplyr")
@@ -156,7 +163,7 @@ install.packages("forcats")
 After installing a package, and *everytime* you open a new RStudio session, you need to first load (open) the packages you want to use with the `library` function. This tells R to access the package's functions and prevents RStudio from lags that would occur if it automatically loaded every downloaded package every time you opened it.
 
 Packages can be loaded like this:
-```{r eval=FALSE}
+```{r, eval=FALSE}
 library(tidyverse)
 ```
 
@@ -183,27 +190,20 @@ For example, we can load our Saanich data into R with `read_csv` for a comma-sep
 - `file`: the name of the file you want to load
 - `col_names`: can take either the value `TRUE` or `FALSE` and tells R if the first row contains column names
 
-```{r eval=FALSE}
+```{r, eval=FALSE}
 read_csv(file="data/Saanich_OTU_metadata.csv", col_names = TRUE)
 ```
 
-```{r echo=FALSE, include=FALSE}
-data(meta)
-meta
+```{r, echo=FALSE}
+OTU_metadata_table <- combined
 ```
-
 
 ### Save data in the environment
 
 Since we want to do more with our data after reading it in, we need to save it as a variable in R as we did previously with the `<-` operator. You can choose to name the object whatever you like, though this module assumes the names used below.
 
-
-```{r eval=FALSE}
+```{r, eval=FALSE}
 OTU_metadata_table <- read_csv(file="data/Saanich_OTU_metadata.csv", col_names = TRUE)
-```
-
-```{r echo=FALSE}
-OTU_metadata_table <- meta
 ```
 
 ### Data exploration
@@ -223,19 +223,19 @@ ncol(OTU_metadata_table)
 ```
 
 We can list the column names using `colnames`:
-```{R}
+```{r}
 colnames(OTU_metadata_table)
 ```
 
 We can select to work with only specific columns/variables from our table using the `select` function:
 ```{r}
-restricted_columns <- select(OTU_metadata_table, sample, Otu0001, Otu0002, Otu0004, Depth_m)
+restricted_columns <- select(OTU_metadata_table, Depth, OTU0001, OTU0002, OTU0004)
 ```
 
 We can filter for specific rows based on a column value using the `filter` function. Here we restrict for rows where the value for "depth" is < 135. 
 
 ```{r}
-above_135_depth <- filter(OTU_metadata_table, Depth_m < 135)
+above_135_depth <- filter(OTU_metadata_table, Depth < 135)
 ```
 
 We can also only choose to work with specific rows based on their position in our data table using the `slice()` function. 
@@ -247,7 +247,7 @@ first_five_rows <- slice(OTU_metadata_table, 1:5)
 ## Getting Help
 You can get help with any function in R by inputting `?function_name` into the Console. This will open a window in the bottom right under the Help tab with information on that function, including input options and example code.
 
-```{r}
+```{r, eval=FALSE}
 ?read_delim
 ```
 
@@ -255,8 +255,8 @@ The **Description** section tells us that `read_delim` is a general case of the 
 
 The **Usage** section tells us the inputs that need to be specified and default inputs of read_delim:
 
-- "file" and "delim" need to be specified as they are not followed by "="
-- all other parameters have a default value eg(quote = "\"") and do not have to be specified to run the function.
+- `file` and `delim` need to be specified as they are not followed by `=`
+- all other parameters have a default value e.g. `quote = "\""` and do not have to be specified to run the function.
 
 The **Arguments** Section describes the requirements of each input argument in detail.   
 
@@ -274,12 +274,3 @@ Additionally, you should annotate your R scripts with comments. In each line of 
 Let's create an R script (File > New File > R Script) and save it as `tidyverse.R` in your main project directory. If you again look to the project directory on your computer, you will see `tidyverse.R` is now saved there.
 
 We can copy and paste the previous commands in this tutorial and aggregate it in our R script.
-
-
-
-## Office Hours
-Office hours start Jan 20 and end Apr 24, 2020:
-
-- Tuesday, 4&ndash;5 pm in LSC1510
-- Wednesday, 10&ndash;11 am in LSK121
-- Thursday, 4&ndash;5 pm in LSC1410 (except Mar 5 and Apr 2: LSC West Atrium)

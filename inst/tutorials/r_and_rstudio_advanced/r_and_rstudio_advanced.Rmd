@@ -116,6 +116,7 @@ Just like with vectors, there are a few functions which are helpful when looking
 
 ```{r dataframe_summary}
 my_df <- read_tsv("../Saanich_metadata.txt")
+
 # Instead of length() use dim()
 dim(my_df)
 
