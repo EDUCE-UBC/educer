@@ -50,6 +50,10 @@ Write a one line command that filters the geochemicals dataset for all geochemic
 ```{r refresher_startswith, exercise = TRUE, exercise.lines = 5}
 ```
 
+Calculate the mean temperature of the 100 samples with the highest PO4 concentrations.
+
+```{r refresher_challenge, exercise = TRUE, exercise.lines = 5}
+```
 ## Join Tables 
 
 Dyplr has built in functions to quickly join two tables. In this tutorial we will be focusing on Inner Join. Inner join takes in two tables, x and y, and return all rows from x where there are matching values in y, and all columns from x and y. If there are multiple matches between x and y, all combination of the matches are returned.

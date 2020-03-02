@@ -54,6 +54,7 @@ Packages can be loaded like this:
 
 ```{r eval=TRUE}
 library("tidyverse")
+library("educer")
 ```
 
 ### Data description
@@ -194,5 +195,40 @@ If you would like to to select a range of observations, give the starting and en
 
 ```{r}
 slice(OTU_metadata_table, 1:5)
+```
+
+
+```{r echo=FALSE}
+temp <- geochemicals %>% 
+  select(Cruise, Date, Depth, CTD_O2) %>% 
+  filter(Cruise == 72 & Depth >= 0.05)
+```
+
+## Summary Exercise
+Using the geochemical data:
+
+1. select the Cruise, Date, Depth, and oxygen variables
+2. filter the data to retain data on Cruise 72 where Depth is greater than or equal to 0.05 km
+
+Your resulting pdat object should be a [`r dim(temp)`] data frame. The data has been loaded for you 
+
+```{r summary_exercise, exercise = TRUE, exercise.lines = 5}
+dat <- geochemicals
+```
+### Challenge exercise: `select` and `filter`
+If you want more practice or have previous experience in R, try this more challenging exercise! Be sure to create a fresh `pdat`.
+
+3. Keep only the Cruise and Depth variables and the rows where oxygen OR nitrate is greater than zero.
+
+```{r echo=FALSE}
+dat <- geochemicals %>% 
+  filter(CTD_O2 > 0 | NO3) %>% 
+  select(Cruise, Depth)
+```
+
+Your resulting pdat object should be a [`r dim(temp)`] data frame. *Hint:* Can you filter based on a variable that you previously removed by not selecting it?
+
+```{r summary_exercise2, exercise = TRUE, exercise.lines = 5}
+dat <- geochemicals
 ```
 
