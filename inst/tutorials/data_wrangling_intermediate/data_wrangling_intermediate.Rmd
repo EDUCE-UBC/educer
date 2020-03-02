@@ -17,26 +17,90 @@ library(tidyverse)
 In this tutorial, we will be using the Saanich data set, lets load it into our environment:
 ```{r message=FALSE}
 library(tidyverse)
-raw_dat <- read_csv("Saanich_Data.csv")
+library(educer)
+raw_dat <- geochemicals
 ```
 
-## Refresher: Filter and Select
+## Refresher: Select, Filter, Slice
 
 We can clean the data using the filter and select dplyr verbs like this:
 ```{r}
 dat <- raw_dat
-dat <- select(dat, Cruise, Date, Depth, Temperature, WS_O2, WS_NO3, WS_H2S)
-dat <- filter(dat, !is.na(WS_O2))
+dat <- select(dat, Cruise, Date, Depth, Temperature, CTD_O2, NO3, Mean_H2S)
+dat <- filter(dat, !is.na(CTD_O2))
 ```
 
+```{r intro_quiz, echo = FALSE}
+quiz(
+  question("Which one of these statements will result in ERROR?",
+           answer("is.na(NO3)"),
+           answer("x = 9 & y < 0", correct = TRUE),
+           answer("x %in% c(1, 4, 9)")
+           )
+)
+```
+
+from the previous tutorial: how would you select only the rows where Cruise is 1 or 2?  
+```{r refresher_exercise, exercise = TRUE, exercise.lines = 5}
+
+```
+
+How would you create a new dataframe called "subset_dat" with only the first third and seventh row of raw_dat?  
+```{r slice_exercise, exercise = TRUE, exercise.lines = 5}
+
+```
 ## Rename
 
-We can use the `rename` function to assign new names to your variables. This can be very useful when your variable names are very long and tedious to type. Here, we remove the "WS_" prefixes from some of the variables and add units.
+We can use the `rename` function to assign new names to your variables. This can be very useful when your variable names are very long and tedious to type. Here, we remove the prefixes from some of the variables.
 ```{r}
-dat <- rename(dat, O2_uM=WS_O2, NO3_uM=WS_NO3, H2S_uM=WS_H2S)
+dat <- rename(dat, O2=CTD_O2, H2S=Mean_H2S)
 ```
 
+## Exercise 
+```{r eval= FALSE}
+rename(dat, depth_M=Depth)
+dat <- filter(dat, 200>(depth_M))
+```
+
+```{r rename_quiz, echo = FALSE}
+quiz(
+  question("What would result from running the chunk of code above?",
+           answer("Depth is renamed to depth_M and dat is filtered to only include rows with depth less than 200m"),
+           answer("Depth is renamed to depth_M and dat is filtered to only include rows with depth greater than 200m"),
+           answer("ERROR", correct=TRUE)
+           ),
+  question("How would you rename the column O2 to O2_uM?",
+           answer("rename(dat, O2=O2_uM)"),
+           answer("rename(dat, O2_uM=O2)", correct = TRUE),
+           answer("rename(dat, 'O2_uM'='O2')"),
+           answer("rename(dat, 'O2'='O2_uM')")
+           )
+)
+```
+
+## Renaming Conventions 
+
 This is a good point to touch on best practices for units in data. It is best to either name the units in the variable name, such as O2_uM for oxygen in micromolar, or to create a separate column for units, such as O2 = 3.4 and O2_units = uM. You should *never* place the units in the same variable as the measurement because then you cannot plot the variable as a number!
+
+Let's rename our geochemical columns to include units.
+
+```{r}
+dat <- rename(dat, O2_uM=O2, H2S_uM=H2S, NO3_uM=NO3 )
+```
+
+Having columns that have common starts or ends (eg."_uM") allows us to utilize helper functions with select.  
+There are several helper functions that can be used with `select` to
+describe which variables to keep:
+
+- starts_with(x): variable names that start with x
+- ends_with(x): variable names that end with x
+- contains(x): variable names containing x
+
+We can use the `ends_with` helper function to quickly select all of the geochemicals from our datatable.
+
+```{r}
+geo_chem <- select(dat, ends_with("_uM"))
+```
 
 ## Arrange
 
@@ -51,9 +115,9 @@ arrange(subset_dat, NO3_uM)
 
 ## Mutate
 
-Use `mutate(y=x)` to apply a transformation to some variable x and assign it to the variable name y. Here we multiply Depth by 1000 to convert its units from kilometers to meters.
+Use `mutate(y=x)` to apply a transformation to some variable x and assign it to the variable name y. Here we divide Depth by 1000 to convert its units from meters to kilometers.
 ```{r}
-dat <- mutate(dat, Depth_m=Depth*1000)
+dat <- mutate(dat, Depth_km=Depth/1000)
 ```
 
 ## Piping with `%>%`
@@ -72,33 +136,84 @@ Instead, we can chain commands together using the `%>%` (pipe) operator. This op
 
 `select(dat, Cruise)` is the same as `dat %>% select(Cruise)`
 
-Piping works nicely to condense code and to improve readability. Dplyr syntax is very easy to read. Starting with the raw_data, we select the Cruise, Date, ..., WS_H2S variables, filter out oxygen NA data, rename the WS variables, and then multiply Depth by 1000 to convert to meters.
+## Exercise: piping
+
+```{r eval=FALSE}
+dat <- geochemicals
+dat <- select(dat, Cruise, Date, Depth, Temperature, CTD_O2, NO3, Mean_H2S)
+dat <- filter(dat, !is.na(CTD_O2))
+```
+
+write a pipe to convert the above code into a pipe 
+```{r initialize_types_exercise, exercise = TRUE, exercise.lines = 5}
+```
+
+```{r pipe_quiz, echo = FALSE}
+quiz(
+  question("Which one of the following pipes will not result in ERROR?",
+           answer("dat <- raw_dat %>% slice(dat, 1:10) !is.na(NO3)"),
+           answer("dat <- raw_dat %>% slice(1:10) !is.na(NO3)"),
+           answer("dat <- raw_dat %>% slice(1:10) %>% !is.na(NO3)", correct=TRUE)
+           )
+)
+```
+
+## Solution: Piping
+Piping works nicely to condense code and to improve readability. Dplyr syntax is very easy to read. Starting with the raw_data, we select the Cruise, Date, ..., WS_H2S variables, filter out oxygen NA data, rename the geochemical variables, and then multiply Depth by 1000 to convert to meters.
 ```{r}
 dat <- 
   raw_dat %>%
   select(Cruise, Date, Depth, Temperature,
-         WS_O2, WS_NO3, WS_H2S) %>%
-  filter(!is.na(WS_O2)) %>%
-  rename(O2_uM=WS_O2, NO3_uM=WS_NO3, H2S_uM=WS_H2S) %>%
-  mutate(Depth_m=Depth*1000)
+         CTD_O2, NO3, Mean_H2S) %>%
+  filter(!is.na(CTD_O2)) %>%
+  rename(O2_uM=CTD_O2, NO3_uM=NO3, H2S_uM=Mean_H2S) %>%
+  mutate(Depth_km=Depth/1000)
 ```
 
 **So, this single function now completes everything we've done to the data so far!**
+
+## group_by and summarise
+`summarise` (or `summarize`) is handy when we want to calculate summaries for groups of observations. This is done by first applying the `group_by` verb and then feeding it into `summarise` with the pipe. 
+
+For example, we can calculate the mean and standard deviation for oxygen at all depths.
+
+```{r}
+dat %>%
+  group_by(Depth) %>%
+  summarise(Mean_O2=mean(O2_uM, na.rm=TRUE),
+            SD_O2=sd(O2_uM, na.rm=TRUE))
+```
+
+## Exercise: summarise
+Calculate median, interquartile range, and sample size of Temperature by Cruise. As always, start by copying your data 
+```{r groupby_exercise, exercise = TRUE, exercise.lines = 5}
+pdat <- dat
+```
+
+## Solution
+The results for the previous exercise should look like this.
+```{r echo=FALSE}
+pdat <- dat
+pdat %>%
+  group_by(Cruise) %>%
+  summarise(Median_Temperature=median(Temperature, na.rm=TRUE), 
+            IQR_Temperature=IQR(Temperature, na.rm=TRUE),
+            n = n())
+```
 
 ## Factors
 
 A data structure we haven't utilized in R yet are factors, which are used to represent categorical variables. In general, categorical variables can take on fixed number of possible values. For example, `Cruise` is a numeric right now, but actually represents a category (i.e. each cruise just indicates a group of measurements). To convert a vector to factors we use the `as.factors()` function. 
 ```{r}
-dat <- mutate(dat, Depth_m = as.factor(Depth_m),
+dat <- mutate(dat, Depth = as.factor(Depth),
               Cruise = as.factor(Cruise))
 ```
 
 Using the `%in%` binary operator we can filter for groups of values. Subset data to 3 depths in 7 cruises (i.e. specimens) in February:
 ```{r}
-dat <- filter(dat, Depth_m %in% c(10, 100, 200),
+dat <- filter(dat, Depth %in% c(10, 100, 200),
               # The cruises that took place in Februrary can be determined
               # using the Date variable and functions that we won't discuss in
               # these data science modules
               Cruise %in% c(18, 30, 42, 54, 66, 80, 92))
 ```
-

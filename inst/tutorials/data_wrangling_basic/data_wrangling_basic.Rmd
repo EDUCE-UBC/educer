@@ -89,9 +89,14 @@ OTU_metadata_table <- read_csv(file="Saanich_OTU_metadata.csv", col_names = TRUE
 
 ## Data exploration
 
-Let's explore the data that we've imported into R.
+Let's explore the data that we've imported into R. `glimpse` is a function that as its name suggests, allows us to get a "glimpse" of the contents of a data table. Running `glimpse` on a data table outputs the number of rows (observations), columns (variables), and lists each column name along with its type and a portion of its contents. Let's run `glimpse` with our OTU_metadata_table like this:
 
-We can look at the dimensions of our data, number of rows, and number of columns.
+```{r}
+glimpse(OTU_metadata_table)
+```
+from this we see that our table has 7 rows and 10 columns. Each $ is followed by a column name, with information on the contents following each column name.
+
+If we only want the dimensions of a dataframe or table, we can use the dim function which prints the number of rows followed by the number of columns. Simple functions to query just the number of rows or columns in a data table are `nrow` and `ncol`.
 
 ```{r}
 #number of rows followed by number of columns
@@ -114,16 +119,80 @@ We can select to work with only specific columns from our table using the `selec
 restricted_columns <- select(OTU_metadata_table, sample, Otu0001, Otu0002, Otu0004, Depth_m)
 ```
 
-We can filter our data based on a column value using the `filter()` function. Here we restrict for rows where the value for "depth" is < 135. 
+As an exercise, select for only the depth and geochemical columns in OTU_metadata_table and name the new table "metadata" 
+```{r select_exercise, exercise = TRUE, exercise.lines = 5}
 
-```{r}
-above_135_depth <- filter(OTU_metadata_table, Depth_m < 135)
 ```
 
+## Booleans
+
+Booleans are logical statements that are either TRUE or FALSE but can not be anything in between. For example:
+
+the equation x < 3 is TRUE when x is less than 3 and FALSE when x is greater than 3.
+
+the equation x == "DOG" is TRUE when x is "DOG" and FALSE when x is not "DOG"
+
+note that in R, "==" is used in Boolean equations and using a single "=" will result in error. 
+
+For quick reference, here are the most commonly used statements and operators.
+
+R code     | meaning
+---------- | ---------------
+`==`       | equals
+`< or >`   | less/greater than
+`<= or >= `| less/greater than or equal to
+`%in%`     | in
+`is.na`    | is missing (NA)
+`!`        | not (as in not equal to `!=`)
+`&`        | and
+`|`        | or
+
+You can use `filter` to select specific rows based on a logical condition of a variable.
+Some examples working with our `OTU_metadata_table` data.
+
+`variable == value` returns rows where the variable matches the value
+```{r}
+filter(OTU_metadata_table, Depth_m == 100)
+```
+
+`variable != value` returns rows where the variable does not match the value
+```{r}
+filter(OTU_metadata_table, Depth_m != 100)
+```
+
+`variable > value` returns rows where the variable is greater than the value
+```{r}
+filter(OTU_metadata_table, Depth_m > 100)
+```
+
+`variable %in% values` returns rows where the variable matches one of the given values.
+Values are provided as a vector `c(value1, value2, ...)`
+```{r}
+filter(OTU_metadata_table, Depth_m %in% c(100, 200))
+```
+
+As an exercise, restrict for rows where the value for "depth" is less than or equal to 135m. 
+```{r filter_exercise, exercise = TRUE, exercise.lines = 5}
+
+```
+
+
+## Slice
 We can also only choose to work with specific rows in our data table using the `slice()` function. 
 
+To select a subset of observations (rows) by their ordinal position, we use the `slice` function.
 ```{r}
-first_five_rows <- slice(OTU_metadata_table, 1:5)
+slice(OTU_metadata_table, 1)
 ```
 
+You can list multiple ordinal postions to select multiple observations at once.
+```{r}
+slice(OTU_metadata_table, 1, 2, 3, 4, 5)
+```
+
+If you would like to to select a range of observations, give the starting and end position separated by a colon like so: `Start:End`.
+
+```{r}
+slice(OTU_metadata_table, 1:5)
+```
 

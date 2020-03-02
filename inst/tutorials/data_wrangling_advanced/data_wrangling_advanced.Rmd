@@ -18,6 +18,36 @@ Let's first load the tidyverse package into our environment
 **R v3.4 or newer**
 ```{r message=FALSE}
 library(tidyverse)
+library(educer)
+```
+
+## Refresher 
+
+```{r echo=FALSE, results=FALSE}
+pdat <- geochemicals
+temp <- pdat %>% 
+  select(Depth, CTD_O2) %>% 
+  filter(Depth == 100) %>% 
+  rename(Oxygen = CTD_O2) %>% 
+  mutate(Oxygen = Oxygen*32) %>%
+  filter(!is.na(Oxygen))
+```
+
+1. Select the Depth and CTD_O2 variables from geochemicals dataset
+2. Filter to 100 m samples
+3. Rename the O2 variable to `Oxygen` using rename
+4. Transform Oxygen from micromoles/L to micrograms/L using mutate (multiply Oxygen by 32)
+    - You should now have a [`r dim(temp)`] data frame.
+5. Calculate the mean and standard deviation of Oxygen in micrograms/L for this subset of data.
+
+This should result in `r mean(temp$Oxygen)` $\pm$ `r sd(temp$Oxygen)`
+
+```{r refresher_exercise, exercise = TRUE, exercise.lines = 5}
+```
+
+Write a one line command that filters the geochemicals dataset for all geochemical mean values 
+
+```{r refresher_startswith, exercise = TRUE, exercise.lines = 5}
 ```
 
 ## Join Tables 
