@@ -51,7 +51,14 @@ typeof(my_bool)
 
 Create 3 variables: One `double`, one `logical`, and one `character`. Try adding your variables together using the `+` operator.
 ```{r initialize_types_exercise, exercise = TRUE, exercise.lines = 5}
+# Create a 'double' variable
 
+# Create a 'logical' variable
+
+# Create a 'character' variable
+
+
+# Add your variables together
 
 ```
 
@@ -72,12 +79,14 @@ quiz(
 ```
 
 ## Data Structures
+In data science, you rarely want to work with a single number, word, or condition. To help keep you organized, R has several different data structures, each with their own rules and uses.
 
 ### Vectors 
-The most basic data structure in R is called a *vector*. A vector contains multiple elements with the same type. You can assign a vector with the function `c()`.
+The most basic data structure in R is called a *vector*. A vector contains multiple elements with the same type. You can assign a vector with the function `c()`. You can have a vector of any `type`.
 
 ```{r vector_assignment}
 my_vect <- c(1, 2, 3, 4)
+my_char_vect <- c("hello", "world")
 ```
 
 There are several functions which you can use to summarize the contents of objects in R.
@@ -93,6 +102,12 @@ You can add new elements to a vector using `c()` by including the vector as one 
 ```{r extend vector}
 new_vect <- c(my_vect, 5, 6, 7)
 new_vect
+```
+
+#### Vector Exercises
+Initialize 3 vectors with :
+```{r vector_exercises, exercise = TRUE}
+
 ```
 ### Matrices
 Matrices are like vectors but in 2 dimensions. You will probably not encounter matrices in most R courses, because they are difficult to work with. There are, however, some programs which require them, so it is important to know what they are.
@@ -115,8 +130,7 @@ These three classes are all composed of vectors with the same length, arranged a
 Just like with vectors, there are a few functions which are helpful when looking at a data frame for the first time. 
 
 ```{r dataframe_summary}
-my_df <- read_tsv("../Saanich_metadata.txt")
-
+my_df <- read_csv("data/Saanich_OTU_metadata.csv")
 # Instead of length() use dim()
 dim(my_df)
 
@@ -157,7 +171,15 @@ You can subset data frames with the square brackets as well, using comma-separat
 new_df[3,2]
 ```
 
-Perhaps a more common and useful way of subsetting a data frame is to return a column from the data frame as a vector. The operator to perform this function is `$`.
-```{r_subsetting_df_2}
+Perhaps a more common and useful way of subsetting a data frame is to return a column from the data frame. The operator to perform this function is `$`.
+```{r subsetting_df_2}
 new_df$vect1
+```
+
+
+
+
+*Note*: you can also return a column with square bracket notation
+```{r subsetting_df_3}
+new_df[,1]
 ```
