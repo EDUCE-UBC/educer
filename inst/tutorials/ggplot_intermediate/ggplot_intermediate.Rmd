@@ -62,6 +62,57 @@ So, what are microbes using to survive? As oxygen is depleted, microbes must use
 
 Let's plot these data to investigtate them and test these hypotheses!
 
+## Pivoting Data
+
+`pivot_longer` and `pivot_wider` are verbs that convert wide and long data, which are two different formats for a data frame. Wide data is where each variable is given its own column. Narrow data is where one column contains all of the variable names, and another column contains all of the values of these variables.
+
+For example, this wide data
+
+```{r, echo=FALSE}
+set.seed(123)
+wide <- data.frame(
+  sample_ID = c(1, 2, 3, 4),
+  year_2015 = runif(4, 0, 1) %>% round(3),
+  year_2016 = runif(4, 0.2, 1.2) %>% round(3),
+  year_2017 = runif(4, 0.5, 1.5) %>% round(3)
+)
+wide
+```
+
+contains the same information as this long data.
+```{r echo=FALSE}
+pivot_longer(wide, cols = c("year_2015", "year_2016", "year_2017"), names_to ="Year", values_to = "Value") %>% arrange(sample_ID)
+```
+
+Our data is in the wide format. Observe that each variable is given its own column.
+```{r}
+subset_otu_metadata
+```
+
+Some R functions work better with wide data and others work better with long data. `pivot_longer` and `pivot_wider` are two functions from the tidyr package that enable easy conversion between the formats. The first will merge all specified columns in the "cols" parameter into one column containing all of the variable names (specified by the "names_to" parameter) and another column containing all of the values (specified by the values_to parameter). The second function will "spread" your long data into the wide data format. 
+
+Here, we convert our data from wide to long format using `pivot_longer()`.
+```{r}
+long_dat <-
+  pivot_longer(
+    subset_otu_metadata,
+    cols = c("NO3_uM", "NO2_uM", "N2O_uM", "NH4_uM", "H2S_uM", "O2_uM", "PO4_uM", "SiO2_uM", "CH4_nM"),
+     names_to = "Chemical",
+     values_to = "Concentration",
+  )
+
+long_dat
+```
+
+We can undo this by spreading our data from long to wide format. Arguements for `pivot_wider` are: the dataframe that we want to convert from long to wide, the column(s) that you want to convert into multiple columns in the "names_from" parameter and their corresponding values in the "values_from" parameter. 
+```{r}
+wide_dat <- pivot_wider(long_dat, names_from = "Chemical", values_from = "Concentration")
+wide_dat
+```
+
+long data is more frequently used in plotting with ggplot.
+
+
 ## Graphics with ggplot2
 _ggplot2_ is an add-on package to R. It is an alternative to base graphics that has become very popular, to the point where it is recommended/preferred unless you have old code that already uses a different graphing package.
 

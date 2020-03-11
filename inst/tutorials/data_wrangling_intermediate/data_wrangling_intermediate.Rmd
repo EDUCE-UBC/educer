@@ -4,30 +4,66 @@ author: "michelle kang"
 date: "05/02/2020"
 output: learnr::tutorial
 runtime: shiny_prerendered
+description: this file contains the second of three data wrangling tutorials using the tidyverse package in R. This tutorial introduces loading datasets within the educer package, piping, and the rename, arrange, mutate, summarise and as.factor functions of tidyverse.
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(learnr)
 library(tidyverse)
+library(educer)
 ```
 
 ## Intermediate tidyverse
 
-In this tutorial, we will be using the Saanich data set, lets load it into our environment:
+In this tutorial, we will be using the "geochemicals" dataset included in the educer package. This dataframe contains time series observations on the water column chemistry. Learn more about the geochemicals dataset by running the following line in your R console. 
+
+```{r dataset_exercise, exercise = TRUE, exercise.lines = 5}
+?geochemicals
+```
+
+```{r dataset_quiz, echo = FALSE}
+quiz(
+  question("Which colum in the geochemicals dataset has data on average concentration of Hydrogen sulfide for each depth?",
+           answer("Mean_H2S", correct = TRUE),
+           answer("mean_h2s"),
+           answer("Avg_H2S")
+           )
+)
+```
+
+lets load the geochemicals dataset into our environment like this:
 ```{r message=FALSE}
-library(tidyverse)
-library(educer)
 raw_dat <- geochemicals
 ```
 
 ## Refresher: Select, Filter, Slice
 
-We can clean the data using the filter and select dplyr verbs like this:
-```{r}
+The pre-requisites for this tutorial are understanding how to use the `select`, `filter` and `slice` functions introduced in the previous "data wrangling basic" tutorial.
+
+As a refresher:
+
+`select(dataframe, specified columns separated by commas) ` : select to work with only specified columns from our data table 
+
+`filter(dataframe, boolean condition)` : select specific rows in dataframe based on a logical condition of a column value.
+
+`slice(dataframe, specified rows separated by commas OR range of rows separated by ":")` : select a subset of observations (rows) by their position in the dataframe
+
+1. copy raw dat into a new variable called "dat"
+2. select for the Cruise, Date, Depth, Temperature, CTD_O2, NO3, Mean_H2S columns 
+3. omit all rows where CTD_02 is null 
+4. use the `glimpse` function to make sure that "dat" now has 7 columns and 1,249 rows. 
+
+```{r intro_exercise, exercise = TRUE, exercise.lines = 5}
+
+```
+
+
+```{r, include = FALSE}
 dat <- raw_dat
 dat <- select(dat, Cruise, Date, Depth, Temperature, CTD_O2, NO3, Mean_H2S)
 dat <- filter(dat, !is.na(CTD_O2))
+glimpse(dat)
 ```
 
 ```{r intro_quiz, echo = FALSE}
@@ -40,15 +76,34 @@ quiz(
 )
 ```
 
-from the previous tutorial: how would you select only the rows where Cruise is 1 or 2?  
+how would you select only the rows where Cruise is 18 or 19 and save the result into a variable called "restricted_Cruise"? your resulting dataframe should have 32 rows.
 ```{r refresher_exercise, exercise = TRUE, exercise.lines = 5}
+```
 
+```{r include=FALSE}
+restricted_Cruise <- filter(dat, Cruise == 18 | Cruise == 19)
+glimpse(restricted_Cruise)
 ```
 
 How would you create a new dataframe called "subset_dat" with only the first third and seventh row of raw_dat?  
 ```{r slice_exercise, exercise = TRUE, exercise.lines = 5}
 
 ```
+
+## Learning Objectives
+
+In this tutorial you will learn to use:
+
+- the `rename` function to assign more intuitive names for columns
+
+- the `arrange` function to sort rows by value
+
+- the `mutate` function to apply a transformation to values in one column and assign new values to a new column
+
+- piping with %>% to chain commands together
+
+- the `summarise` function to calculate summary statistics such as mean and standard deviation for groups of data
+
 ## Rename
 
 We can use the `rename` function to assign new names to your variables. This can be very useful when your variable names are very long and tedious to type. Here, we remove the prefixes from some of the variables.

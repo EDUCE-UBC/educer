@@ -4,6 +4,7 @@ author: "michelle kang"
 date: "05/02/2020"
 output: learnr::tutorial
 runtime: shiny_prerendered
+description: this file contains the first of three data wrangling tutorials using the tidyverse package in R. Along with an introduction on downloading and loading packages, this tutorial introduces loading and visualising tabular data tables, and the filter, slice and select functions of tidyverse.  
 ---
 
 ```{r setup, include=FALSE}
@@ -16,7 +17,9 @@ library(tidyverse)
 
 ### By the end of this tutorial you should be able to
 
-- load and subset tabular data using tidyverse
+- install and load R packages
+- load tabular data using read_csv and save the data to your R environment
+- use the filter, slice and select methods to conditionally subset your data
 
 ## R packages
 
@@ -90,12 +93,18 @@ OTU_metadata_table <- read_csv(file="Saanich_OTU_metadata.csv", col_names = TRUE
 
 ## Data exploration
 
-Let's explore the data that we've imported into R. `glimpse` is a function that as its name suggests, allows us to get a "glimpse" of the contents of a data table. Running `glimpse` on a data table outputs the number of rows (observations), columns (variables), and lists each column name along with its type and a portion of its contents. Let's run `glimpse` with our OTU_metadata_table like this:
+Let's explore the data that we've imported into R. The simplest way to view your imported data is to view it as a "tibble" like this. This view displays a subset of large data tables (notice that the last column name gets cut off) in a table view
+
+```{r}
+OTU_metadata_table
+```
+
+`glimpse` is a function that as its name suggests, allows us to get a "glimpse" of the contents of a data table. Running `glimpse` on a data table outputs the number of rows (observations), columns (variables), and lists each column name along with its type and a portion of its contents. Let's run `glimpse` with our OTU_metadata_table like this:
 
 ```{r}
 glimpse(OTU_metadata_table)
 ```
-from this we see that our table has 7 rows and 10 columns. Each $ is followed by a column name, with information on the contents following each column name.
+from this we see that our table has 7 rows and 10 columns. Each $ is followed by a column name, with information on the contents following each column name. `glimpse` lists all columns of a table
 
 If we only want the dimensions of a dataframe or table, we can use the dim function which prints the number of rows followed by the number of columns. Simple functions to query just the number of rows or columns in a data table are `nrow` and `ncol`.
 
@@ -114,6 +123,9 @@ We can list the column names using `colnames()`.
 colnames(OTU_metadata_table)
 ```
 
+
+## Select
+
 We can select to work with only specific columns from our table using the `select()` function. 
 
 ```{R}
@@ -127,13 +139,17 @@ As an exercise, select for only the depth and geochemical columns in OTU_metadat
 
 ## Booleans
 
-Booleans are logical statements that are either TRUE or FALSE but can not be anything in between. For example:
+Booleans are logical statements that are either TRUE or FALSE but can not be anything in between. As an example, run the code below:
+```{r boolean_exercise,exercise = TRUE, exercise.lines = 5 }
+x = 6
+y = "cat"
 
-the equation x < 3 is TRUE when x is less than 3 and FALSE when x is greater than 3.
+x < 3
+y == "dog"
+```
+the equation x < 3 is FALSE because x is set to 6 in the line above. As a simple exercise, manipulate the above code to make both equations TRUE. 
 
-the equation x == "DOG" is TRUE when x is "DOG" and FALSE when x is not "DOG"
-
-note that in R, "==" is used in Boolean equations and using a single "=" will result in error. 
+note that in R, "==" is used in Boolean equations and using a single "=" will result in error. As you may have noticed above a single "=" is used to set a variable to a value. 
 
 For quick reference, here are the most commonly used statements and operators.
 
@@ -147,6 +163,15 @@ R code     | meaning
 `!`        | not (as in not equal to `!=`)
 `&`        | and
 `|`        | or
+
+```{r, include=FALSE}
+x = 10
+```
+
+write a boolean equation for "x is greater than 6 or less than 12", it should return "TRUE" after running
+```{r boolean_exercise2,exercise = TRUE, exercise.lines = 5 }
+
+```
 
 You can use `filter` to select specific rows based on a logical condition of a variable.
 Some examples working with our `OTU_metadata_table` data.

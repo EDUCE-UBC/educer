@@ -4,6 +4,7 @@ author: "michelle kang"
 date: "07/02/2020"
 output: learnr::tutorial
 runtime: shiny_prerendered
+description: this file contains the third of three data wrangling tutorials using the tidyverse package in R. This tutorial introduces joining datatables using the inner_join function and converting data from long format to wide format using the pivot functions. 
 ---
 
 ```{r setup, include=FALSE}
@@ -12,7 +13,7 @@ library(learnr)
 library(tidyverse)
 ```
 
-## Load packages
+## Introduction
 Let's first load the tidyverse package into our environment
 
 **R v3.4 or newer**
@@ -21,7 +22,27 @@ library(tidyverse)
 library(educer)
 ```
 
+After completing this tutorial you will be able to:
+
+-use the left_join function to combine two data tables
+
 ## Refresher 
+
+From the previous 2 tutorials you should be comfortable using the:
+
+- `select(dataframe, specified columns separated by commas) ` : select to work with only specified columns from our data table 
+
+- `filter(dataframe, boolean condition)` : select specific rows in dataframe based on a logical condition of a column value.
+
+- `slice(dataframe, specified rows separated by commas OR range of rows separated by ":")` : select a subset of observations (rows) by their position in the dataframe
+
+- the `rename(dataframe, new_column_name = old_column_name)` function to assign more intuitive names for columns
+
+- the `mutate(dataframe, new_column = transformation of old_column)` function to apply a transformation to values in one column and assign new values to a new column
+
+- piping with %>% to chain commands together
+
+- the `summarise` function to calculate summary statistics such as mean and standard deviation for groups of data
 
 ```{r echo=FALSE, results=FALSE}
 pdat <- geochemicals
@@ -33,6 +54,10 @@ temp <- pdat %>%
   filter(!is.na(Oxygen))
 ```
 
+Exercise:
+
+We will be using the "geochemicals" dataset included in the educer package. This dataframe contains time series observations on the water column chemistry. Learn more about the geochemicals dataset by running "?educer" in your R console. The geochemicals dataset has been loaded into "dat" for you as a start.
+
 1. Select the Depth and CTD_O2 variables from geochemicals dataset
 2. Filter to 100 m samples
 3. Rename the O2 variable to `Oxygen` using rename
@@ -43,20 +68,20 @@ temp <- pdat %>%
 This should result in `r mean(temp$Oxygen)` $\pm$ `r sd(temp$Oxygen)`
 
 ```{r refresher_exercise, exercise = TRUE, exercise.lines = 5}
+dat <- geochemicals
+
 ```
 
-Write a one line command that filters the geochemicals dataset for all geochemical mean values 
+Write a one line command that filters the geochemicals dataset for all geochemical mean values (*hint* use the "starts_with" helper function)
 
 ```{r refresher_startswith, exercise = TRUE, exercise.lines = 5}
 ```
 
-Calculate the mean temperature of the 100 samples with the highest PO4 concentrations.
-
-```{r refresher_challenge, exercise = TRUE, exercise.lines = 5}
-```
 ## Join Tables 
 
-Dyplr has built in functions to quickly join two tables. In this tutorial we will be focusing on Inner Join. Inner join takes in two tables, x and y, and return all rows from x where there are matching values in y, and all columns from x and y. If there are multiple matches between x and y, all combination of the matches are returned.
+Dyplr has built in functions to quickly join two tables. In this tutorial we will be focusing on `inner_join`. `inner_join` takes in two tables, x and y, and return all rows from x where there are matching values in y, and all columns from x and y. 
+
+If there are multiple matches between x and y, *all combination of the matches are returned*.
 
 for example, a table x:
 ```{R echo=FALSE, warning=FALSE, message=FALSE}
@@ -87,52 +112,31 @@ we will select the first 15 columns to work with fewer OTUs:
 subset_otu_metadata <- select(otu_metadata, 1:15)
 ```
 
-## Pivoting Data
+perform an inner join on the following two data frames of fruits students brought for lunch in classroom A and classroom B.
+```{r join_table_exercise, exercise = TRUE, exercise.lines = 10}
+fruits = c("apple", "orange", "pear", "grape", "orange")
+student_A = c("Joe", "Maria", "Tom", "Sally", "James")
+classroom_A <- data.frame(fruits,student_A)
 
-`pivot_longer` and `pivot_wider` are verbs that convert wide and long data, which are two different formats for a data frame. Wide data is where each variable is given its own column. Narrow data is where one column contains all of the variable names, and another column contains all of the values of these variables.
+fruits = c("apple", "orange", "grape", "pear", "orange")
+student_B = c("Jason", "Mary", "Tory", "Sarah", "Josh")
+classroom_b <- data.frame(fruits,student_B)
 
-For example, this wide data
 
-```{r, echo=FALSE}
-set.seed(123)
-wide <- data.frame(
-  sample_ID = c(1, 2, 3, 4),
-  year_2015 = runif(4, 0, 1) %>% round(3),
-  year_2016 = runif(4, 0.2, 1.2) %>% round(3),
-  year_2017 = runif(4, 0.5, 1.5) %>% round(3)
+```
+
+```{r table_join_quiz, echo = FALSE}
+quiz(
+  question("How many rows does the resulting dataframe have?",
+           answer("5"),
+           answer("6"),
+           answer("7", correct = TRUE)
+           ),
+  question("What happens if you decrease the size of the classroom A dataset by deleting one orange and one student?",
+           answer("ERROR both data frames have to be equal in size for them to be joined"),
+           answer("The resulting joint table will have 5 rows", correct = TRUE),
+           answer("The resulting joint table will have 6 rows")
+           )
 )
-wide
 ```
 
-contains the same information as this long data.
-```{r echo=FALSE}
-pivot_longer(wide, cols = c("year_2015", "year_2016", "year_2017"), names_to ="Year", values_to = "Value") %>% arrange(sample_ID)
-```
-
-Our data is in the wide format. Observe that each variable is given its own column.
-```{r}
-subset_otu_metadata
-```
-
-Some R functions work better with wide data and others work better with long data. `pivot_longer` and `pivot_wider` are two functions from the tidyr package that enable easy conversion between the formats. The first will merge all specified columns in the "cols" parameter into one column containing all of the variable names (specified by the "names_to" parameter) and another column containing all of the values (specified by the values_to parameter). The second function will "spread" your long data into the wide data format. 
-
-Here, we convert our data from wide to long format using `pivot_longer()`.
-```{r}
-long_dat <-
-  pivot_longer(
-    subset_otu_metadata,
-    cols = c("NO3_uM", "NO2_uM", "N2O_uM", "NH4_uM", "H2S_uM", "O2_uM", "PO4_uM", "SiO2_uM", "CH4_nM"),
-     names_to = "Chemical",
-     values_to = "Concentration",
-  )
-
-long_dat
-```
-
-We can undo this by spreading our data from long to wide format. Arguements for `pivot_wider` are: the dataframe that we want to convert from long to wide, the column(s) that you want to convert into multiple columns in the "names_from" parameter and their corresponding values in the "values_from" parameter. 
-```{r}
-wide_dat <- pivot_wider(long_dat, names_from = "Chemical", values_from = "Concentration")
-wide_dat
-```
-
-long data is more frequently used in plotting with ggplot.
