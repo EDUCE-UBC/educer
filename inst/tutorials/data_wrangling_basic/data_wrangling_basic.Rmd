@@ -11,11 +11,12 @@ description: this file contains the first of three data wrangling tutorials usin
 knitr::opts_chunk$set(echo = TRUE)
 library(learnr)
 library(tidyverse)
+library(educer)
 ```
 
 ## Objectives:
 
-### By the end of this tutorial you should be able to
+### By the end of this tutorial you should be able to:
 
 - install and load R packages
 - load tabular data using read_csv and save the data to your R environment
@@ -32,7 +33,7 @@ In this tutorial we will be using the "tidyverse" package. This package contains
 The tidyverse package can be installed like this (to install a different package just replace "tidyverse" with the name of the desired package):
 
 **For R v3.4 or newer**
-```{r eval=FALSE}
+```{R eval=FALSE}
 install.packages("tidyverse")
 ```
 
@@ -55,7 +56,7 @@ After installing a package, and *everytime* you open a new RStudio session, the 
 
 Packages can be loaded like this:
 
-```{r eval=TRUE}
+```{R tidyverse_load, exercise = TRUE, exercise.lines = 5}
 library("tidyverse")
 library("educer")
 ```
@@ -69,6 +70,12 @@ The OTU_metadata_table (`Saanich_OTU_metadata.csv`) is a comma-delimited table o
 
 For a brief introduction to these data, see Hallam SJ et al. 2017. Monitoring microbial responses to ocean deoxygenation in a model oxygen minimum zone. Sci Data 4: 170158 [doi:10.1038/sdata.2017.158](https://www.nature.com/articles/sdata2017158).
 
+
+```{r include=FALSE}
+combined_Data <- combined
+write.csv(combined_Data, "Saanich_OTU_metadata.csv", row.names = FALSE )
+```
+
 ## Loading tabular data
 
 Every R function follows the following basic syntax, where `Function` is the name of the function and `arguments` are the different parameters you can specify.
@@ -77,38 +84,72 @@ Function(argument1=..., argument2=..., ...)
 
 Data tables can be loaded into R using the tidyverse `read_*` function. 
 
-For example, we can load our Saanich data into R with `read_csv` for a comma separated file and specify the arguments that describe our data as follows.
+The `read_table` function allows us to open raw datafiles. Run the following code to see what "Saanich_OTU_metadata.csv" looks like. 
+
+```{r, message=FALSE}
+read_table("Saanich_OTU_metadata.csv")
+```
+
+Notice how values in "Saanich_OTU_metadata.csv" are separated by commas. We can load our Saanich data into R with `read_csv` for comma separated files and specify the arguments that describe our data as follows.
 
 * col_names: tells R that the first row is column names, not data
 
-```{r}
+```{r, message=FALSE}
 read_csv(file="Saanich_OTU_metadata.csv", col_names = TRUE)
 ```
 
+now our data is formatted nicely into table form.
+
 ### Save data in the environment
 Since we want to do more with our data after reading it in, we need to save it as a variable in R like we did previously with the `<-` operator. You can choose to name the object whatever you like, though this module assumes the names used below.
-```{r}
+```{r, message=FALSE}
 OTU_metadata_table <- read_csv(file="Saanich_OTU_metadata.csv", col_names = TRUE)
+```
+
+```{r saving_quiz, echo = FALSE}
+quiz(
+  question("How do we make sure the datatable is saved to 'OTU_metadata_table' in our environment?",
+           answer("entering 'OTU_metadata_table' in the console displays the table"),
+           answer("entering OTU_metadata_table (no quotes) in the console displays the table", correct=TRUE),
+           answer("OTU_metadata_table shows up in the 'Global Environment' box on the top right hand corner", correct = TRUE)
+           )
+)
 ```
 
 ## Data exploration
 
 Let's explore the data that we've imported into R. The simplest way to view your imported data is to view it as a "tibble" like this. This view displays a subset of large data tables (notice that the last column name gets cut off) in a table view
 
-```{r}
+```{r view_as_tibble, exercise = TRUE, exercise.lines = 5}
 OTU_metadata_table
 ```
 
 `glimpse` is a function that as its name suggests, allows us to get a "glimpse" of the contents of a data table. Running `glimpse` on a data table outputs the number of rows (observations), columns (variables), and lists each column name along with its type and a portion of its contents. Let's run `glimpse` with our OTU_metadata_table like this:
 
-```{r}
+```{r glimpse, exercise = TRUE, exercise.lines = 5}
 glimpse(OTU_metadata_table)
 ```
 from this we see that our table has 7 rows and 10 columns. Each $ is followed by a column name, with information on the contents following each column name. `glimpse` lists all columns of a table
 
+### Exercise
+
+```{r glimpse_quiz, echo = FALSE}
+quiz(
+  question("Which columns are in the OTU_metadata_table?",
+           answer("OTU001", correct = TRUE),
+           answer("Otu002"),
+           answer("72"),
+           answer("NO3", correct = TRUE),
+           answer("NO3_Mean"),
+           answer("Mean_N20", correct = TRUE),
+           answer("Depth", correct = TRUE)
+           )
+)
+```
+
 If we only want the dimensions of a dataframe or table, we can use the dim function which prints the number of rows followed by the number of columns. Simple functions to query just the number of rows or columns in a data table are `nrow` and `ncol`.
 
-```{r}
+```{r dimentions, exercise = TRUE, exercise.lines = 7}
 #number of rows followed by number of columns
 dim(OTU_metadata_table)
 #number of rows
@@ -117,9 +158,10 @@ nrow(OTU_metadata_table)
 ncol(OTU_metadata_table)
 ```
 
+
 We can list the column names using `colnames()`. 
 
-```{R}
+```{R colnames, exercise = TRUE, exercise.lines = 5}
 colnames(OTU_metadata_table)
 ```
 
@@ -128,10 +170,16 @@ colnames(OTU_metadata_table)
 
 We can select to work with only specific columns from our table using the `select()` function. 
 
-```{R}
-restricted_columns <- select(OTU_metadata_table, sample, Otu0001, Otu0002, Otu0004, Depth_m)
+```{R select_1, exercise = TRUE, exercise.lines = 5}
+restricted_columns <- select(OTU_metadata_table, OTU0001, OTU0002, OTU0004, Depth)
 ```
 
+To view our new "restricted_columns" variable, just type in the variable name and run the code like this:
+```{R view, exercise = TRUE, exercise.lines = 3}
+restricted_columns
+```
+
+### Exercise
 As an exercise, select for only the depth and geochemical columns in OTU_metadata_table and name the new table "metadata" 
 ```{r select_exercise, exercise = TRUE, exercise.lines = 5}
 
@@ -168,6 +216,7 @@ R code     | meaning
 x = 10
 ```
 
+### Exercise
 write a boolean equation for "x is greater than 6 or less than 12", it should return "TRUE" after running
 ```{r boolean_exercise2,exercise = TRUE, exercise.lines = 5 }
 
@@ -177,26 +226,27 @@ You can use `filter` to select specific rows based on a logical condition of a v
 Some examples working with our `OTU_metadata_table` data.
 
 `variable == value` returns rows where the variable matches the value
-```{r}
-filter(OTU_metadata_table, Depth_m == 100)
+```{r boolean2, exercise = TRUE, exercise.lines = 5}
+filter(OTU_metadata_table, Depth == 100)
 ```
 
 `variable != value` returns rows where the variable does not match the value
-```{r}
-filter(OTU_metadata_table, Depth_m != 100)
+```{r boolean3, exercise = TRUE, exercise.lines = 5}
+filter(OTU_metadata_table, Depth != 100)
 ```
 
 `variable > value` returns rows where the variable is greater than the value
-```{r}
-filter(OTU_metadata_table, Depth_m > 100)
+```{r boolean4, exercise = TRUE, exercise.lines = 5}
+filter(OTU_metadata_table, Depth > 100)
 ```
 
 `variable %in% values` returns rows where the variable matches one of the given values.
 Values are provided as a vector `c(value1, value2, ...)`
-```{r}
-filter(OTU_metadata_table, Depth_m %in% c(100, 200))
+```{r boolean5, exercise = TRUE, exercise.lines = 5}
+filter(OTU_metadata_table, Depth %in% c(100, 200))
 ```
 
+### Exercise
 As an exercise, restrict for rows where the value for "depth" is less than or equal to 135m. 
 ```{r filter_exercise, exercise = TRUE, exercise.lines = 5}
 
@@ -207,21 +257,31 @@ As an exercise, restrict for rows where the value for "depth" is less than or eq
 We can also only choose to work with specific rows in our data table using the `slice()` function. 
 
 To select a subset of observations (rows) by their ordinal position, we use the `slice` function.
-```{r}
+```{r slice, exercise = TRUE, exercise.lines = 5}
 slice(OTU_metadata_table, 1)
 ```
 
 You can list multiple ordinal postions to select multiple observations at once.
-```{r}
+```{r slice2, exercise = TRUE, exercise.lines = 5}
 slice(OTU_metadata_table, 1, 2, 3, 4, 5)
 ```
 
 If you would like to to select a range of observations, give the starting and end position separated by a colon like so: `Start:End`.
 
-```{r}
+```{r slice3, exercise = TRUE, exercise.lines = 5}
 slice(OTU_metadata_table, 1:5)
 ```
 
+```{r slice_quiz, echo = FALSE}
+quiz(
+  question("What is the value of OTU0003 in the 6th row of OTU_metadata_table?",
+           answer("0"),
+           answer("156"),
+           answer("178", correct=TRUE),
+           answer("72")
+           )
+)
+```
 
 ```{r echo=FALSE}
 temp <- geochemicals %>% 
@@ -230,18 +290,25 @@ temp <- geochemicals %>%
 ```
 
 ## Summary Exercise
+
+The "geochemicals" dataset is included in the educer package. This dataframe contains time series observations on the water column chemistry. Learn more about the geochemicals dataset by running the following line in your R console. 
+
+```{r dataset_exercise, exercise = TRUE, exercise.lines = 5}
+?geochemicals
+```
+
 Using the geochemical data:
 
 1. select the Cruise, Date, Depth, and oxygen variables
 2. filter the data to retain data on Cruise 72 where Depth is greater than or equal to 0.05 km
 
-Your resulting pdat object should be a [`r dim(temp)`] data frame. The data has been loaded for you 
+Your resulting pdat object should be a [`r dim(temp)`] data frame. The data has been loaded for you into the "dat" variable 
 
 ```{r summary_exercise, exercise = TRUE, exercise.lines = 5}
 dat <- geochemicals
 ```
 ### Challenge exercise: `select` and `filter`
-If you want more practice or have previous experience in R, try this more challenging exercise! Be sure to create a fresh `pdat`.
+If you want more practice or have previous experience in R, try this more challenging exercise! Be sure to create a fresh `dat`.
 
 3. Keep only the Cruise and Depth variables and the rows where oxygen OR nitrate is greater than zero.
 
