@@ -14,7 +14,7 @@ library(tidyverse)
 library(educer)
 ```
 
-## Objectives:
+## Objectives
 
 ### By the end of this tutorial you should be able to:
 
@@ -50,7 +50,7 @@ install.packages("purrr")
 install.packages("forcats")
 ```
 
-## Loading packages:
+## Loading packages
 
 After installing a package, and *everytime* you open a new RStudio session, the packages you want to use need to be loaded (opened) into the R work-space with the `library` function. This tells R to access the package's functions and prevents RStudio from lags that would occur if it automatically loaded every downloaded package every time you opened it.
 
@@ -71,11 +71,6 @@ The OTU_metadata_table (`Saanich_OTU_metadata.csv`) is a comma-delimited table o
 For a brief introduction to these data, see Hallam SJ et al. 2017. Monitoring microbial responses to ocean deoxygenation in a model oxygen minimum zone. Sci Data 4: 170158 [doi:10.1038/sdata.2017.158](https://www.nature.com/articles/sdata2017158).
 
 
-```{r include=FALSE}
-combined_Data <- combined
-write.csv(combined_Data, "Saanich_OTU_metadata.csv", row.names = FALSE )
-```
-
 ## Loading tabular data
 
 Every R function follows the following basic syntax, where `Function` is the name of the function and `arguments` are the different parameters you can specify.
@@ -86,24 +81,38 @@ Data tables can be loaded into R using the tidyverse `read_*` function.
 
 The `read_table` function allows us to open raw datafiles. Run the following code to see what "Saanich_OTU_metadata.csv" looks like. 
 
-```{r, message=FALSE}
+```{r, include=FALSE}
+comb<-combined
+write.csv(comb, "~/Downloads/Saanich_OTU_metadata.csv")
+```
+
+```{r, message=FALSE, eval=FALSE}
 read_table("Saanich_OTU_metadata.csv")
 ```
 
+```{R, echo=FALSE, message=FALSE}
+read_table("~/Downloads/Saanich_OTU_metadata.csv")
+```
 Notice how values in "Saanich_OTU_metadata.csv" are separated by commas. We can load our Saanich data into R with `read_csv` for comma separated files and specify the arguments that describe our data as follows.
 
 * col_names: tells R that the first row is column names, not data
 
-```{r, message=FALSE}
+```{r, message=FALSE,eval=FALSE}
 read_csv(file="Saanich_OTU_metadata.csv", col_names = TRUE)
 ```
 
+```{R, echo=FALSE}
+combined
+```
 now our data is formatted nicely into table form.
 
 ### Save data in the environment
 Since we want to do more with our data after reading it in, we need to save it as a variable in R like we did previously with the `<-` operator. You can choose to name the object whatever you like, though this module assumes the names used below.
-```{r, message=FALSE}
+```{r, message=FALSE,eval=FALSE}
 OTU_metadata_table <- read_csv(file="Saanich_OTU_metadata.csv", col_names = TRUE)
+```
+```{R, echo=FALSE}
+OTU_metadata_table<-combined
 ```
 
 ```{r saving_quiz, echo = FALSE}
@@ -120,13 +129,13 @@ quiz(
 
 Let's explore the data that we've imported into R. The simplest way to view your imported data is to view it as a "tibble" like this. This view displays a subset of large data tables (notice that the last column name gets cut off) in a table view
 
-```{r view_as_tibble, exercise = TRUE, exercise.lines = 5}
+```{r}
 OTU_metadata_table
 ```
 
 `glimpse` is a function that as its name suggests, allows us to get a "glimpse" of the contents of a data table. Running `glimpse` on a data table outputs the number of rows (observations), columns (variables), and lists each column name along with its type and a portion of its contents. Let's run `glimpse` with our OTU_metadata_table like this:
 
-```{r glimpse, exercise = TRUE, exercise.lines = 5}
+```{r}
 glimpse(OTU_metadata_table)
 ```
 from this we see that our table has 7 rows and 10 columns. Each $ is followed by a column name, with information on the contents following each column name. `glimpse` lists all columns of a table
@@ -149,7 +158,7 @@ quiz(
 
 If we only want the dimensions of a dataframe or table, we can use the dim function which prints the number of rows followed by the number of columns. Simple functions to query just the number of rows or columns in a data table are `nrow` and `ncol`.
 
-```{r dimentions, exercise = TRUE, exercise.lines = 7}
+```{r}
 #number of rows followed by number of columns
 dim(OTU_metadata_table)
 #number of rows
@@ -161,7 +170,7 @@ ncol(OTU_metadata_table)
 
 We can list the column names using `colnames()`. 
 
-```{R colnames, exercise = TRUE, exercise.lines = 5}
+```{R}
 colnames(OTU_metadata_table)
 ```
 
@@ -170,12 +179,12 @@ colnames(OTU_metadata_table)
 
 We can select to work with only specific columns from our table using the `select()` function. 
 
-```{R select_1, exercise = TRUE, exercise.lines = 5}
+```{R}
 restricted_columns <- select(OTU_metadata_table, OTU0001, OTU0002, OTU0004, Depth)
 ```
 
 To view our new "restricted_columns" variable, just type in the variable name and run the code like this:
-```{R view, exercise = TRUE, exercise.lines = 3}
+```{R}
 restricted_columns
 ```
 
@@ -226,23 +235,23 @@ You can use `filter` to select specific rows based on a logical condition of a v
 Some examples working with our `OTU_metadata_table` data.
 
 `variable == value` returns rows where the variable matches the value
-```{r boolean2, exercise = TRUE, exercise.lines = 5}
+```{r boolean2}
 filter(OTU_metadata_table, Depth == 100)
 ```
 
 `variable != value` returns rows where the variable does not match the value
-```{r boolean3, exercise = TRUE, exercise.lines = 5}
+```{r boolean3}
 filter(OTU_metadata_table, Depth != 100)
 ```
 
 `variable > value` returns rows where the variable is greater than the value
-```{r boolean4, exercise = TRUE, exercise.lines = 5}
+```{r boolean4}
 filter(OTU_metadata_table, Depth > 100)
 ```
 
 `variable %in% values` returns rows where the variable matches one of the given values.
 Values are provided as a vector `c(value1, value2, ...)`
-```{r boolean5, exercise = TRUE, exercise.lines = 5}
+```{r boolean5}
 filter(OTU_metadata_table, Depth %in% c(100, 200))
 ```
 
@@ -257,18 +266,18 @@ As an exercise, restrict for rows where the value for "depth" is less than or eq
 We can also only choose to work with specific rows in our data table using the `slice()` function. 
 
 To select a subset of observations (rows) by their ordinal position, we use the `slice` function.
-```{r slice, exercise = TRUE, exercise.lines = 5}
+```{r}
 slice(OTU_metadata_table, 1)
 ```
 
 You can list multiple ordinal postions to select multiple observations at once.
-```{r slice2, exercise = TRUE, exercise.lines = 5}
+```{r}
 slice(OTU_metadata_table, 1, 2, 3, 4, 5)
 ```
 
 If you would like to to select a range of observations, give the starting and end position separated by a colon like so: `Start:End`.
 
-```{r slice3, exercise = TRUE, exercise.lines = 5}
+```{r}
 slice(OTU_metadata_table, 1:5)
 ```
 
