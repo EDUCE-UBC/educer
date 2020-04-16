@@ -4,7 +4,8 @@
 \name{geochemicals}
 \alias{geochemicals}
 \title{Full geochemical data set from Saanich Inlet 2006 to 2014}
-\format{A data frame with 1605 rows and 29 variables:
+\format{
+A data frame with 1605 rows and 29 variables:
 \describe{
   \item{Longitude}{Unique geographical coordinates for sampling station.
   Units: Decimal degrees}
@@ -56,7 +57,8 @@
   Practical salinity unit}
   \item{Density}{CTD density measurement at each pressure point. Units:
   Sigma-theta}
-}}
+}
+}
 \source{
 For a brief introduction to the data, see Hallam SJ \emph{et al.}
   2017. Monitoring microbial responses to ocean deoxygenation in a model

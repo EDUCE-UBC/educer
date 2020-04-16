@@ -4,14 +4,16 @@
 \name{normalized_OTUs}
 \alias{normalized_OTUs}
 \title{Normalized abundance of OTUs for Saanich Inlet Cruise 72}
-\format{A data frame with 30,576 rows and 4 variables:
+\format{
+A data frame with 30,576 rows and 4 variables:
 \describe{
   \item{Cruise}{Numerical identifier of individual cruises. Units: Numeric
   string}
   \item{Depth}{Sampling depth. Units: Meters}
   \item{OTU}{Numerical identifier of OTU. Units: Numeric string}
   \item{Count}{Count of OTU sequences. Units: Numeric string}
-}}
+}
+}
 \source{
 For a brief introduction to the data, see Hallam SJ \emph{et al.}
   2017. Monitoring microbial responses to ocean deoxygenation in a model

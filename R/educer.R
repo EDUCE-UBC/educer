@@ -19,7 +19,8 @@
 #'     \item\link[=OTUs]{Abundance of OTUs for Saanich Inlet Cruise 72}
 #'     \item\link[=normalized_OTUs]{Normalized abundance of OTUs for Saanich
 #'     Inlet Cruise 72}
-#'     \item\link[=combined]{Combined data set of geochemicals and OTUabundance}
+#'     \item\link[=combined]{Combined data set of geochemicals and OTU
+#'     abundance}
 #'   }
 #' @docType package
 #' @name educer
