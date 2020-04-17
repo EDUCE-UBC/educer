@@ -18,27 +18,36 @@ library(tidyverse)
 
 # Helper function to set path to images to "/images" etc.
 setup_resources()
-
-speedplot <- function(df){
-  ggplot(df, aes(speed, dist))+
-    stat_summary(geom = "line")
-}
 ```
 
 ## Learning Objectives
  By the end of this tutorial, students should be able to:
  
- 1. Understand the different data types in R
+ 1. Distinguish between the different data types in R
  2. Convert the type and structure of data
  
+## How to use this tutorial
+This tutorial was made with learnr, which provides a simple environment to learn R. The main content of the lessons is on the right hand side of your screen.
+
+![](/images/content_window.png){width=100%}
+
+On the left hand side of the screen is a navigation menu that you can use to go back to previously completed sections.
+
+![](/images/navigation_pane.png){width=100%}
+
+When you're done with the content on your screen, click the button at the bottom that says "Next Topic" or "Continue".
+
+![](/images/navigation_button.png){width=100%}
+
+Sometimes you'll encounter interactive code sections in the tutorial. These boxes give you a space to write R code and practice what you're learning. You can run the code by clicking the "run code" button.
+
+![](/images/interactive_code.png){width=100%}
+
 
 ## Functions
 A function is a piece of code that takes at least one input and produces some sort of output. 
 
-```{r function_image, echo = FALSE, out.width="60%"}
-knitr::include_graphics("/images/function.png")
-```
-
+![](/images/function.png){width=100%}
 Functions form the basis of programming and data science. Most functions have some restrictions about what data you can give them. This tutorial is focused on how R interprets different types and shapes of data, so that you can use function in R effectively.
 
 
@@ -57,7 +66,9 @@ You can find the type of data with the `typeof` function.
 
 ### Character
 
-An object with type *character* is treated like a word. Anything can be stored as character, but that limits the operations you can perform on the data. You can assign a character by using either single or double quotation marks. Try using the `typeof()` function to verify that my_char is a character.
+An object with type *character* is treated like a word. Anything can be stored as character, but that limits the operations you can perform on the data. You can assign a character by using either single or double quotation marks. 
+
+Try using the `typeof()` function to verify that my_char is a character.
 
 ```{r character_assignment, exercise = TRUE}
 # Assign a character
@@ -79,6 +90,7 @@ Division | /
 Exponents | ^
 
 
+Math operations in R take double as input and produce double output. In the chunk below, use the math operations above to calculate the area of a circle with radius 2.
 ```{r double_assignment, exercise = TRUE}
 pi <- 3.14
 r <- 2
@@ -103,7 +115,18 @@ df <- data.frame("Operator" = c(">", "<", ">=", "<=",
 knitr::kable(df)
 ```
 
-  
+Logical expressions can be combined to make new expressions using "and" and "or" operators. The "and" operator for R is `&`. If two logical expressions are combined with `&`, they *both* must evaluate to TRUE for R to return TRUE.
+
+
+#TODO
+
+
+The "or" operator in R is "|". When two logical expressions are combined with `|`, R will return TRUE if one or both of the expressions is true.
+
+#TODO 
+
+ 
+The current logical expression evaluates to TRUE. Write another logical expression that is FALSE.
 ```{r logical_data_assignment, exercise = TRUE}
 # Use one of the operators in the table above to assign logical data to a variable
 my_logical <- 1 >= 0
@@ -135,7 +158,7 @@ quiz(
 In data science, you rarely want to work with a single number, word, or condition. To help keep you organized, R has several different data structures, each with their own rules and uses.
 
 ### Vectors 
-The most basic data structure in R is called a *vector*. A vector contains multiple elements with the same type. You can assign a vector with the function `c()`. You can have a vector of any `type`. If you attempt to create a vector with more data that has more than one data type, R will coerce all of the elements to same type without warning you.
+The most basic data structure in R is called a *vector*. A vector contains multiple elements with the same type. You can assign a vector with the function `c()`. You can have a vector of any `type`. 
 
 ```{r vector_assignment}
 my_vect <- c(1, 2, 3, 4)
@@ -160,6 +183,22 @@ new_vect <- c(my_vect, 5, 6, 7)
 new_vect
 ```
 
+If you attempt to create a vector with data that has more than one data type, R will coerce all of the elements to same type without warning you. If there are any characters in the vector, everything else will be coerced to `character`.
+
+```{r coercion_example}
+mixed_vector_1 <- c(1, "2", 3)
+mixed_vector_1
+```
+
+Notice how the output is in double quotation marks. This is one way R tells you that the entries are characters.
+
+If you try to mix logical and doubles in a vector, the resulting vector will contain doubles with TRUE being coerced to 1 and FALSE being coerced to 0.
+
+```{r logical_coercion}
+mixed_vector_2 <- c(TRUE, 2, 3)
+mixed_vector_2
+```
+
 #### Vector Exercises
 
 ```{r vector_exercises, exercise = TRUE}
@@ -167,11 +206,10 @@ new_vect
 ```
 
 ### Matrices
+
 Matrices are like vectors but in 2 dimensions. You will probably not encounter matrices in most R courses, because they are difficult to work with. Many of the functions in the `vegan` package which you will use in other tutorials produce matrices so it is good to be able to recognize them 
 
-There are several ways to initialize a matrix. The first way is by using the `matrix()` function which 
-
-combining vectors with the functions row-wise or column-wise with `rbind()` and `cbind()` respectively.
+The first way to build a matrix is with the `matrix` function which has several arguments that allow you to set the shape of the matrix.
 
 ```{r matrix examples}
 v1 <- c(1,2,3)
@@ -187,15 +225,25 @@ cbind(v1, v2, v3)
 ```
 
 Or you can use `rbind` which combines the vectors as rows.
-
 ```{r rbind_example}
 rbind(v1, v2, v3)
 ```
 
-Just like vectors, all of the data within a matrix must be the same type, so R will coerce all of the elements to the same type.
+Just like vectors, all of the data within a matrix must be the same type, so R will coerce all of the elements to a common type. Below is the first matrix example, but with `v2` as a character vector.
+
+```{r matrix_coercion_example}
+
+v1 <- c(1,2,3)
+v2 <- c("4","5","6")
+v3 <- c(7,8,9)
+
+matrix(data = c(v1, v2, v3), nrow = 3)
+```
+
+Notice that in the output, all of the entries in the matrix are in quotation marks.
 
 ### Data Frames
-A data frame is the most common way to store data in R. Most of the time, you will create data frames by reading files in from your computer with the `read_*()` family of functions from the tidyverse which will be introduced in a different tutorial.
+A data frame is the most common way to store data in R, because columns can have different types of data. Most of the time, you will create data frames by reading files in from your computer with the `read_*()` family of functions from the tidyverse which will be introduced in a different tutorial.
 
 Just like with vectors, there are a few functions which are helpful when looking at a data frame for the first time. 
 
@@ -214,11 +262,13 @@ summary(my_df)
 ```
 
 
+
 ## Changing Data Structures and Types
 One very common problem while coding in R is that the data is in the wrong format for the function you want to use. Sometimes data structure issues break your code and are relatively easy to catch. Other times, however, your code will run without issue and cause unexpected results. 
 
-If you need to change the type of an object, you can use the `as.*()` family of functions. For example, if you want to convert the data.frame from the previous page to a matrix, you can use `as.matrix()`. 
+If you need to change the type or struture of an object, you can use the `as.*()` family of functions. A very common function is `as.numeric()` which tries to coerce data to something that can be used in mathmatical operations.
 
+#example
 
 ### Exercise
 The `cars` dataset has speed and stopping distances for cars. The goal of this exercise is to create distance vs. speed that should look like this:
