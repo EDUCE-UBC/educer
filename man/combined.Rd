@@ -4,7 +4,8 @@
 \name{combined}
 \alias{combined}
 \title{Combined data set of geochemicals and OTU abundance}
-\format{A data frame with 7 rows and 10 variables:
+\format{
+A data frame with 7 rows and 10 variables:
 \describe{
   \item{Cruise}{Numerical identifier of individual cruises. Units: Numeric
   string}
@@ -21,7 +22,8 @@
   automated purge-and-trap). Units: Nanomolar}
   \item{Mean_NH4}{Average concentration of Ammonium for each depth
   (fluorometric assay). Units: Micromolar}
-}}
+}
+}
 \source{
 For a brief introduction to the data, see Hallam SJ \emph{et al.}
   2017. Monitoring microbial responses to ocean deoxygenation in a model

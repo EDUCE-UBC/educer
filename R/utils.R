@@ -16,6 +16,7 @@
 #' @param css A string giving the css location relative to installed package.
 #'
 #' @keywords internal
+#'
 #' @seealso \code{\link[shiny]{addResourcePath}()}
 setup_resources <- function(css    = "resources/css",
                             images = "resources/images") {
