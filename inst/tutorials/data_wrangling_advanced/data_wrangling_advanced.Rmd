@@ -11,6 +11,20 @@ description: this file contains the third of three data wrangling tutorials usin
 knitr::opts_chunk$set(echo = TRUE)
 library(learnr)
 library(tidyverse)
+library(educer)
+
+otu_data <- OTUs
+widertable<-pivot_wider(otu_data, names_from = OTU, values_from = Count )
+otu_data<-select(widertable, "Cruise","Depth", "0001", "0002", "0003", "0004", "0005")
+names(otu_data)<-c("Cruise", "Depth", "OTU0001", "0TU0002", "OTU0003", "OTU0004", "0TU0005")
+otu_data$Depth <- as.numeric(otu_data$Depth )
+
+
+metadata <- geochemicals
+metadata<-select(metadata, "Cruise","Depth", "PO4", "NO3", "Mean_CH4")
+
+original_names <- select(geochemicals, "Depth", "CTD_O2", "Mean_H2S")
+original_names<-na.omit(original_names)
 ```
 
 ## Introduction
@@ -28,17 +42,47 @@ After completing this tutorial you will be able to:
 
 ## Refresher 
 
+We will be using the "geochemicals" dataset included in the educer package. This dataframe contains time series observations on the water column chemistry. Learn more about the geochemicals dataset by running `?geochemicals` in your console. 
+
 From the previous 2 tutorials you should be comfortable using the:
 
 - `select(dataframe, specified columns separated by commas) ` : select to work with only specified columns from our data table 
 
+```{r select_Refresh, exercise = TRUE, exercise.lines = 3}
+select(geochemicals, "Depth", "Date", "NO3")
+```
+
 - `filter(dataframe, boolean condition)` : select specific rows in dataframe based on a logical condition of a column value.
+
+```{r filter_refresh,exercise = TRUE, exercise.lines = 5  }
+filter(geochemicals, Depth == 100)
+```
 
 - `slice(dataframe, specified rows separated by commas OR range of rows separated by ":")` : select a subset of observations (rows) by their position in the dataframe
 
+```{r slice_refresh,exercise = TRUE, exercise.lines = 5  }
+slice(geochemicals, 1:5)
+```
+
 - the `rename(dataframe, new_column_name = old_column_name)` function to assign more intuitive names for columns
 
+Original column names:
+```{R echo=FALSE}
+original_names
+```
+
+Rename the "CTD_O2" and "Mean_H2S" columns like this:
+```{r rename_refresh,exercise = TRUE, exercise.lines = 5  }
+new_names <-rename(original_names, O2=CTD_O2, H2S=Mean_H2S)
+new_names
+```
+
 - the `mutate(dataframe, new_column = transformation of old_column)` function to apply a transformation to values in one column and assign new values to a new column
+
+```{r mutate_refresh,exercise = TRUE, exercise.lines = 5  }
+dat <- mutate(geochemicals, Depth_km=Depth/1000)
+dat
+```
 
 - piping with %>% to chain commands together
 
@@ -85,44 +129,42 @@ If there are multiple matches between x and y, *all combination of the matches a
 
 for example, a table x:
 ```{R echo=FALSE, warning=FALSE, message=FALSE}
-metadata <- read_tsv("Saanich_metadata.txt", col_names = TRUE)
-head(metadata)
+metadata
 ```
 
 and a table y:
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
-otu_data <- read_tsv("Saanich_OTU.txt", col_names = TRUE)
-otu_data <- rename(otu_data, sample = X1)
-head(otu_data)
+otu_data
 ```
 
-can be joined by their mutual column "sample" like this:
-```{r warning=FALSE, message=FALSE}
-metadata <- read_tsv("Saanich_metadata.txt", col_names = TRUE)
-otu_data <- read_tsv("Saanich_OTU.txt", col_names = TRUE)
-otu_data <- rename(otu_data, sample = X1)
-otu_metadata <- inner_join(metadata, otu_data, by = "sample")
+can be joined by their mutual columns "Depth" and "Cruise" like this:
+```{r jointables_Example, exercise = TRUE, exercise.lines = 5, warning=FALSE, message=FALSE}
+otu_metadata <- inner_join(metadata, otu_data, by = c("Depth", "Cruise"))
+
 otu_metadata
 ```
 
 as you may have noticed, this is how the "Saanich_OTU_Metadata.csv" file from the introductory tutorial was generated. 
 
-we will select the first 15 columns to work with fewer OTUs:
-```{R}
-subset_otu_metadata <- select(otu_metadata, 1:15)
-```
-
 perform an inner join on the following two data frames of fruits students brought for lunch in classroom A and classroom B.
-```{r join_table_exercise, exercise = TRUE, exercise.lines = 10}
+
+`classroom_A`:
+```{r echo=FALSE}
 fruits = c("apple", "orange", "pear", "grape", "orange")
 student_A = c("Joe", "Maria", "Tom", "Sally", "James")
 classroom_A <- data.frame(fruits,student_A)
+classroom_A
+```
 
+`classroom_B`:
+```{R echo=FALSE}
 fruits = c("apple", "orange", "grape", "pear", "orange")
 student_B = c("Jason", "Mary", "Tory", "Sarah", "Josh")
 classroom_b <- data.frame(fruits,student_B)
+classroom_b
+```
 
-
+```{r jointables, exercise = TRUE, exercise.lines = 5}
 ```
 
 ```{r table_join_quiz, echo = FALSE}
