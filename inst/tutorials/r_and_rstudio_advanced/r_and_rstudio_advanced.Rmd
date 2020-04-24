@@ -43,12 +43,17 @@ Sometimes you'll encounter interactive code sections in the tutorial. These boxe
 
 ![](/images/interactive_code.png){width=100%}
 
+Code chunks are ungraded, so you don't need to stress about getting things right the first time. Use the `help()` function or check [StackExchange](https://stackexchange.com/) if you get stuck.
 
+Here is an interactive code chunk with some code for you to run:
+```{r first_chunk, exercise = TRUE}
+print("Hello, World!", quote = FALSE)
+```
 ## Functions
 A function is a piece of code that takes at least one input and produces some sort of output. 
 
 ![](/images/function.png){width=100%}
-Functions form the basis of programming and data science. Most functions have some restrictions about what data you can give them. This tutorial is focused on how R interprets different types and shapes of data, so that you can use function in R effectively.
+Functions form the basis of programming and data science. Most functions have some restrictions about what data you can give them. This tutorial is focused on how R interprets different types and shapes of data, so that you can use functions in R effectively.
 
 
 ## Basic Data Types
@@ -62,11 +67,11 @@ Similarly, R is able to perform different operations on different types of data.
   * "logical"
 
 
-You can find the type of data with the `typeof` function. 
+You can find the type of a variable with the `typeof` function. 
 
 ### Character
 
-An object with type *character* is treated like a word. Anything can be stored as character, but that limits the operations you can perform on the data. You can assign a character by using either single or double quotation marks. 
+An object with type *character* is treated like a word. Anything can be stored as character, but doing so limits the operations you can perform on the data. You can assign a character by using either single or double quotation marks. 
 
 Try using the `typeof()` function to verify that my_char is a character.
 
@@ -90,7 +95,8 @@ Division | /
 Exponents | ^
 
 
-Math operations in R take double as input and produce double output. In the chunk below, use the math operations above to calculate the area of a circle with radius 2.
+Math operations in R take double as input and produce double output. In the chunk below, use math operations to calculate the area of a circle with radius 2.
+
 ```{r double_assignment, exercise = TRUE}
 pi <- 3.14
 r <- 2
@@ -125,15 +131,24 @@ The "or" operator in R is "|". When two logical expressions are combined with `|
 
 #TODO 
 
- 
-The current logical expression evaluates to TRUE. Write another logical expression that is FALSE.
-```{r logical_data_assignment, exercise = TRUE}
-# Use one of the operators in the table above to assign logical data to a variable
-my_logical <- 1 >= 0
-
-my_logical
+To summarize, refer to this table:
+```{r combinatorial_operators, echo = FALSE}
+df <- data.frame("1" = c(TRUE, TRUE, FALSE, FALSE),
+                 "2" = c(TRUE, FALSE, TRUE, FALSE),
+                 "AND (&)" = c(TRUE, FALSE, FALSE, FALSE),
+                 "OR (|)" = c(TRUE, TRUE, TRUE, FALSE))
+knitr::kable(df)
 ```
 
+The current logical expression evaluates to TRUE. Write another logical expression that is FALSE. Try combining the two expressions using & and |.
+```{r logical_data_assignment, exercise = TRUE}
+# Use one of the operators in the table above to assign logical data to a variable
+logical_1 <- 1 >= 0
+logical_1
+
+logical_2 <- #Put an expression here
+logical_2
+```
 
 
 ### Exercises
@@ -158,50 +173,81 @@ quiz(
 In data science, you rarely want to work with a single number, word, or condition. To help keep you organized, R has several different data structures, each with their own rules and uses.
 
 ### Vectors 
-The most basic data structure in R is called a *vector*. A vector contains multiple elements with the same type. You can assign a vector with the function `c()`. You can have a vector of any `type`. 
+The most basic data structure in R is called a *vector*. A vector contains multiple elements with the same type. You can assign a vector with the function `c()`. You can have a vector of any `type`. In the code chunk below, assign character elements to `my_char_vect` using `c()`.
 
-```{r vector_assignment}
+```{r vector_setup, echo = FALSE}
 my_vect <- c(1, 2, 3, 4)
-my_char_vect <- c("hello", "world")
+bool_vect <- my_vect > 2
+depths <- unique(geochemicals$Depth) * 1000
+```
+
+```{r vector_assignment, exercise = TRUE, exercise.setup = "vector_setup"}
+my_vect <- c(1, 2, 3, 4)
+my_char_vect <- 
 ```
 
 You'll often want to know some basic information about your data without plotting or spending too much time writing code. There are several functions which you can use to summarize the contents of objects in R.
 
-The function `length` tells you how many entries are in a vector and `summary` gives you some basic information, which depends on the type and structure of the data you run it on.
+The function `length` tells you how many entries are in a vector and `summary` gives you some basic information, which depends on the type and structure of the data that you input. 
 
-```{r vector_summaries}
-# Number entries in an array
-length(my_vect)
+Use length() and summary() to quickly assess the contents of `my_vect`.
+```{r vector_summaries, exercise = TRUE, exercise.setup = "vector_setup"}
+# Number entries in my_vect
 
 # Summary statistics
-summary(my_vect)
+
 ```
 
-You can add new elements to a vector using `c()` by including the vector as one of the elements.
-```{r extend vector}
+You can add new elements to a vector using `c()` by including the vector as one of the elements. Use length() to find the length of new_vect.
+```{r extend_vector, exercise = TRUE, exercise.setup = "vector_setup"}
 new_vect <- c(my_vect, 5, 6, 7)
 new_vect
 ```
 
 If you attempt to create a vector with data that has more than one data type, R will coerce all of the elements to same type without warning you. If there are any characters in the vector, everything else will be coerced to `character`.
 
-```{r coercion_example}
+
+In the code chunk below, there is a vector containing both numbers and characters. Use `typeof()` to verify that the vector has been coerced to a character vector.
+```{r coercion_example, exercise = TRUE}
 mixed_vector_1 <- c(1, "2", 3)
 mixed_vector_1
 ```
 
 Notice how the output is in double quotation marks. This is one way R tells you that the entries are characters.
 
-If you try to mix logical and doubles in a vector, the resulting vector will contain doubles with TRUE being coerced to 1 and FALSE being coerced to 0.
+If you try to mix logical and double elements in a vector, the resulting vector will contain all doubles with TRUE being coerced to 1 and FALSE being coerced to 0. 
 
-```{r logical_coercion}
+```{r logical_coercion, exercise = TRUE}
 mixed_vector_2 <- c(TRUE, 2, 3)
 mixed_vector_2
 ```
 
-#### Vector Exercises
+A common use for coercing logical data to double is when you want to count how many elements in a vector match a certain condition. 
 
-```{r vector_exercises, exercise = TRUE}
+For example, if I wanted to know how many numbers in `my_vect` are greater than 2, I could generate a vector of logical data by running:
+```{r counting_true1, exercise = TRUE, exercise.setup = "vector_setup"}
+bool_vect <- my_vect > 2
+bool_vect
+```
+
+Since TRUE gets coerced to 1 and FALSE gets coerced to 0, you can count how many elements in the vector evaluated to TRUE with the function `sum()`.
+```{r counting_true2, exercise = TRUE, exercise.setup = "vector_setup"}
+sum(bool_vect)
+```
+
+You can combine these two expressions and run them together by placing the logical expression inside of `sum()`.
+```{r counting_true3, exercise = TRUE, exercise.setup = "vector_setup"}
+sum(my_vect > 2)
+```
+
+#### Vector Exercise
+The data for these tutorials comes from a study of ocean microbes. Measurements were taken at different depths which are stored in a vector called "depths". Follow the instructions in the comments in the code chunk below.
+```{r vector_exercises, exercise = TRUE, exercise.setup = "vector_setup"}
+#How many depths were studied?
+
+#Convert the depths to kilometres
+
+#How many depths are greater than 100 metres
 
 ```
 
@@ -210,8 +256,13 @@ mixed_vector_2
 Matrices are like vectors but in 2 dimensions. You will probably not encounter matrices in most R courses, because they are difficult to work with. Many of the functions in the `vegan` package which you will use in other tutorials produce matrices so it is good to be able to recognize them 
 
 The first way to build a matrix is with the `matrix` function which has several arguments that allow you to set the shape of the matrix.
+```{r matrix_setup, echo = FALSE}
+v1 <- c(1,2,3)
+v2 <- c(4,5,6)
+v3 <- c(7,8,9)
+```
 
-```{r matrix examples}
+```{r matrix_examples, exercise = TRUE, exercise.setup = "matrix_setup"}
 v1 <- c(1,2,3)
 v2 <- c(4,5,6)
 v3 <- c(7,8,9)
@@ -220,12 +271,12 @@ matrix(data = c(v1, v2, v3), nrow = 3)
 ```
 
 You can also use `cbind` which combines the vectors as columns.
-```{r  cbind_example}
+```{r  cbind_example, exercise = TRUE, exercise.setup = "matrix_setup"}
 cbind(v1, v2, v3)
 ```
 
 Or you can use `rbind` which combines the vectors as rows.
-```{r rbind_example}
+```{r rbind_example, exercise = TRUE, exercise.setup = "matrix_setup"}
 rbind(v1, v2, v3)
 ```
 
@@ -243,7 +294,13 @@ matrix(data = c(v1, v2, v3), nrow = 3)
 Notice that in the output, all of the entries in the matrix are in quotation marks.
 
 ### Data Frames
-A data frame is the most common way to store data in R, because columns can have different types of data. Most of the time, you will create data frames by reading files in from your computer with the `read_*()` family of functions from the tidyverse which will be introduced in a different tutorial.
+As we've just seen, vectors and matrices can only store one type of data. In most circumstances, however, you'll want to store data with different types together. The data structure that R uses to store multiple data types together is a data frame. Data frames consist of column vectors joined together. Because columns are vectors, every entry in the column must have the same type, but you can have columns with different types in the same data frame.
+
+```{r data_frame_example, echo = FALSE}
+knitr::kable(geochemicals[1:10,1:5])
+```
+
+Most of the time, you will create data frames by reading files in from your computer with the `read_*()` family of functions from the tidyverse which will be introduced in a different tutorial.
 
 Just like with vectors, there are a few functions which are helpful when looking at a data frame for the first time. 
 
@@ -251,7 +308,7 @@ Just like with vectors, there are a few functions which are helpful when looking
 my_df = geochemicals[1:10,]
 ```
 
-There is a dataframe in this 
+
 ```{r dataframe_summary, exercise = TRUE, exercise.setup = "dataframe_setup"}
 
 # Instead of length() use dim()
@@ -262,46 +319,13 @@ summary(my_df)
 ```
 
 
-
-## Changing Data Structures and Types
-One very common problem while coding in R is that the data is in the wrong format for the function you want to use. Sometimes data structure issues break your code and are relatively easy to catch. Other times, however, your code will run without issue and cause unexpected results. 
-
-If you need to change the type or struture of an object, you can use the `as.*()` family of functions. A very common function is `as.numeric()` which tries to coerce data to something that can be used in mathmatical operations.
-
-#example
-
-### Exercise
-The `cars` dataset has speed and stopping distances for cars. The goal of this exercise is to create distance vs. speed that should look like this:
-```{r plot_example, echo = FALSE}
-ggplot(cars, aes(speed, dist))+
-    stat_summary(geom = "line")
-```
-
-```{r type_conversion_setup, echo = FALSE, message = FALSE}
-speedplot <- function(df){
-  ggplot(df, aes(speed, dist))+
-    stat_summary(geom = "line")
-}
-
-cars$speed <- as.character(cars$speed)
-```
-
-For this exercise, one of the two columns in the `cars` dataset has been modified. Try running the chunk below to see what happens. Use `summary` or `typeof` to figure out what is wrong with the data frame and one of the `as.*` functions to fix the problem. Your final chart should look like the one above.
-```{r type_conversion_exercise, exercise = TRUE, exercise.setup = "type_conversion_setup"}
-# Your code here
-
-
-## Don't touch this!!
-speedplot(cars)
-```
-
 ## Subsetting
 Sometimes, you will want to look at just one column of a data frame or one element in a vector. 
 
-To subset a vector, you can use square brackets with the index of the element that you want to return. The code below returns the 5th element of `new_vect`. Modify it to return the first element.
+To subset a vector, you can use square brackets with the index of the element that you want to return. The code below returns the 2nd element of `my_vect`. Modify it to return the first element.
 
-```{r subsetting_vectors}
-new_vect[5]
+```{r subsetting_vectors, exercise = TRUE, exercise.setup = "vector_setup"}
+my_vect[2]
 ```
 
 You can subset data frames with the square brackets as well, using comma-separated values for row and column. Try to  find the 3rd item from the 2nd colum of `my_df`.
@@ -321,3 +345,45 @@ my_df$
 ```{r subsetting_df_3}
 geochemicals[,1]
 ```
+
+
+## Changing Data Structures and Types
+One very common problem while coding in R is that the data is in the wrong format for the function you want to use. Sometimes data structure issues break your code and are relatively easy to catch. Other times, however, your code will run without issue and cause unexpected results. 
+
+If you need to change the type or struture of an object, you can use the `as.*()` family of functions. A very common function is `as.numeric()` which tries to coerce data to something that can be used in mathmatical operations.
+
+Try using `as.numeric()` to create a numeric vector from this character vector:
+
+```{r coercion_exercise, exercise = TRUE}
+char_vect <- c("1", "2", "3")
+numeric_vect <- #Put code here
+```
+
+### Exercise
+The `cars` dataset has speed and stopping distances for cars. The goal of this exercise is to create distance vs. speed that should look like this:
+
+```{r plot_example, echo = FALSE, message = FALSE}
+ggplot(cars, aes(speed, dist))+
+    stat_summary(geom = "line")
+```
+
+
+```{r type_conversion_setup, echo = FALSE, message = FALSE}
+speedplot <- function(df){
+  ggplot(df, aes(speed, dist))+
+    stat_summary(geom = "line")
+}
+
+cars$speed <- as.character(cars$speed)
+```
+
+For this exercise, one of the two columns in the `cars` dataset has been modified. Try running the chunk below to see what happens. Use `summary` or `typeof` to figure out what is wrong with the data frame and one of the `as.*` functions to fix the problem. Your final chart should look like the one above.
+
+```{r type_conversion_exercise, exercise = TRUE, exercise.setup = "type_conversion_setup", message=FALSE}
+# Your code here
+
+
+## Don't touch this!!
+speedplot(cars)
+```
+
