@@ -1,44 +1,64 @@
 ---
-title: "tidyverse advanced"
-author: "michelle kang"
+title: "Tidyverse advanced"
+author: "Michelle Kang"
 date: "07/02/2020"
-output: learnr::tutorial
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
 runtime: shiny_prerendered
 description: this file contains the third of three data wrangling tutorials using the tidyverse package in R. This tutorial introduces joining datatables using the inner_join function and converting data from long format to wide format using the pivot functions. 
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+# General learnr setup
 library(learnr)
-library(tidyverse)
+knitr::opts_chunk$set(echo = TRUE)
 library(educer)
+# Helper function to set path to images to "/images" etc.
+setup_resources()
 
-otu_data <- OTUs
-widertable<-pivot_wider(otu_data, names_from = OTU, values_from = Count )
-otu_data<-select(widertable, "Cruise","Depth", "0001", "0002", "0003", "0004", "0005")
-names(otu_data)<-c("Cruise", "Depth", "OTU0001", "0TU0002", "OTU0003", "OTU0004", "0TU0005")
-otu_data$Depth <- as.numeric(otu_data$Depth )
+# Tutorial specific setup
+library(tidyverse)
 
 
-metadata <- geochemicals
-metadata<-select(metadata, "Cruise","Depth", "PO4", "NO3", "Mean_CH4")
 
-original_names <- select(geochemicals, "Depth", "CTD_O2", "Mean_H2S")
-original_names<-na.omit(original_names)
+otu_data <-
+  OTUs %>%
+  pivot_wider(names_from = OTU,
+              names_prefix = "OTU",
+              values_from = Count) %>%
+  select(Cruise, Depth, OTU0001:OTU0005)
+
+metadata       <- select(geochemicals, Cruise, Depth, PO4, NO3, Mean_CH4)
+original_names <- select(geochemicals, Depth, CTD_O2, Mean_H2S)
+
+
+
+classroom_A <- tibble(fruits = c("apple", "orange", "pear", "grape", "orange"),
+                      students = c("Joe", "Maria", "Tom", "Sally", "James"))
+
+classroom_B <- tibble(fruits = c("apple", "orange", "grape", "pear", "orange"),
+                      students = c("Jason", "Mary", "Tory", "Sarah", "Josh"))
 ```
 
+
+
 ## Introduction
+
 Let's first load the tidyverse package into our environment
 
 **R v3.4 or newer**
-```{r message=FALSE}
+```{r eval = FALSE}
 library(tidyverse)
 library(educer)
 ```
 
 After completing this tutorial you will be able to:
 
--use the left_join function to combine two data tables
+- use the left_join function to combine two data tables
+
+
 
 ## Refresher 
 
@@ -46,49 +66,51 @@ We will be using the "geochemicals" dataset included in the educer package. This
 
 From the previous 2 tutorials you should be comfortable using the:
 
-- `select(dataframe, specified columns separated by commas) ` : select to work with only specified columns from our data table 
+- `select(dataframe, specified columns separated by commas)`: select to work with only specified columns from our data table.
 
 ```{r select_Refresh, exercise = TRUE, exercise.lines = 3}
-select(geochemicals, "Depth", "Date", "NO3")
+select(geochemicals, Depth, Date, NO3)
 ```
 
-- `filter(dataframe, boolean condition)` : select specific rows in dataframe based on a logical condition of a column value.
+- `filter(dataframe, boolean condition)`: select specific rows in dataframe based on a logical condition of a column value.
 
-```{r filter_refresh,exercise = TRUE, exercise.lines = 5  }
+```{r filter_refresh, exercise = TRUE, exercise.lines = 5}
 filter(geochemicals, Depth == 100)
 ```
 
-- `slice(dataframe, specified rows separated by commas OR range of rows separated by ":")` : select a subset of observations (rows) by their position in the dataframe
+- `slice(dataframe, specified rows separated by commas OR range of rows separated by ":")` : select a subset of observations (rows) by their position in the dataframe.
 
-```{r slice_refresh,exercise = TRUE, exercise.lines = 5  }
+```{r slice_refresh, exercise = TRUE, exercise.lines = 5}
 slice(geochemicals, 1:5)
 ```
 
-- the `rename(dataframe, new_column_name = old_column_name)` function to assign more intuitive names for columns
+- The `rename(dataframe, new_column_name = old_column_name)` function to assign more intuitive names for columns.
 
 Original column names:
-```{R echo=FALSE}
+
+```{R echo = FALSE}
 original_names
 ```
 
-Rename the "CTD_O2" and "Mean_H2S" columns like this:
-```{r rename_refresh,exercise = TRUE, exercise.lines = 5  }
-new_names <-rename(original_names, O2=CTD_O2, H2S=Mean_H2S)
+Rename the `CTD_O2` and `Mean_H2S` columns like this:
+
+```{r rename_refresh,exercise = TRUE, exercise.lines = 5}
+new_names <- rename(original_names, O2 = CTD_O2, H2S = Mean_H2S)
 new_names
 ```
 
-- the `mutate(dataframe, new_column = transformation of old_column)` function to apply a transformation to values in one column and assign new values to a new column
+- The `mutate(dataframe, new_column = transformation of old_column)` function to apply a transformation to values in one column and assign new values to a new column
 
-```{r mutate_refresh,exercise = TRUE, exercise.lines = 5  }
-dat <- mutate(geochemicals, Depth_km=Depth/1000)
+```{r mutate_refresh,exercise = TRUE, exercise.lines = 5}
+dat <- mutate(geochemicals, Depth_km = Depth / 1000)
 dat
 ```
 
-- piping with %>% to chain commands together
+- Piping with `%>%` to chain commands together
 
-- the `summarise` function to calculate summary statistics such as mean and standard deviation for groups of data
+- The `summarise()` function to calculate summary statistics such as mean and standard deviation for groups of data
 
-```{r echo=FALSE, results=FALSE}
+```{r echo = FALSE, results = FALSE}
 pdat <- geochemicals
 temp <- pdat %>% 
   select(Depth, CTD_O2) %>% 
@@ -98,76 +120,75 @@ temp <- pdat %>%
   filter(!is.na(Oxygen))
 ```
 
-Exercise:
+### Exercise:
 
 We will be using the "geochemicals" dataset included in the educer package. This dataframe contains time series observations on the water column chemistry. Learn more about the geochemicals dataset by running "?educer" in your R console. The geochemicals dataset has been loaded into "dat" for you as a start.
 
-1. Select the Depth and CTD_O2 variables from geochemicals dataset
+1. Select the `Depth` and `CTD_O2` variables from geochemicals dataset
 2. Filter to 100 m samples
-3. Rename the O2 variable to `Oxygen` using rename
-4. Transform Oxygen from micromoles/L to micrograms/L using mutate (multiply Oxygen by 32)
-    - You should now have a [`r dim(temp)`] data frame.
+3. Rename `CTD_O2` to `Oxygen` using `rename()`.
+4. Transform Oxygen from micromoles/L to micrograms/L using mutate (multiply Oxygen by 32).  
+   You should now have a [`r dim(temp)`] data frame.
 5. Calculate the mean and standard deviation of Oxygen in micrograms/L for this subset of data.
 
 This should result in `r mean(temp$Oxygen)` $\pm$ `r sd(temp$Oxygen)`
 
 ```{r refresher_exercise, exercise = TRUE, exercise.lines = 5}
 dat <- geochemicals
-
 ```
 
-Write a one line command that filters the geochemicals dataset for all geochemical mean values (*hint* use the "starts_with" helper function)
+Write a one line command that filters the `geochemicals` dataset for all geochemical mean values (*hint* use the `starts_with()` helper function)
 
-```{r refresher_startswith, exercise = TRUE, exercise.lines = 5}
+```{r starts-with, exercise = TRUE, exercise.lines = 5}
 ```
 
-## Join Tables 
+## Join tables 
 
-Dyplr has built in functions to quickly join two tables. In this tutorial we will be focusing on `inner_join`. `inner_join` takes in two tables, x and y, and return all rows from x where there are matching values in y, and all columns from x and y. 
+Dyplr has built in functions to quickly join two tables. In this tutorial we will be focusing on `inner_join()`. `inner_join()` takes in two tables, x and y, and return all rows from x where there are matching values in y, and all columns from x and y. 
 
 If there are multiple matches between x and y, *all combination of the matches are returned*.
 
-for example, a table x:
+For example, a table x:
+
 ```{R echo=FALSE, warning=FALSE, message=FALSE}
 metadata
 ```
 
 and a table y:
+
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
 otu_data
 ```
 
-can be joined by their mutual columns "Depth" and "Cruise" like this:
-```{r jointables_Example, exercise = TRUE, exercise.lines = 5, warning=FALSE, message=FALSE}
+can be joined by their mutual columns `Depth` and `Cruise` like this:
+
+```{r jointables-example, exercise = TRUE, exercise.lines = 5, warning=FALSE, message=FALSE}
 otu_metadata <- inner_join(metadata, otu_data, by = c("Depth", "Cruise"))
 
 otu_metadata
 ```
 
-as you may have noticed, this is how the "Saanich_OTU_Metadata.csv" file from the introductory tutorial was generated. 
+As you may have noticed, this is how the `Saanich_OTU_Metadata.csv` file from the introductory tutorial was generated. 
 
-perform an inner join on the following two data frames of fruits students brought for lunch in classroom A and classroom B.
+Perform an inner join on the following two data frames of fruits students brought for lunch in classroom A and classroom B.
 
 `classroom_A`:
-```{r echo=FALSE}
-fruits = c("apple", "orange", "pear", "grape", "orange")
-student_A = c("Joe", "Maria", "Tom", "Sally", "James")
-classroom_A <- data.frame(fruits,student_A)
+
+```{r echo = FALSE}
 classroom_A
 ```
 
 `classroom_B`:
-```{R echo=FALSE}
-fruits = c("apple", "orange", "grape", "pear", "orange")
-student_B = c("Jason", "Mary", "Tory", "Sarah", "Josh")
-classroom_b <- data.frame(fruits,student_B)
-classroom_b
+
+```{r echo = FALSE}
+classroom_B
 ```
 
-```{r jointables, exercise = TRUE, exercise.lines = 5}
+```{r join-tables, exercise = TRUE, exercise.lines = 5}
+
 ```
 
-```{r table_join_quiz, echo = FALSE}
+```{r join-tables-quiz, echo = FALSE}
 quiz(
   question("How many rows does the resulting dataframe have?",
            answer("5"),
