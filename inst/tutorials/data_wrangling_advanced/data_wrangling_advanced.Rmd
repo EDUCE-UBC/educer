@@ -7,10 +7,10 @@ output:
     progressive: true
     allow_skip: true
 runtime: shiny_prerendered
-description: this file contains the third of three data wrangling tutorials using the tidyverse package in R. This tutorial introduces joining datatables using the inner_join function and converting data from long format to wide format using the pivot functions. 
+description: This file contains the third of three data wrangling tutorials using the tidyverse package in R. This tutorial introduces joining datatables using the inner_join function and converting data from long format to wide format using the pivot functions. 
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE}
 # General learnr setup
 library(learnr)
 knitr::opts_chunk$set(echo = TRUE)

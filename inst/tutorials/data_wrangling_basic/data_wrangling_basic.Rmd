@@ -7,10 +7,10 @@ output:
     progressive: true
     allow_skip: true
 runtime: shiny_prerendered
-description: this file contains the first of three data wrangling tutorials using the tidyverse package in R. Along with an introduction on downloading and loading packages, this tutorial introduces loading and visualising tabular data tables, and the filter, slice and select functions of tidyverse.  
+description: This file contains the first of three data wrangling tutorials using the tidyverse package in R. Along with an introduction on downloading and loading packages, this tutorial introduces loading and visualising tabular data tables, and the filter, slice and select functions of tidyverse.  
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE}
 # General learnr setup
 library(learnr)
 knitr::opts_chunk$set(echo = TRUE)
