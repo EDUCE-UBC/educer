@@ -2,12 +2,16 @@
 title: "Intermediate data wrangling"
 author: "Michelle Kang"
 date: "05/02/2020"
-output: learnr::tutorial
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
 runtime: shiny_prerendered
 description: This file contains the second of three data wrangling tutorials using the tidyverse package in R. This tutorial introduces loading datasets within the educer package, piping, and the rename, arrange, mutate, summarise and as.factor functions of tidyverse.
 ---
 
 ```{r setup, include = FALSE}
+# General learnr setup
 library(learnr)
 knitr::opts_chunk$set(echo = TRUE)
 library(educer)

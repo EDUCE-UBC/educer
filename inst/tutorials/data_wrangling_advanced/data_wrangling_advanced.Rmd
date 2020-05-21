@@ -1,5 +1,5 @@
 ---
-title: "Tidyverse advanced"
+title: "Advanced data wrangling"
 author: "Michelle Kang"
 date: "07/02/2020"
 output:
