@@ -7,7 +7,7 @@ output:
     progressive: true
     allow_skip: true
 runtime: shiny_prerendered
-description: Data visualizqtion with ggplot2.
+description: Data visualization with ggplot2.
 ---
 
 ```{r setup, include = FALSE}

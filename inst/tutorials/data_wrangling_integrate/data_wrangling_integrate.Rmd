@@ -3,26 +3,38 @@ title: "Working with data 1"
 subtitle: "2019.20 MICB405"
 author: "Dr. Stephan Koenig (adapted from Dr. Kim Dill-McFarland)"
 date: "version `r format(Sys.time(), '%B %d, %Y')`"
-output: learnr::tutorial
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
 runtime: shiny_prerendered
+description: This material will be integrated into other tutorials.
 ---
 
 ```{r setup, include=FALSE}
+# General learnr setup
 library(learnr)
 knitr::opts_chunk$set(echo = TRUE)
+library(educer)
+# Helper function to set path to images to "/images" etc.
+setup_resources()
+
+# Tutorial specific setup
 library(dplyr)
 library(readr)
-library(educer)
 ```
 
 ## Overview
-In this tutorial, we will learn to manipulate real world data using packages in the [tidyverse](https://www.tidyverse.org/). We will cover some of the most commonly used functions in `dplyr` and then expand on these and additional tidyverse functions in our next class session. Here, we cover dplyr's:
+In this tutorial, we will learn to manipulate real world data using packages in the [tidyverse](https://www.tidyverse.org/). We will cover some of the most commonly used functions in "dplyr" and then expand on these and additional tidyverse functions in our next class session. Here, we cover dplyr's:
 
-* read_\*
-* select
-* filter
+- `read_\*()`
+- `select()`
+- `filter()`
+
+
 
 ## Setup
+
 You should open your R project you created in the "introR" tutorial
 and continue working in the `tidyverse.R` script.
 
@@ -40,7 +52,9 @@ library(dplyr)
 ```
 
 
+
 ## Tidyverse vs. base R
+
 The [tidyverse](https://www.tidyverse.org/) is a collection of R packages for data wrangling, analysis, and visualization.
 
 The main advantages of using the tidyverse to read in data over base R are:
@@ -54,6 +68,7 @@ The main advantages of using the tidyverse to read in data over base R are:
     
     
 ## Data wrangling
+
 ```{r}
 # Load data
 raw_dat <- geochemicals
@@ -61,7 +76,7 @@ raw_dat <- geochemicals
 
 The most basic and common type of data in R is the vector. In fact, a scalar (like the number 5) is simply a vector of length 1 and a data frame is a vector of vectors! So, our data `raw_dat` are contained in a vector of length `r ncol(raw_dat)` (columns) and each vector within this is length `r nrow(raw_dat)` (rows).
 
-Since a table is a vector of vectors, we can extract a single column (vector) using the `$` operator. 
+Since a table is a group of vectors, we can extract a single column (vector) using the `$` operator. 
 
 ```{r}
 # Extract the Depth measurements
@@ -69,44 +84,47 @@ Since a table is a vector of vectors, we can extract a single column (vector) us
 head(raw_dat$Depth)
 ```
 
-A popular package for data wrangling is _dplyr_ in the tidyverse. This package is so good at what it does, and integrates so well with other popular tools like _ggplot2_, that it has rapidly become the de-facto standard.
+A popular package for data wrangling is *dplyr* in the tidyverse. This package is so good at what it does, and integrates so well with other popular tools like *ggplot2*, that it has rapidly become the de-facto standard.
 
-dplyr code is very readable because all operations are based on using dplyr functions or _verbs_ (select, filter, mutate...). 
+dplyr code is very readable because all operations are based on using dplyr functions or *verbs* (select, filter, mutate...). 
 
 Typical data wrangling tasks in dplyr:
 
-- `select` a subset of variables (columns)
-- `slice` out rows by their ordinal position in the tbl
-- `filter` out a subset of observations (rows)
-- `rename` variables
-- `arrange` the observations by sorting a variable in ascending or descending order
-- `mutate` all values of a variable (apply a transformation)
-- `group_by` a variable and `summarise` data by the grouped variable
-- `*_join` two data frames into a single data frame
+- `select()` a subset of variables (columns)
+- `slice()` out rows by their ordinal position in the tbl
+- `filter()` out a subset of observations (rows)
+- `rename()` variables
+- `arrange()` the observations by sorting a variable in ascending or descending order
+- `mutate()` all values of a variable (apply a transformation)
+- `group_by()` a variable and `summarise` data by the grouped variable
+- `*_join()` two data frames into a single data frame
 
 Each verb works similarly:
 
-- input data frame in the first argument
-- other arguments can refer to variables as if they were local objects
-- output is another data frame
+- Input data frame in the first argument.
+- Other arguments can refer to variables as if they were local objects
+- Output is another data frame
 
 Before working with our data, we first want to make a copy of the raw data so that we may revert to it quickly if we make any mistakes. This is best practices for data science in general.
+
 ```{r}
 dat <- raw_dat
 ```
 
 We will then continually overwrite this object with `<-` as we clean it in R.
 
+
+
 ## Select
 
-You can use the `select` function to focus on a subset of variables (columns). Let's select the variables that we will need for this tutorial. Here, we will use our copied raw data `dat` and select the variables:
+You can use the `select()` function to focus on a subset of variables (columns). Let's select the variables that we will need for this tutorial. Here, we will use our copied raw data `dat` and select the variables:
 
 - Cruise #
 - Date
 - Depth in kilometers
-- Oxygen (O~2~) in &micro;M
-- Nitrate (NO~3~) in &micro;M
-- Hydrogen sulfide (H~2~S) in &micro;M
+- Oxygen (O~2~) in µM
+- Nitrate (NO~3~) in µM
+- Hydrogen sulfide (H~2~S) in µM
 
 ```{r}
 dat <- select(dat,
@@ -115,14 +133,14 @@ dat <- select(dat,
 
 *Note that we can spread a single function across several lines as long as the preceding line ends with a comma.*
 
-There are several helper functions that can be used with `select` to
+There are several helper functions that can be used with `select()` to
 describe which variables to keep:
 
-- starts_with(x): variable names that start with x
-- ends_with(x): variable names that end with x
-- contains(x): variable names containing x
+- `starts_with(x)`: variable names that start with x
+- `ends_with(x)`: variable names that end with x
+- `contains(x)`: variable names containing x
 
-We can use the `starts_with` helper function to quickly select all of the compounds that we will be using in this tutorial. Since we have just overwritten the dat object, we have to start over from the raw_dat object.
+We can use the `starts_with()` helper function to quickly select all of the compounds that we will be using in this tutorial. Since we have just overwritten the dat object, we have to start over from the raw_dat object.
 
 ```{r}
 # dat <- select(raw_dat, 
@@ -131,7 +149,8 @@ We can use the `starts_with` helper function to quickly select all of the compou
 
 The full list of helper functions can be found by running `?select_helpers` in the console. 
 
-### Exercise: select
+### Exercise: `select()`
+
 Select the Cruise, Date, Depth, PO4, and WS_NO3 variables
 ```{r select_exercise, exercise=TRUE, exercise.lines=3}
 dat <- raw_dat
@@ -139,36 +158,44 @@ dat <- select()
 
 dat
 ```
-## Slice
 
-To select a subset of observations (rows) by their ordinal position, we use the `slice` function.
+
+
+## `slice()`
+
+To select a subset of observations (rows) by their ordinal position, we use the `slice()` function.
+
 ```{r}
 slice(dat, 1)
 ```
 
 You can list multiple ordinal postions to select multiple observations at once.
+
 ```{r}
 slice(dat, 1, 2, 3, 4, 5)
 ```
 
-If you would like to to select a range of observations, give the starting and end position separated by a colon like so: `Start:End`.
+If you would like to to select a range of observations, give the starting and end position separated by a colon like so: `<start>:<end>`.
 
 ```{r}
 slice(dat, 1:5)
 ```
 
 ### Exercise: slice and select
-Using `slice` and `select`, determine:
+Using `slice()` and `select()`, determine:
 
-    A) what depth value occurs in the 20th row?
-    B) what methane value occurs in the 170th row?
+A) what depth value occurs in the 20th row?
+B) what methane value occurs in the 170th row?
     
 ```{r slice_exercise, exercise=TRUE, exercise.lines=5}
 dat <- raw_dat
-
 ```
-## Filter
-Conditional statements and logical operators are important when working with data in R. We will practice using different conditional statements and logical operators on the oxygen data in `dat`. You can use `filter` to select specific rows based on a logical condition of a variable. Let's work with a subset of all observations, so we can observe the effects when we apply filter. 
+
+
+
+## `filter()`
+
+Conditional statements and logical operators are important when working with data in R. We will practice using different conditional statements and logical operators on the oxygen data in `dat`. You can use `filter()` to select specific rows based on a logical condition of a variable. Let's work with a subset of all observations, so we can observe the effects when we apply filter. 
 ```{r}
 subset_dat <- slice(dat, 710, 713, 715, 716, 709, 717, 718, 719)
 ```
@@ -188,56 +215,66 @@ R code     | meaning
 
 Some examples working with our `subset_dat` data.
 
-`variable == value` returns rows where the variable matches the value
+`variable == value` returns rows where the variable matches the value.
+
 ```{r}
 filter(subset_dat, Mean_O2 == 204.259)
 ```
 
-`variable != value` returns rows where the variable does not match the value
+`variable != value` returns rows where the variable does not match the value.
+
 ```{r}
 filter(subset_dat, Mean_O2 != 204.259)
 ```
 
-`variable > value` returns rows where the variable is greater than the value
+`variable > value` returns rows where the variable is greater than the value.
+
 ```{r}
 filter(subset_dat, Mean_O2 > 204.259)
 ```
 
 `variable %in% values` returns rows where the variable matches one of the given values.
-Values are provided as a vector `c(value1, value2, ...)`
+Values are provided as a vector `c(value1, value2, ...)`.
+
 ```{r}
 filter(subset_dat, Mean_O2 %in% c(40.745, 204.259))
 ```
 
-`is.na(variable)` returns rows where the variable is NA (Not Available)
+`is.na(variable)` returns rows where the variable is `NA` (Not Available).
+
 ```{r}
 filter(subset_dat, is.na(Mean_O2))
 ```
 
-`!condition` returns rows where the condition is not fulfilled
+`!condition` returns rows where the condition is not fulfilled.
+
 ```{r}
 filter(subset_dat, !is.na(Mean_O2))
 ```
 
-We can look for a range of values by finding the rows where the value of the variable is <= 120 **AND** >= 20
+We can look for a range of values by finding the rows where the value of the variable is <= 120 **AND** >= 20 bu using the logical operator `&`.
+
 ```{r}
 filter(subset_dat, Mean_O2 <= 120 & Mean_O2 >= 20)
 ```
 
-logical OR `|`. Find the rows where the value is <= 50 **OR** >= 150
+Logical OR `|`. Find the rows where the value is <= 50 **OR** >= 150.
+
 ```{r}
 filter(subset_dat, Mean_O2 <= 50 | Mean_O2 >= 150)
 ```
 
-### Exercise: filter
+### Exercise: `filter()`
 Use `filter` to remove all rows in `dat` where Temperature is N/A
 ```{r filter_exercise, exercise = TRUE, exercise.lines = 5}
 dat <- raw_dat
 dat <- filter()
-
 ```
-## group_by and summarise
-`summarise` (or `summarize`) is handy when we want to calculate summaries for groups of observations. This is done by first applying the `group_by` verb and then feeding it into `summarise` with the pipe. 
+
+
+
+## `group_by()` and `summarise()`
+`summarise()` (or `summarize()`) is handy when we want to calculate summaries for groups of observations. This is done by first applying the `group_by()` verb and then feeding it into `summarise()` with the pipe. 
 
 For example, we can calculate the mean and standard deviation for oxygen at all depths (unlike the just 1 depth we calculated earlier).
 
@@ -248,12 +285,14 @@ dat %>%
             SD_O2 = sd(Mean_O2, na.rm = TRUE))
 ```
 
-### Exercise: summarise
-Calculate median, interquartile range, and sample size of Temperature by Cruise. As always, start by copying your data 
-```{r summarize_exercise, exercise=TRUE, exercise.lines=5}
+### Exercise: `summarise()`
+
+Calculate median, interquartile range, and sample size of Temperature by Cruise. As always, start by copying your data.
+
+```{r summarise_exercise, exercise=TRUE, exercise.lines=5}
 pdat <- raw_dat
 pdat <- group_by() %>%
-  summarize()
+  summarise()
 
 pdat
 ```
