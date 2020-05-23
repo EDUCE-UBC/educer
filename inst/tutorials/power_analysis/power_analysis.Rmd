@@ -2,11 +2,24 @@
 title: "Power Analysis"
 author: "Michelle Kang and Dr. Stephan Koenig, adapted from https://cran.r-project.org/web/packages/pwr/vignettes/pwr-vignette.html"
 date: "12/01/2020"
-output: html_document
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+description: This tutorial instroduces basic statistical terminology and the use of power analysis to cacluate the likelihood of a Type II error.
 ---
 
 ```{r setup, include=FALSE}
+# General learnr setup
+library(learnr)
 knitr::opts_chunk$set(echo = TRUE)
+library(educer)
+# Helper function to set path to images to "/images" etc.
+setup_resources()
+
+# Tutorial specific setup
+library(pwr)
 ```
 
 ## Variables
@@ -67,7 +80,7 @@ Two Types of Errors can result from a Statistical Test:
 - **Type I Error** : False Positive, the null hypothesis is rejected due to an optimistically small *p*-value and there is no significant effect. 
 - **Type II Error** : False Negative, the *p*-value is pessimistically large and the null hypothesis is rejected when it should not be.
 
-![](../../images/confusion_matrix.png){ width=50% }
+![](/images/confusion_matrix.png){ width=50% }
 
 We can think of **&alpha;**, the significance level, as the **probability of making a Type I Error or a false positive**.
 
