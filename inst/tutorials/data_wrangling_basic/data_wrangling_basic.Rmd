@@ -22,7 +22,7 @@ setup_resources()
 library(tidyverse)
 
 OTU_metadata_table <- combined
-write.csv(combined, "Saanich_OTU_metadata.csv")
+# write.csv(combined, "Saanich_OTU_metadata.csv")
 x = 10 #for boolean exercise
 restricted_columns <- select(OTU_metadata_table, OTU0001,
                              OTU0002, OTU0004, Depth)
@@ -99,6 +99,57 @@ The OTU_metadata_table (`Saanich_OTU_metadata.csv`) is a comma-delimited table o
 
 For a brief introduction to these data, see Hallam SJ et al. 2017. Monitoring microbial responses to ocean deoxygenation in a model oxygen minimum zone. Sci Data 4: 170158 [doi:10.1038/sdata.2017.158](https://www.nature.com/articles/sdata2017158).
 
+We are going to save this data on your computer:
+
+```{r echo = FALSE}
+# App title ----
+titlePanel("Downloading Data")
+
+# Sidebar layout with input and output definitions ----
+sidebarLayout(
+  # Sidebar panel for inputs ----
+  sidebarPanel(
+    # Input: Choose dataset ----
+    selectInput("dataset", "Choose a dataset:",
+                choices = c("geochemicals", "normalized_OTUs",
+                            "OTUs", "combined")),
+
+    # Button
+    downloadButton("downloadData", "Download")
+  ),
+
+  # Main panel for displaying outputs ----
+  mainPanel(
+    tableOutput("table")
+  )
+)
+```
+
+```{r context = "server"}
+datasetInput <- reactive({
+  switch(input$dataset,
+         "geochemicals" = geochemicals,
+         "OTUs" = OTUs,
+         "normalized_OTUs" = normalized_OTUs,
+         "combined" = combined)
+})
+
+# Table of selected dataset ----
+output$table <- renderTable({
+  datasetInput()
+})
+
+# Downloadable csv of selected dataset ----
+output$downloadData <- downloadHandler(
+  filename = function() {
+    paste(input$dataset, ".csv", sep = "")
+  },
+  content = function(file) {
+    write.csv(datasetInput(), file, row.names = FALSE)
+  }
+)
+```
+
 
 
 ## Loading tabular data
@@ -112,7 +163,7 @@ Data tables can be loaded into R using the tidyverse `read_*()` function.
 The `read_table()` function allows us to open raw datafiles. Run the following code to see what `Saanich_OTU_metadata.csv` looks like. 
 
 ```{r message = FALSE}
-read_table("Saanich_OTU_metadata.csv")
+#read_table("Saanich_OTU_metadata.csv")
 ```
 
 Notice how values in `Saanich_OTU_metadata.csv` are separated by commas. We can load our Saanich data into R with `read_csv()` for comma separated files and specify the arguments that describe our data as follows.
@@ -120,7 +171,7 @@ Notice how values in `Saanich_OTU_metadata.csv` are separated by commas. We can 
 - `col_names`: tells R that the first row is column names, not data
 
 ```{r message = FALSE}
-read_csv(file = "Saanich_OTU_metadata.csv", col_names = TRUE)
+#read_csv(file = "Saanich_OTU_metadata.csv", col_names = TRUE)
 ```
 
 Now our data is formatted nicely into table form.
@@ -128,7 +179,7 @@ Now our data is formatted nicely into table form.
 ### Save data in the environment
 Since we want to do more with our data after reading it in, we need to save it as a variable in R like we did previously with the `<-` operator. You can choose to name the object whatever you like, though this module assumes the names used below.
 ```{r message = FALSE}
-OTU_metadata_table <- read_csv(file = "Saanich_OTU_metadata.csv", col_names = TRUE)
+#OTU_metadata_table <- read_csv(file = "Saanich_OTU_metadata.csv", col_names = TRUE)
 ```
 
 
