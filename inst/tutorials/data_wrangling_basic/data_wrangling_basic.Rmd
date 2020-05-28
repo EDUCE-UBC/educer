@@ -19,10 +19,11 @@ library(educer)
 setup_resources()
 
 # Tutorial specific setup
+library(readr)
 library(tidyverse)
 
 OTU_metadata_table <- combined
-# write.csv(combined, "Saanich_OTU_metadata.csv")
+
 x = 10 #for boolean exercise
 restricted_columns <- select(OTU_metadata_table, OTU0001,
                              OTU0002, OTU0004, Depth)
@@ -60,7 +61,7 @@ In this tutorial we will be using the "tidyverse" package. This package contains
 The tidyverse package can be installed like this (to install a different package just replace "tidyverse" with the name of the desired package):
 
 **For R v3.4 or newer**
-```{R eval=FALSE}
+```{r eval = FALSE}
 install.packages("tidyverse")
 ```
 
@@ -85,9 +86,9 @@ After installing a package, and *everytime* you open a new RStudio session, the 
 
 Packages can be loaded like this:
 
-```{R tidyverse_load, exercise = TRUE, exercise.lines = 5}
-library("tidyverse")
-library("educer")
+```{r tidyverse_load, exercise = TRUE, exercise.lines = 5}
+library(tidyverse)
+library(educer)
 ```
 
 ### Data description
@@ -95,57 +96,26 @@ The data used throughout this module were collected as part of an on-going ocean
 
 The data that you will use in R are 16S amplicon profiles of microbial communities at several depths in Saanich Inlet from one time point in this series (August 2012). These ~300 bp sequences were processed using [mothur](https://www.mothur.org/wiki/Main_Page) to yield 97% (approximately species-level) operational taxonomic units (OTUs). 
 
-The OTU_metadata_table (`Saanich_OTU_metadata.csv`) is a comma-delimited table of counts of four OTUs in each sample, normalized to 100,000 sequences per sample and the corresponding conditions of each sample (Depth, NO2, NO3 etc). 
+`combined` is a comma-delimited table of counts of four OTUs in each sample, normalized to 100,000 sequences per sample and the corresponding conditions of each sample (Depth, NO2, NO3 etc). 
 
 For a brief introduction to these data, see Hallam SJ et al. 2017. Monitoring microbial responses to ocean deoxygenation in a model oxygen minimum zone. Sci Data 4: 170158 [doi:10.1038/sdata.2017.158](https://www.nature.com/articles/sdata2017158).
 
-We are going to save this data on your computer:
+Click the button below to save a copy of this data set to your computer:
 
 ```{r echo = FALSE}
-# App title ----
-titlePanel("Downloading Data")
-
-# Sidebar layout with input and output definitions ----
-sidebarLayout(
-  # Sidebar panel for inputs ----
-  sidebarPanel(
-    # Input: Choose dataset ----
-    selectInput("dataset", "Choose a dataset:",
-                choices = c("geochemicals", "normalized_OTUs",
-                            "OTUs", "combined")),
-
-    # Button
-    downloadButton("downloadData", "Download")
-  ),
-
-  # Main panel for displaying outputs ----
-  mainPanel(
-    tableOutput("table")
-  )
+# Download button shiny app UI
+fluidRow(
+  column(12, align = "center", downloadButton("downloadData", "Download"))
 )
+
 ```
 
 ```{r context = "server"}
-datasetInput <- reactive({
-  switch(input$dataset,
-         "geochemicals" = geochemicals,
-         "OTUs" = OTUs,
-         "normalized_OTUs" = normalized_OTUs,
-         "combined" = combined)
-})
-
-# Table of selected dataset ----
-output$table <- renderTable({
-  datasetInput()
-})
-
-# Downloadable csv of selected dataset ----
+# Download button shiny app server
 output$downloadData <- downloadHandler(
-  filename = function() {
-    paste(input$dataset, ".csv", sep = "")
-  },
+  filename = "combined.csv",
   content = function(file) {
-    write.csv(datasetInput(), file, row.names = FALSE)
+    write_csv(combined, file)
   }
 )
 ```
@@ -160,28 +130,28 @@ Every R function follows the following basic syntax, where `function()` is the n
 
 Data tables can be loaded into R using the tidyverse `read_*()` function. 
 
-The `read_table()` function allows us to open raw datafiles. Run the following code to see what `Saanich_OTU_metadata.csv` looks like. 
+The `read_table()` function allows us to open raw datafiles. Run the following code to see what `combined.csv` looks like. 
 
-```{r message = FALSE}
-#read_table("Saanich_OTU_metadata.csv")
+```{r eval = FALSE}
+read_table("combined.csv")
 ```
 
-Notice how values in `Saanich_OTU_metadata.csv` are separated by commas. We can load our Saanich data into R with `read_csv()` for comma separated files and specify the arguments that describe our data as follows.
+Notice how values in `combined.csv` are separated by commas. We can load our Saanich data into R with `read_csv()` for comma separated files and specify the arguments that describe our data as follows.
 
 - `col_names`: tells R that the first row is column names, not data
 
-```{r message = FALSE}
-#read_csv(file = "Saanich_OTU_metadata.csv", col_names = TRUE)
+```{r eval = FALSE}
+read_csv(file = "combined.csv", col_names = TRUE)
 ```
 
 Now our data is formatted nicely into table form.
 
 ### Save data in the environment
 Since we want to do more with our data after reading it in, we need to save it as a variable in R like we did previously with the `<-` operator. You can choose to name the object whatever you like, though this module assumes the names used below.
-```{r message = FALSE}
-#OTU_metadata_table <- read_csv(file = "Saanich_OTU_metadata.csv", col_names = TRUE)
-```
 
+```{r eval = FALSE}
+OTU_metadata_table <- read_csv(file = "combined.csv", col_names = TRUE)
+```
 
 ```{r saving-quiz, echo = FALSE}
 quiz(
