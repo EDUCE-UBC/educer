@@ -110,6 +110,10 @@ pivot_longer(
 ) %>% arrange(sample_ID)
 ```
 
+Here a simple animation to demonstrate how these two tables are related:
+
+![](/images/pivot_longer.gif)
+
 Our data is in the wide format. Observe that each variable is given its own column.
 
 ```{r}
