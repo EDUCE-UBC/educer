@@ -24,6 +24,8 @@ library(tidyverse)
 
 OTU_metadata_table <- combined
 
+subset_dat <- slice(geochemicals, 710, 713, 715, 716, 709, 717, 718, 719)
+
 x = 10 #for boolean exercise
 restricted_columns <- select(OTU_metadata_table, OTU0001,
                              OTU0002, OTU0004, Depth)
@@ -45,8 +47,8 @@ summary_solution_2 <-
 ### By the end of this tutorial you should be able to:
 
 - Install and load R packages.
-- Load tabular data using read_csv and save the data to your R environment.
-- Use the filter, slice and select methods to conditionally subset your data.
+- Load tabular data using `read_csv()` and save the data to your R environment.
+- Use the `filter()`, `slice()` and `select()` methods to conditionally subset your data.
 
 
 
@@ -90,6 +92,52 @@ Packages can be loaded like this:
 library(tidyverse)
 library(educer)
 ```
+
+
+
+## Tidyverse vs. base R
+
+The [tidyverse](https://www.tidyverse.org/) is a collection of R packages for data wrangling, analysis, and visualization.
+
+The main advantages of using the tidyverse to read in data over base R are:
+
+- Faster data processing
+- Seamless integration with other tidyverse functions
+- Automatic designation of data types
+- Data storage in tibble as opposed to data frames
+    - Tibbles are data frames with an additional layer of formatting that causes them to print nicely in the console and always return a tibble in functions
+    
+    
+A popular package for data wrangling is *dplyr* in the tidyverse. This package is so good at what it does, and integrates so well with other popular tools like *ggplot2*, that it has rapidly become the de-facto standard.
+
+dplyr code is very readable because all operations are based on using dplyr functions or *verbs* (select, filter, mutate...). 
+
+Typical data wrangling tasks in dplyr:
+
+- `select()` a subset of variables (columns)
+- `slice()` out rows by their ordinal position in the tbl
+- `filter()` out a subset of observations (rows)
+- `rename()` variables
+- `arrange()` the observations by sorting a variable in ascending or descending order
+- `mutate()` all values of a variable (apply a transformation)
+- `group_by()` a variable and `summarise` data by the grouped variable
+- `*_join()` two data frames into a single data frame
+
+Each verb works similarly:
+
+- Input data frame in the first argument.
+- Other arguments can refer to variables as if they were local objects
+- Output is another data frame
+
+Before working with our data, we first want to make a copy of the raw data so that we may revert to it quickly if we make any mistakes. This is best practices for data science in general.
+
+```{r}
+dat <- raw_dat
+```
+
+We will then continually overwrite this object with `<-` as we clean it in R.
+
+
 
 ### Data description
 The data used throughout this module were collected as part of an on-going oceanographic time series program in Saanich Inlet, a seasonally anoxic fjord on the East coast of Vancouver Island, British Columbia.
@@ -147,6 +195,7 @@ read_csv(file = "combined.csv", col_names = TRUE)
 Now our data is formatted nicely into table form.
 
 ### Save data in the environment
+
 Since we want to do more with our data after reading it in, we need to save it as a variable in R like we did previously with the `<-` operator. You can choose to name the object whatever you like, though this module assumes the names used below.
 
 ```{r eval = FALSE}
@@ -175,7 +224,7 @@ OTU_metadata_table
 
 `glimpse()` is a function that as its name suggests, allows us to get a "glimpse" of the contents of a data table. Running `glimpse()` on a data table outputs the number of rows (observations), columns (variables), and lists each column name along with its type and a portion of its contents. Let's run `glimpse()` with our OTU_metadata_table like this:
 
-```{r glimpse, exercise = TRUE, exercise.lines = 5 }
+```{r glimpse, exercise = TRUE, exercise.lines = 5}
 glimpse(OTU_metadata_table)
 ```
 from this we see that our table has 7 rows and 10 columns. Each $ is followed by a column name, with information on the contents following each column name. `glimpse()` lists all columns of a table
@@ -209,15 +258,15 @@ ncol(OTU_metadata_table)
 
 We can list the column names using `colnames()`. 
 
-```{R colnames,exercise = TRUE, exercise.lines = 5 }
+```{R colnames,exercise = TRUE, exercise.lines = 5}
 colnames(OTU_metadata_table)
 ```
 
 
 
-## Select
+## `select()`
 
-We can select to work with only specific columns from our table using the `select()` function. 
+You can use the `select()` function to keep only a subset of variables (columns). Let's select the variables `OTU0001`, `OTU0002`, `OTU0004`, `Depth`.
 
 ```{R select-1, exercise = TRUE, exercise.lines = 5}
 restricted_columns <- select(OTU_metadata_table, OTU0001, OTU0002, OTU0004, Depth)
@@ -236,13 +285,25 @@ As an exercise, select for only the depth and geochemical columns in `OTU_metada
 
 ```
 
+### Exercise: `select()`
+
+Select the Cruise, Date, Depth, PO4, and WS_NO3 variables of the `geochemicals` data set
+
+```{r select-exercise-1, exercise=TRUE, exercise.lines = 3}
+
+dat <- select()
+
+dat
+```
+
+
 
 
 ## Booleans
 
 Booleans are logical statements that are either `TRUE` or `FALSE` but can not be anything in between. As an example, run the code below:
 
-```{r boolean-exercise, exercise = TRUE, exercise.lines = 5 }
+```{r boolean-exercise, exercise = TRUE, exercise.lines = 5}
 x <- 6
 y <- "cat"
 
@@ -272,36 +333,66 @@ R code     | meaning
 
 Write a boolean equation for "x is greater than 6 or less than 12", it should return `TRUE` after running.
 
-```{r boolean-exercise-2, exercise = TRUE, exercise.lines = 5 }
+```{r boolean-exercise-2, exercise = TRUE, exercise.lines = 5}
 
 ```
 
-You can use `filter()` to select specific rows based on a logical condition of a variable.
-Some examples working with our `OTU_metadata_table` data.
+### `filter()`
+
+Conditional statements and logical operators are important when working with data in R. We will practice using different conditional statements and logical operators on the oxygen data in a subset of the `geochemicals` data set. You can use `filter()` to select specific rows based on a logical condition of a variable.
+
+
+```{r}
+subset_dat <- slice(geochemicals, 710, 713, 715, 716, 709, 717, 718, 719)
+```
 
 `variable == value` returns rows where the variable matches the value:
 
-```{r equal-to, exercise = TRUE, exercise.lines = 5  }
-filter(OTU_metadata_table, Depth == 100)
+```{r equal-to, exercise = TRUE, exercise.lines = 5}
+filter(subset_dat, CTD_O2 == 204.259)
 ```
 
 `variable != value` returns rows where the variable does not match the value:
 
-```{r not-equal-to, exercise = TRUE, exercise.lines = 5 }
-filter(OTU_metadata_table, Depth != 100)
+```{r not-equal-to, exercise = TRUE, exercise.lines = 5}
+filter(subset_dat, CTD_O2 != 204.259)
 ```
 
 `variable > value` returns rows where the variable is greater than the value:
 
-```{r greater-than, exercise = TRUE, exercise.lines = 5 }
-filter(OTU_metadata_table, Depth > 100)
+```{r greater-than, exercise = TRUE, exercise.lines = 5}
+filter(subset_dat, CTD_O2 > 204.259)
 ```
 
 `variable %in% values` returns rows where the variable matches one of the given values.
 Values are provided as a vector `c(value1, value2, ...)`:
 
-```{r match-in, exercise = TRUE, exercise.lines = 5 }
-filter(OTU_metadata_table, Depth %in% c(100, 200))
+```{r match-in, exercise = TRUE, exercise.lines = 5}
+filter(subset_dat, CTD_O2 %in% c(40.745, 204.259))
+```
+
+`is.na(variable)` returns rows where the variable is `NA` (Not Available).
+
+```{r is-na, exercise = TRUE, exercise.lines = 5}
+filter(subset_dat, is.na(CTD_O2))
+```
+
+`!condition` returns rows where the condition is not fulfilled.
+
+```{r opposite, exercise = TRUE, exercise.lines = 5}
+filter(subset_dat, !is.na(CTD_O2))
+```
+
+We can look for a range of values by finding the rows where the value of the variable is <= 120 **AND** >= 20 bu using the logical operator `&`.
+
+```{r and, exercise = TRUE, exercise.lines = 5}
+filter(subset_dat, CTD_O2 <= 120 & CTD_O2 >= 20)
+```
+
+Logical OR `|`. Find the rows where the value is <= 50 **OR** >= 150.
+
+```{r or, exercise = TRUE, exercise.lines = 5}
+filter(subset_dat, CTD_O2 <= 50 | CTD_O2 >= 150)
 ```
 
 ### Exercise
@@ -313,23 +404,23 @@ As an exercise, restrict for rows where the value for "depth" is less than or eq
 
 
 
-## Slice
+## `slice()`
 
 We can also only choose to work with specific rows in our data table using the `slice()` function. 
 
 To select a subset of observations (rows) by their ordinal position, we use the `slice()` function.
 
-```{r slice-1, exercise = TRUE, exercise.lines = 5 }
+```{r slice-1, exercise = TRUE, exercise.lines = 5}
 slice(OTU_metadata_table, 1)
 ```
 
 You can list multiple ordinal postions to select multiple observations at once.
 
-```{r slice-2, exercise = TRUE, exercise.lines = 5 }
+```{r slice-2, exercise = TRUE, exercise.lines = 5}
 slice(OTU_metadata_table, 1, 2, 3, 4, 5)
 ```
 
-If you would like to to select a range of observations, give the starting and end position separated by a colon like so: `Start:End`.
+If you would like to to select a range of observations, give the starting and end position separated by a colon like so: `<start>:<end>`.
 
 ```{r slice-3, exercise = TRUE, exercise.lines = 5}
 slice(OTU_metadata_table, 1:5)
@@ -344,6 +435,16 @@ quiz(
            answer("72")
            )
 )
+```
+
+### Exercise: `slice()` and `select()`
+Using `slice()` and `select()`, determine:
+
+A) what depth value occurs in the 20th row?
+B) what methane value occurs in the 170th row?
+    
+```{r slice_exercise, exercise=TRUE, exercise.lines=5}
+dat <- OTU_metadata_table
 ```
 
 
@@ -378,3 +479,12 @@ Your resulting pdat object should be a [`r dim(summary_solution_2)`] data frame.
 ```{r summary-exercise-2, exercise = TRUE, exercise.lines = 5}
 dat <- geochemicals
 ```
+
+
+
+## Additional resources
+
+* [R cheatsheets](https://www.rstudio.com/resources/cheatsheets/) also available in RStudio under Help > Cheatsheets
+* [Introduction to dplyr](https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html)
+* [dplyr tutorial](https://rpubs.com/justmarkham/dplyr-tutorial)
+* [dplyr video tutorial](https://www.r-bloggers.com/hands-on-dplyr-tutorial-for-faster-data-manipulation-in-r/)

@@ -180,6 +180,8 @@ We can use the `ends_with()` helper function to quickly select all of the geoche
 geo_chem <- select(dat, ends_with("_uM"))
 ```
 
+The full list of helper functions can be found by running `?select_helpers` in the console. 
+
 
 
 ## `arrange()`
@@ -321,3 +323,12 @@ dat <- filter(dat, Depth %in% c(10, 100, 200),
               # these data science modules
               Cruise %in% c(18, 30, 42, 54, 66, 80, 92))
 ```
+
+
+
+## Additional resources
+
+* [R cheatsheets](https://www.rstudio.com/resources/cheatsheets/) also available in RStudio under Help > Cheatsheets
+* [Introduction to dplyr](https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html)
+* [dplyr tutorial](https://rpubs.com/justmarkham/dplyr-tutorial)
+* [dplyr video tutorial](https://www.r-bloggers.com/hands-on-dplyr-tutorial-for-faster-data-manipulation-in-r/)
