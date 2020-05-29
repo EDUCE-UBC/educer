@@ -132,7 +132,7 @@ Each verb works similarly:
 Before working with our data, we first want to make a copy of the raw data so that we may revert to it quickly if we make any mistakes. This is best practices for data science in general.
 
 ```{r}
-dat <- raw_dat
+# dat <- raw_dat
 ```
 
 We will then continually overwrite this object with `<-` as we clean it in R.
