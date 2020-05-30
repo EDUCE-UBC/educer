@@ -1,0 +1,261 @@
+---
+title: "Introduction to data visualization"
+author: "Julia Anstett and Dr. Stephan Koenig (adpated from Dr. Kim Dill-McFarland)"
+date: "version `r format(Sys.time(), '%B %d, %Y')`"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+description: Data visualization with ggplot2.
+---
+
+```{r setup, include = FALSE}
+# General learnr setup
+library(learnr)
+knitr::opts_chunk$set(echo = TRUE)
+library(educer)
+# Helper function to set path to images to "/images" etc.
+setup_resources()
+
+library(dplyr)
+library(readr)
+
+raw_dat <- geochemicals
+```
+
+## Introduction
+This tutorial provides guided, hands-on instruction to create and modify plots using the `ggplot2` package in R. It also includes plots of an ANOVA analysis.
+
+After this tutorial, you will be able to:
+
+* Create dot and box plots in `ggplot2`
+* Modify attributes of ggplots
+* Complete and interpret the output of ANOVAs in R
+
+## Setup
+Prior to starting this tutorial, please complete the *Pre-module download assignment* to obtain all the necessary software and data.
+
+Create a new script named "ANOVA". As before, you begin by loading your packages with `library()`.
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+```
+
+## Explore the metadata
+In addition to measurements of microbial communities, you also have geochemical data for the Saanich Inlet samples. For a brief introduction to these data, see Hallam SJ et al. 2017. Monitoring microbial responses to ocean deoxygenation in a model oxygen minimum zone. Sci Data 4: 170158 [doi:10.1038/sdata.2017.158](https://www.nature.com/articles/sdata2017158). 
+
+A subset of these data has been provided in `4.MICB301_stats_extend_data.csv`  on Canvas including:
+
+  - Depth: depth in meters
+  - In micromolar (uM) or nanomolar (nM)
+	- NO3_uM: nitrate 
+	- NCTD_O2: nitrite
+	- N2O_uM: nitrous oxide
+	- NH4_uM: ammonium
+	- H2S_uM: hydrogen sulfide
+	- CTD_O2: oxygen
+	- CH4_nM: methane
+
+Read `4.MICB301_stats_extend_data.csv` into R using `read_csv` and save as `raw_dat`.
+```{r}
+raw_dat <- geochemicals
+```
+
+## Data cleaning
+
+A data structure we haven't utilized in R yet are factors, which are used to represent categorical variables. In general, categorical variables can take on fixed number of possible values. For example, `Cruise` is a numeric right now, but actually represents a category (i.e. each cruise just indicates a group of measurements). To convert a vector to factors we use the `as.factors()` function. 
+```{r}
+dat <- mutate(raw_dat, Depth = as.factor(Depth),
+              Cruise = as.factor(Cruise))
+```
+
+Using the `%in%` binary operator we can filter for groups of values. Subset data to 3 depths in 7 cruises (i.e. specimens) in February:
+```{r}
+dat <- filter(dat, Depth %in% c(10, 100, 200),
+              # The cruises that took place in Februrary can be determined
+              # using the Date variable and functions that we won't discuss in
+              # these data science modules
+              Cruise %in% c(18, 30, 42, 54, 66, 80, 92))
+```
+
+
+
+## Piping with `%>%`
+
+Recall the basic `tidyverse` verb syntax:
+
+- input data frame in the first argument
+- other arguments can refer to variables as if they were local objects
+- output is another data frame
+
+Our geochemical data cleaning code continuously overwrites the `dat` object every time we call a dplyr verb. This is not ideal as we must run these steps in order and can easily get lost or make errors.
+
+Instead, we can chain commands together using the `%>%` (pipe) operator. This operator allows us to chain multiple dplyr (and other) verbs together to result in only the final `dat` object being saved to our R environment.
+
+`f(x) %>% g(y)` is the same as `g(f(x),y)`
+
+`select(dat, Cruise)` is the same as `dat %>% select(Cruise)`
+
+Piping works nicely to condense code and to improve readability. `tidyverse` syntax is very easy to read. Starting with the file, we can load the data frame, select the Cruise, Depth, and oxygen variables, convert Depth and Cruise to factors and filter for only specific values of those variables, all in a single step
+```{r message=FALSE}
+dat <- geochemicals %>%
+  mutate(Depth = as.factor(Depth),
+         Cruise = as.factor(Cruise)) %>%
+  filter(Depth %in% c(10, 100, 200),
+         Cruise %in% c(18, 30, 42, 54, 66, 80, 92))
+```
+
+
+
+## Introduction to ggplot
+"ggplot2" is an R package for creating plots that is included in the "tidyverse" package. It is preferred over base R graphics because it has:
+
+- handsome default settings
+- snap-together building blocks
+- automatic legends, colors, facets
+- statistical overlays
+
+`ggplot2` builds plots by adding several different pieces together: 
+
+- data: 2D table of *variables*
+- *aesthetics*: map variables to visual attributes, always contained in `aes()`
+- *geoms*: graphical representation of data (points, lines, etc.)
+- *stats*: statistical transformations (binning, summarizing, smoothing)
+- *scales*: control *how* to map a variable to an aesthetic
+- *guides*: axes, legend, etc.
+
+The best way to learn about these pieces is to use them, as you will in this tutorial. Further `ggplot2` documentation is available at
+[docs.ggplot2.org](http://docs.ggplot2.org/current/)
+
+
+
+## Dot plot
+Any `ggplot` needs at least 3 pieces: data, aesthetics, and a geom. So, if you want to plot the relationship between a geochemical variable and depth, you would need:
+
+* data: `dat`
+* aesthetics: x and y variables
+* geom: `geom_point` to plot these data as points
+
+Let's do so with the relationship between depth (as a categorical variable) and oxygen (O~2~) as a continuous variable (as opposed to categorical oxic vs. anoxic in your previous t-tests)
+
+The first argument of ggplot is the data. We see here that since we have not told ggplot anything about these data, we create a blank plot.
+```{r}
+ggplot(dat)
+```
+
+The second argument is the aesthetics `aes`, where we specify visual attributes of our plot like the x- and y-variables. Now, we see that the plot has axes with labels but we still have not told ggplot how we would like to add the data values.
+```{r}
+ggplot(dat, aes(x = Depth, y = CTD_O2))
+```
+
+*NOTE: The x-axis showing depth is not linear because we converted depth to factors.*
+
+Finally we add the geom to specify how we want to map our data onto these axes (*i.e.* points, boxplot, lines, etc.). Here, we will use points for the data. 
+
+Plot depth and oxygen:
+```{r}
+ggplot(dat, aes(x = Depth, y = CTD_O2)) +
+  geom_point()
+```
+
+Importantly, aesthetics in the `ggplot` layer will be applied to all layers while those in a specific geom will only be applied to that one layer. So in the above code, we have given aesthetics in `ggplot` so they will be used in `ggplot` and `geom_point` (and any other additional layers we might add). 
+
+In contrast, in the code below, we specify the aesthetics in the geom so only `geom_point` will use it. In this case, the plots are the same.
+```{r}
+ggplot(dat) +
+  geom_point(aes(x = Depth, y = CTD_O2))
+```
+
+Since you only specified the minimum pieces, the rest are filled in with `ggplot2` defaults.
+
+Now, you can add pieces to alter these defaults. Below, see how we keep adding to the plot with additional pieces to:
+
+Change axes labels
+```{r}
+ggplot(dat, aes(x= Depth, y = CTD_O2)) +
+  geom_point() +
+  labs(x="Depth [m]", y="Oxygen [uM]")
+```
+
+Change the point color. You can specify a specific color like "orange":
+```{r}
+ggplot(dat, aes(x= Depth, y = CTD_O2)) +
+  geom_point(color = "orange") +
+  labs(x="Depth [m]", y="Oxygen [uM]")
+```
+
+There are 7 data points for each depths, but a few of them fall in the same range and cannot be resolved visulally (the data was *overplotted*). One way to deal with overplotting is to use transparency, denoted by the `alpha` argument.
+
+```{r}
+ggplot(dat, aes(x = Depth, y = CTD_O2)) +
+  geom_point(alpha = 0.5) +
+  labs(x="Depth [m]", y="Oxygen [uM]")
+```
+
+Change the point shape. Similar to color, this can be a single shape or mapped to a variable:
+```{r}
+ggplot(dat, aes(x = Depth, y = CTD_O2)) +
+  geom_point(alpha = 0.5, shape = 17) +
+  labs(x="Depth [m]", y="Oxygen [uM]")
+```
+
+We can summarize the multiple data points as a boxplot:
+```{r}
+ggplot(dat, aes(x = Depth, y = CTD_O2)) +
+  geom_boxplot() +
+  geom_point(alpha = 0.5) +
+  labs(x="Depth [m]", y="Oxygen [uM]")
+```
+
+We can visualize the overall mean of all O~2~ values with a horizontal line:
+```{r}
+ggplot(dat, aes(x = Depth, y = CTD_O2)) +
+  geom_boxplot() +
+  geom_point(alpha = 0.5) +
+    # Add a horizontal line for the overall mean
+  geom_hline(aes(yintercept=mean(CTD_O2))) + 
+  labs(x="Depth [m]", y="Oxygen [uM]")
+```
+
+A list of shape codes can be found [here](http://sape.inf.usi.ch/quick-reference/ggplot2/shape).
+
+Change the overall look with a theme:
+```{r}
+ggplot(dat, aes(x = Depth, y = CTD_O2)) +
+  geom_boxplot() +
+  geom_point(alpha = 0.5) +
+  labs(x="Depth [m]", y="Oxygen [uM]") +
+  geom_hline(aes(yintercept=mean(CTD_O2))) + 
+  theme_classic()
+```
+
+There is also a handy [ggplot cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/11/ggplot2-cheatsheet-2.1.pdf) to show you many more options!
+
+
+## ggplot Exercises 
+Recreate the following plots:
+
+### Exercise 1
+```{r plot1, echo = FALSE, warning=FALSE}
+ggplot(dat, aes(x = Depth, y = Mean_CH4, fill = Cruise)) +
+  geom_bar(stat = "identity")
+```
+
+```{r plot1-exercise, exercise=TRUE}
+ggplot(dat, aes(x = , y = , fill = )) +
+  geom_bar(stat = "identity")
+```
+
+### Exercise 2
+```{r plot2, echo = FALSE, warning = FALSE}
+ggplot(dat, aes(x = Mean_H2S, CTD_O2)) +
+  geom_point()
+```
+
+```{r plot2-exercise, exercise = TRUE, exercise.lines = 5}
+
+```
+## Additional resources
+
+* [R cheatsheets](https://www.rstudio.com/resources/cheatsheets/) also available in RStudio under Help > Cheatsheets
+* Applied Statistics and Data Science Group ([ASDa](https://asda.stat.ubc.ca/)) at UBC
