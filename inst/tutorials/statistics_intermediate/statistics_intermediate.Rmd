@@ -1,0 +1,258 @@
+---
+title: "Intermediate Statistics Tutorial"
+author: "Dr. Stephan Koenig and Andrew Wilson"
+date: "20/01/2020"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+description: Will follow.
+---
+
+```{r setup, include = FALSE}
+# General learnr setup
+library(learnr)
+knitr::opts_chunk$set(echo = TRUE)
+library(educer)
+# Helper function to set path to images to "/images" etc.
+setup_resources()
+
+# Tutorial specific setup
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(broom)
+library(gvlma)
+
+raw_dat <- geochemicals
+```
+
+## Overview
+
+At its heart, R is statistical software. Thus, it should come as no surprise that base R allows you to perform many different statistical tests. Here, we cover:
+
+* *t*-tests
+* One-way ANOVA
+* Simple linear models
+
+
+
+## Setup
+
+```{r, eval = FALSE}
+library(tidyverse)
+library(broom)
+raw_dat <- geochemicals
+```
+
+The first step of any data science project is to examine the data you are working with. In our case, we are examining some measurements from the Saanich Inlet data set. 
+
+```{r}
+dim(raw_dat)
+colnames(raw_dat)
+```
+
+### Data cleaning
+
+We want to remove entries with no oxygen measurements from our dataset.
+```{r}
+dat <-
+  raw_dat %>%
+  select(Cruise, Date, Depth, Temperature,
+         CTD_O2, NO3, Mean_H2S) %>%
+  filter(!is.na(CTD_O2)) %>%
+  rename(O2_uM  = CTD_O2,
+         NO3_uM = NO3,
+         H2S_uM = Mean_H2S)
+```
+
+
+
+## *t*-test and ANOVA
+
+Analysis of variance (ANOVA) allows us to compare 3 or more groups. The *t*-test is a special case of ANOVA comparing only 2 groups. Both have the same assumptions, but tests fundamentally different hypotheses. We will investigate one-way ANOVAs, meaning there is a single independent variable.
+
+### Hypotheses
+
+Criteria | *t*-test | ANOVA
+--------- | ------ | ----- 
+Number of groups | 2 | 3+
+Null hypothesis H~0~ | the population means are not different | *all* of the population means are equal to the mean across all populations
+Alternate hypothesis H~1~ | the population means are different | *at least one* population mean is not equal to the mean across all populations\*
+
+\**Note that this does not test __which__ population mean is different from the overall mean.* Box plots can help determine which group is different by visualizing data
+
+### *t*-test and ANOVA Assumptions
+
+1. Simple random sample
+2. Approximately normal distributions of the sample mean
+3. Reasonably large sample size
+4. Equal sample sizes*
+5. Equal sample variances*
+
+\* For *t*-test: different equations exist if these assumptions are not true
+
+In general, you can determine if your data adhere to the assumptions of a *t*-test or ANOVA simply by understanding where the data came from and completely a few exploratory tests like below.
+
+#### Are the data normally distributed?
+
+```{r}
+# Subset data to 3 depths in 3 cruises in February.
+dat_aov <- dat %>%
+  # The number of possible values of the independent variable (here Depth)
+  # determines if you need a t-test or ANOVA
+  filter(Depth %in% c(10, 100, 200) & Cruise %in% c(18,30,42)) %>% 
+  select(Cruise, Date, Depth, O2_uM)
+
+ggplot(dat_aov, aes(x = O2_uM)) +
+  geom_histogram(bins = 6) +
+  facet_grid(Depth ~ .)
+```
+
+#### Are the sample sizes large and equal? Are the sample variances equal?
+
+```{r}
+dat_aov %>% 
+  group_by(Depth) %>% 
+  summarise(n   = n(), 
+            sd  = sd(O2_uM), 
+            var = var(O2_uM))
+```
+
+And we see that these data break pretty much all the assumptions. Fortunately, these were merely a subset of the full data and we know that depth is, in fact, linear so a linear model would be a better fit.
+
+### Visualize the data and fit ANOVA
+
+```{r}
+dat_aov %>%
+  
+  ggplot(aes(x = as.factor(Depth), y = O2_uM)) +
+  geom_boxplot() +
+  geom_point() +
+  # Add a horizontal line for the overall mean
+  geom_hline(aes(yintercept = mean(O2_uM))) + 
+  labs(x = "Depth (m)", y = "Oxygen (uM)")
+```
+
+The horizontal line is the overall mean across all 3 depths. It is this mean that the sample means are being compared to.
+
+```{r}
+dat_aov_result <- aov(O2_uM ~ as.factor(Depth), data = dat_aov)
+tidy(dat_aov_result)
+```
+
+### Fit a *t*-test and estimate p-values
+
+Fitting a *t*-test is similar to fitting an ANOVA. We will first subset our data to only two depths (i.e. two groups).
+
+```{r}
+# Select data
+dat_ttest <- dat %>%
+  filter(Depth %in% c(10, 100) & Cruise %in% c(18,30,42)) %>% 
+  select(Cruise, Date, Depth, O2_uM)
+
+# Fit test
+dat_ttest_result <- t.test(O2_uM ~ as.factor(Depth),
+       data = dat_ttest,
+       var.equal = FALSE)
+
+tidy(dat_ttest_result)
+```
+
+
+
+## Linear regression
+
+Linear models take it another step further by allowing us to fit a model to 2 or more continuous variables. Here, we will go over the simplest regression `Y ~ X`.
+
+### Hypotheses
+
+Null hypothesis H~0~: The slope of the relationship between X and Y populations is zero.  
+Alternate hypothesis H~1~: The slope of the relationship between X and Y populations is not zero.
+
+### Assumptions
+
+1. The relationship between X and Y is linear.
+2. Residuals (the difference between the observed data and the linear fit):
+    - are normally distributed.
+    - have a mean of approximately zero.
+    - have equal variance.
+    - are not auto-correlated.
+    - are not correlated with X.
+
+The assumptions of a linear model mostly revolve around residuals. Thus, simple exploration of the raw data won't help. Instead, we can view the residuals using plots like so.
+
+```{r}
+# Subset the data to 3 February cruises.
+dat_lm <- dat %>%
+  filter(Cruise %in% c(18,30,42)) %>% 
+  select(Cruise, Date, Depth, O2_uM)
+
+# Set window to 2x2 plots
+par(mfrow=c(2,2))
+# Use base R to plot
+plot(lm(O2_uM ~ Depth, data = dat_lm))
+```
+
+What you want to see is flat (horizontal) red fit lines and randomly distributed points (plots 1, 3, 4) as well as points mostly along the dotted fit line (plot 2). 
+
+You can also quickly test the most pertinent assumptions using the package "gvlma". *Remember, you will need to install this package before you can load it.*
+
+```{r}
+library(gvlma)
+gvlma(lm(O2_uM ~ Depth, data = dat_lm))
+```
+
+From these results, we can conclude that a linear model is an okay fit for oxygen by depth, but let's investigate the plotted data first.
+
+### Visualize the data
+
+```{r}
+dat_lm %>%
+  
+  ggplot(aes(x = Depth, y = O2_uM)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(x = "Depth (m)", y = "Oxygen (uM)")
+```
+
+Note how ggplot can add the linear fit (blue line) and 95% confidence intervals (grey area) with `geom_smooth`.
+
+### Fit the linear model and estimate p-values
+
+```{r}
+summary(lm(O2_uM ~ Depth, data = dat_lm))
+```
+
+ Looking at the plotted data, a linear fit is likely not the best fit as there is a clear sigmodial shape in  the residual vs. fitted plot. You can also see this clearly if you allow ggplot to fit a polynomial model with `loess`.
+ 
+```{r}
+dat_lm %>% 
+  
+ggplot(aes(x = Depth, y = O2_uM)) +
+  geom_point() +
+  geom_smooth(method = "loess") +
+  labs(x = "Depth (m)", y = "Oxygen (uM)")
+```
+
+Thus, we would next test if a sigmodial model was a better fit. However, this is outside the scope of this module.
+
+
+
+## Breaking assumptions
+
+So what do you do if your data is non-normal? Or has small sample sizes? Or breaks any of the given assumptions of a statistical test?
+
+The first thing is that you *should not* be using that test! There are many, many, many statistical tests for all types of data including non-normal, uneven, and/or small data sets. These, however, are also beyond the scope of this module.
+
+When in doubt, consult a statistician! Science is increasingly collaborative and interdisciplinary so take advantage of other expertise!
+
+
+
+## Additional resources
+
+* [R cheatsheets](https://www.rstudio.com/resources/cheatsheets/) also available in RStudio under Help > Cheatsheets
+
+* [Free online statistics book](http://onlinestatbook.com/2/regression/intro.html)
+* Applied Statistics and Data Science Group ([ASDa](https://asda.stat.ubc.ca/)) at UBC
