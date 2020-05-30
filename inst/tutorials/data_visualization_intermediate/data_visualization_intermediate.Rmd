@@ -1,0 +1,515 @@
+---
+title: "Intermediate data visualization"
+author: "Andrew Wilson"
+date: "03/02/2020"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+description: Data visualization with ggplot2.
+---
+
+```{r setup, include = FALSE}
+# General learnr setup
+library(learnr)
+knitr::opts_chunk$set(echo = TRUE)
+library(educer)
+# Helper function to set path to images to "/images" etc.
+setup_resources()
+
+# Tutorial specific setup
+library(tidyverse)
+library(cowplot)
+```
+
+## Overview
+In this tutorial, we will continue to work in the [tidyverse](https://www.tidyverse.org/), now venturing into plots and figures. Here, we cover:
+
+- Basics of ggplot.
+- Scatterplots.
+- Adding color and shape to plots.
+
+
+
+## Setup
+You should open your `introR` R project and **start a new** working script `ggplot.R`. Since we are working in a new script, you should start it with packages and data loading!
+
+Load packages  
+**R v3.4 or newer**
+```{r eval = FALSE}
+library(tidyverse)
+library(cowplot)
+```
+
+**R v3.3 or older**
+```{r message = FALSE}
+library(readr)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
+
+Load raw data
+
+```{r message = FALSE}
+raw_dat <- geochemicals
+```
+
+Data cleaning
+
+```{r}
+dat <-
+  raw_dat %>%
+  select(Cruise, Date, Depth, Temperature,
+         CTD_O2, NO3, Mean_H2S) %>%
+  filter(!is.na(CTD_O2)) %>%
+  rename(O2_uM = CTD_O2,
+         NO3_uM = NO3,
+         H2S_uM = Mean_H2S)
+```
+
+
+
+## Data description
+Using plots, we will investigate the relationship between **oxygen, nitrate, and hydrogen sulfide** in Saanich Inlet. We are particularly interested in these relationships, because oxygen is the most energetically favorable terminal electron acceptor for microbial metabolism in this system. However, oxygen is depleted in deeper waters as a result of the seasonal stratification. 
+
+So, what are microbes using to survive? As oxygen is depleted, microbes must use alternative terminal electron acceptors. In Saanich Inlet, nitrate is the next best option, so we want to see if nitrate is available to microbes when oxygen is depleted. We are also interested in hydrogen sulfide, because sulfate is the third best terminal electron acceptor in this system. If sulfate is being used, it will be reduced to hydrogen sulfide and we will see a build up of H2S when both oxygen and nitrate are depleted.
+
+![](/images/TEAs.png)
+
+Let's plot these data to investigtate them and test these hypotheses!
+
+
+
+## Pivoting Data
+
+`pivot_longer()` and `pivot_wider()` are verbs that convert wide and long data, which are two different formats for a data frame. Wide data is where each variable is given its own column. Narrow data is where one column contains all of the variable names, and another column contains all of the values of these variables.
+
+For example, this wide data
+
+```{r, echo = FALSE}
+set.seed(123)
+wide <- data.frame(
+  sample_ID = c(1, 2, 3, 4),
+  year_2015 = runif(4, 0, 1) %>% round(3),
+  year_2016 = runif(4, 0.2, 1.2) %>% round(3),
+  year_2017 = runif(4, 0.5, 1.5) %>% round(3)
+)
+wide
+```
+
+contains the same information as this long data:
+
+```{r echo = FALSE}
+pivot_longer(
+  wide,
+  cols = c("year_2015", "year_2016", "year_2017"),
+  names_to = "Year",
+  values_to = "Value"
+) %>% arrange(sample_ID)
+```
+
+Here a simple animation to demonstrate how these two tables are related:
+
+![](/images/pivot_longer.gif)
+
+Our data is in the wide format. Observe that each variable is given its own column.
+
+```{r}
+dat
+```
+
+Some R functions work better with wide data and others work better with long data. `pivot_longer()` and `pivot_wider()` are two functions from the tidyr package that enable easy conversion between the formats. The first will merge all specified columns in the "cols" parameter into one column containing all of the variable names (specified by the "names_to" parameter) and another column containing all of the values (specified by the values_to parameter). The second function will "spread" your long data into the wide data format. 
+
+Here, we convert our data from wide to long format using `pivot_longer()`.
+
+```{r}
+long_dat <-
+  pivot_longer(
+    dat,
+    cols = c("O2_uM", "NO3_uM", "H2S_uM"),
+    names_to = "chemical",
+    values_to = "concentration",
+  )
+
+long_dat
+```
+
+We can undo this by spreading our data from long to wide format. Arguements for `pivot_wider` are: the dataframe that we want to convert from long to wide, the column(s) that you want to convert into multiple columns in the "names_from" parameter and their corresponding values in the "values_from" parameter.
+
+```{r}
+wide_dat <- pivot_wider(long_dat, names_from = "chemical", values_from = "concentration")
+wide_dat
+```
+
+Long data is more frequently used in plotting with ggplot.
+
+
+
+## Graphics with ggplot2
+*ggplot2* is an add-on package to R. It is an alternative to base graphics that has become very popular, to the point where it is recommended/preferred unless you have old code that already uses a different graphing package.
+
+*ggplot2* documentation is available at
+[docs.ggplot2.org](http://docs.ggplot2.org/current/)
+
+
+
+## Why ggplot?
+
+- Wilkinson, *Grammar of Graphics* (1999)
+- ggplot2 is an implementation of Grammar of Graphics for R
+- Benefits:
+    - handsome default settings
+    - snap-together building block approach
+    - automatic legends, colors, facets
+    - statistical overlays: regressions lines and smoothers (with confidence intervals)
+- Drawbacks:
+    - it can be hard to get it to look *exactly* the way you want
+    - requires having the input data in a certain format
+
+
+
+## ggplot building blocks
+
+- data: 2D table (`data.frame`) of *variables*
+- *aesthetics*: map variables to visual attributes (*e.g.* position)
+- *geoms*: graphical representation of data (points, lines, etc.)
+- *stats*: statistical transformations to get from data to points in
+the plot(binning, summarizing, smoothing)
+- *scales*: control *how* to map a variable to an aesthetic
+- *facets*: juxtapose mini-plots of data subsets, split by variable(s)
+- *guides*: axes, legend, etc. reflect the variables and their values
+
+Idea: independently specify and combine the blocks to create the plot you want.
+
+There are at least three things we have to specify to create a plot:
+
+1. Data.
+2. Aesthetic mappings from data variables to visual properties.
+3. A layer describing how to draw those properties.
+
+## `geom_point()`
+Let's begin by exploring scatterplots in ggplot using `geom_point()`.
+
+The first argument of `ggplot()` is the data. We can either specify this argument within the `ggplot()` function or pipe it in like so.
+
+```{r eval = FALSE}
+ggplot(dat)
+```
+
+```{r}
+# is equivalent to
+dat %>% ggplot()
+```
+
+The second argument is the aesthetics `aes()`, where we specify visual attributes of our plot like the x- and y-variables.
+
+```{r}
+dat %>%
+  ggplot(aes(x = O2_uM, y = NO3_uM))
+```
+
+Finally we add the geom to specify how we want to map our data onto these axes. If we don't specify any aesthetics in the geom, it will take them from the main ggplot function.
+```{r eval = FALSE}
+dat %>%
+  ggplot(aes(x = O2_uM, y = NO3_uM)) +
+  geom_point()
+```
+
+But we could specify them in the geom. Importantly, aesthetics in `ggplot()` will be applied to all layers while those in a specific geom will only be applied to that layer.
+
+```{r}
+dat %>%
+  ggplot() +
+  geom_point(aes(x=O2_uM, y=NO3_uM))
+```
+
+*Note* that above R code has a warning. Warnings do not always indicate that there is an error in your code. For example, this warning tells us that there is missing data (NA) in our data frame, which we already know. 
+
+## Exercise: geom_point
+Using scatterplots, 
+
+1. Investigate the relationship between oxygen and hydrogen sulfide
+2. Investigate the relationship between nitrate and hydrogen sulfide
+
+*Does it appear that our earlier hypotheses hold true?*
+
+## Appearance
+It is common to plot multiple conditions or measurements on the same plot, but with different appearances. In ggplot, you are able to change the colour, fill, line style (linetype), and point shape to  
+
+### Add color
+Perhaps we can get a better understanding of what is happening in Saanich Inlet if we instead plot all 3 variables of interest on 1 plot. 
+
+One way to achieve this is to map the third variable as a color aesthetic on a plot of the other 2 variables like so. *Note that the tidyverse understands both `color` and `colour`.*
+
+```{r, warning = FALSE}
+dat %>%
+  ggplot(aes(x = O2_uM, y = NO3_uM, color = H2S_uM)) +
+  geom_point() 
+```
+
+However, ggplot plots the observations in the order that they appear in the data frame. Since most of the hydrogen sulfide values are zero, we want to plot the non-zero data *last* so that they are visually on top in the plot. To do this, we use arrange by this variable to sort the rows by ascending hydrogen sulfide values. We also remove observations without hydrogen sulfide data (NA) since these will not map to any color.
+
+```{r, warning = FALSE}
+dat %>%
+  arrange(H2S_uM) %>%  
+  filter(!is.na(H2S_uM)) %>%
+  
+  ggplot(aes(x=O2_uM, y=NO3_uM, color=H2S_uM)) +
+  geom_point() 
+```
+
+This is a great example of why we use a pipe to input data into `ggplot`. Doing so allows us to manipulate `dat` using other tidyverse functions and then input these modified data directly into a ggplot without saving an intermediate data frame in the R environment.
+
+### Add shape
+
+We could also map a third variable to shape. However, this only works for categorical data so mapping to hydrogen sulfide fails.
+
+```{r error = TRUE}
+dat %>%
+  arrange(H2S_uM) %>%  
+  filter(!is.na(H2S_uM)) %>%
+  
+  ggplot(aes(x=O2_uM, y=NO3_uM, shape=H2S_uM)) +
+  geom_point() 
+```
+
+So, we need to rethink how we are plotting these data if we want to use shape. One option is to instead plot all 3 variables as shapes along depth. We would do so with the following setup. But what are our x and shape variables? 
+
+```{r shape_example, exercise = TRUE, exercise.lines = 6}
+dat %>%
+  ggplot(aes(x = , y = Depth, shape = )) +
+  geom_point()
+```
+
+We actually have multiple variables that we want to input for x (oxygen, nitrate, hydrogen sulfide). So, what do we do?
+
+This is where more tidyverse data manipulation can be used. Since we need a single variable to use as x, we need to `pivot_longer()` our 3 geochemical variables into a single column. We also have to keep (but not gather) our future y-variable, *i.e.* Depth.
+```{r}
+dat %>%
+  select(Depth, O2_uM, NO3_uM, H2S_uM) %>% 
+  pivot_longer(-Depth, names_to = "chemical", values_to = "concentration")
+```
+*Remember that the key (Chemical) and value (Concentration) names are determined by us! You could use different names.*
+
+If we pipe these modified data into our plot, we now have individual variables to use as x and shape.
+
+```{r warning = FALSE}
+dat %>%
+  select(Depth, O2_uM, NO3_uM, H2S_uM) %>% 
+  pivot_longer(-Depth, names_to = "chemical", values_to = "concentration") %>% 
+  
+  ggplot(aes(x = concentration, y = Depth, shape = chemical)) +
+  geom_point()
+```
+
+We could further customize this plot by reversing the y-axis (since we traditionally think of depth going down) and adding color on top of shape!
+
+```{r warning = FALSE}
+dat %>%
+  select(Depth, O2_uM, NO3_uM, H2S_uM) %>% 
+  pivot_longer(-Depth, names_to = "chemical", values_to = "concentration") %>% 
+  
+  ggplot(aes(x = concentration, y = Depth, shape = chemical,
+             colour = chemical)) +
+  geom_point() +
+  scale_y_reverse(limits = c(200, 0))
+```
+
+Now what do you think about our hypotheses?
+
+
+
+## Exercise: color and shape
+
+1. Create a plot of oxygen, nitrate, and hydrogen sulfide like above but only including Cruise 72.
+2. Modify the x- and y-axes labels in this plot. *Hint* look at the R cheatsheet to find the guide functions to achieve this.
+
+```{r appearance_exercise, exercise=TRUE, exercise.lines=5}
+
+```
+
+
+
+## Facetting
+
+Rather than putting a lot of information into a single graphic, we can split the graphic into panels by certain features. This is called faceting.
+
+Let's return to this plot.
+
+```{r warning = FALSE}
+dat %>%
+  select(Depth, O2_uM, NO3_uM, H2S_uM) %>% 
+  pivot_longer(-Depth, names_to = "chemical", values_to = "concentration") %>% 
+  
+  ggplot(aes(x = concentration, y = Depth, shape = chemical,
+             colour = chemical)) +
+  geom_point() +
+  scale_y_reverse(limits = c(200, 0))
+```
+
+Many of our data points overlap so we may want to separate the geochemical variables into separate plots. Instead of independently creating 3 plots, we can instead add `facet_wrap()` of the Chemical variable to the exact same code from above.
+
+```{r warning = FALSE}
+dat %>%
+  select(Depth, O2_uM, NO3_uM, H2S_uM) %>% 
+  pivot_longer(-Depth, names_to = "chemical", values_to = "concentration") %>% 
+  
+  ggplot(aes(x = concentration, y = Depth, shape = chemical,
+             colour = chemical)) +
+  geom_point() +
+  scale_y_reverse(limits = c(200, 0)) +
+  facet_wrap( ~ chemical)
+```
+
+Since the 3 variables are on somewhat different scales, we can also tell ggplot to scale the x-axes independently within each facet with the `scales` option.
+
+```{r warning = FALSE}
+dat %>%
+  select(Depth, O2_uM, NO3_uM, H2S_uM) %>% 
+  pivot_longer(-Depth, names_to = "chemical", values_to = "concentration") %>% 
+  
+  ggplot(aes(x = concentration, y = Depth, shape = chemical,
+             colour = chemical)) +
+  geom_point() +
+  scale_y_reverse(limits = c(200, 0)) +
+  facet_wrap( ~ chemical, scales = "free_x")
+```
+
+You can also facet across multiple variables using `facet_grid()`.
+
+
+
+## Exercise: Facets
+
+We saw in previous analyses that oxygen and nitrate might have a relationship. But we've also seen that depth and many compounds are related. So, how might we tease apart this plot from earlier?
+
+```{r echo = FALSE, warning = FALSE}
+dat %>%
+  ggplot(aes(x = O2_uM, y = NO3_uM)) +
+  geom_point()
+```
+
+In the following exercise, investigate if depth contributes to the relationship between oxygen and nitrate. We will look at only a couple of depths to simplify the plot.
+
+1. Filter to data to depths 10, 60, 100 and 200 m
+2. Plot Oxygen vs Nitrate faceted by Depth
+
+The result should be the following
+
+```{r facet_exercise, exercise = TRUE, exercise.lines = 5}
+
+```
+
+
+
+## Themes
+
+By default, ggplot uses a gray color scheme. However, there are a number of other themes that come with ggplot as well as many more in the additional package ggthemes. You can see many examples from [ggplot](https://datascienceplus.com/ggplot2-themes-examples/) or [ggthemes](http://www.rpubs.com/Mentors_Ubiqum/ggthemes_1).
+
+Themes are simply added as another layer in ggplot.
+
+```{r warning = FALSE}
+dat %>%
+  select(Depth, O2_uM, NO3_uM, H2S_uM) %>% 
+  pivot_longer(-Depth, names_to = "chemical", values_to = "concentration") %>% 
+  
+  ggplot(aes(x = concentration, y = Depth, shape = chemical,
+             colour = chemical)) +
+  geom_point() +
+  scale_y_reverse(limits = c(200, 0)) +
+  facet_wrap( ~ chemical, scales = "free_x") +
+  theme_bw()
+```
+
+Or you can customize each aspect of your theme (either on its own or in addition to a premade theme) within `theme()`. Here, we will only remove the color legend but you can explore many other options with `?theme`.
+
+```{r}
+dat %>%
+  select(Depth, O2_uM, NO3_uM, H2S_uM) %>% 
+  pivot_longer(-Depth, names_to = "chemical", values_to = "concentration") %>% 
+  
+  ggplot(aes(x = concentration, y = Depth, shape = chemical,
+             colour = chemical)) +
+  geom_point() +
+  scale_y_reverse(limits = c(200, 0)) +
+  facet_wrap( ~ chemical, scales = "free_x") +
+  theme_bw() +
+  theme(legend.position = "none")
+```
+
+
+
+## Multiple panels
+
+Faceting often gets you the multi-panel figure that you want. But sometimes you may want to combine multiple plot types, plots from different data sets, or perform some other sort of plotting that faceting does not support. Such plots can be achieved by a number of methods both inside and outside R. Here, we will show you one method using the cowplot package
+
+First, we save the plots to be combined as R objects. Let's use our last plot from above and clean up the labels a bit.
+
+```{r warning = FALSE}
+p1 <- dat %>%
+  select(Depth, O2_uM, NO3_uM, H2S_uM) %>% 
+  pivot_longer(-Depth, names_to = "chemical", values_to = "concentration") %>% 
+  
+  ggplot(aes(x = concentration, y = Depth, shape = chemical,
+             colour = chemical)) +
+  geom_point() +
+  scale_y_reverse(limits = c(200, 0)) +
+  facet_wrap( ~ chemical, scales = "free_x") +
+  theme_bw() +
+  theme(legend.position = "none") +
+  labs(y = "Depth [m]", x = "Concentration [µM]")
+
+p1
+```
+
+As well as one showing the number of samples obtained at each depth.
+```{r warning=FALSE}
+p2 <- dat %>%
+  ggplot(aes(x = Depth)) +
+  geom_histogram(binwidth = 10) +
+  scale_x_reverse(limits = c(200, 0)) +
+  labs(x="", y = "Total samples") +
+  coord_flip() + # flip the x and y axes
+  theme_bw() 
+
+p2
+```
+
+We can then combine these plots with `plot_grid()`. This function allows us to add panel labels, align the edges of plots, line up the axes, determine size (all shown below), and so much more!
+
+```{r warning = FALSE}
+p <-
+  plot_grid(
+    p1,
+    p2,
+    labels = c("A", "B"),
+    align = "h",
+    axis = "tb",
+    rel_widths = c(3 / 4, 1 / 4)
+  )
+
+p
+```
+
+### Saving ggplots
+
+Using `ggsave()` you can save your ggplots to many different file types just by changing the extension in the file name.
+
+Let's save our ggplot to the projects folder as a pdf. 
+```{r eval = FALSE}
+ggsave("saanich.pdf", p, width = 10, height = 6)
+```
+
+*And sometimes after all this, it's still not perfect. So, don't feel bad if you need to finalize plots for publication in another editor like Illustrator. Sometimes it's a necessary evil.*
+
+
+
+## Additional resources
+
+* [R cheatsheets](https://www.rstudio.com/resources/cheatsheets/) also available in RStudio under Help > Cheatsheets
+
+* [ggplot tutorial 1](http://r-statistics.co/Complete-Ggplot2-Tutorial-Part1-With-R-Code.html)
+* [ggplot tutorial 2](https://rpubs.com/g_jw/ggplot2_tutorial)
+* [ggplot tutorial 3](http://tutorials.iq.harvard.edu/R/Rgraphics/Rgraphics.html#the_1_faq)
