@@ -39,10 +39,7 @@ It is a language that you use to give instructions to your computer. It interfac
 #### Why is this important? Why not use Excel?
 Why use a language like R instead of point-and-click alternatives like Excel? For many reasons! Firstly, R is *free* and *open-source*. And because it is a programming language, it is vastly more *flexible* and *reproducible* (more on these later).
 
-```{r step_1, echo=FALSE, out.width = '100%'}
-knitr::include_graphics("/images/what_is_r_step_1.png")
-```
-
+![](/images/what_is_r_step_1.png){width=100%}
 ### Let's get started!
 #### R as a calculator
 The window below is a small interactive environment. You can write R code in it, and then, when you click the Run button, the code is executed by the computer and you receive an *output*. 
@@ -529,15 +526,11 @@ So far, we learned the basics of writing in R by using interactive code boxes. B
 ### What is RStudio?
 A friendly interface between you and the R console. RStudio is an integrated development and analysis environment (IDE) for R that brings a number of conveniences over using R in a terminal or other editing environments.
 
-```{r step_2, echo=FALSE, out.width = '100%'}
-knitr::include_graphics("/images/what_is_r_step_2.png")
-```
+![](/images/what_is_r_step_2.png){width=100%}
 
 You may be running this tutorial from within RStudio. If that is not the case, open RStudio in your computer. When you start RStudio, you will see something like the following window appear:
 
-```{r rstudio, echo=FALSE, out.width = '100%'}
-knitr::include_graphics("/images/rstudio.png")
-```
+![](/images/rstudio.png){width=100%}
 
 Notice that it is divided into different "panes". For now we will focus on the *console* (left side). 
 
@@ -580,9 +573,7 @@ That is very different from the code boxes we used throughout this tutorial. In 
 
 R scripts are simply text files that contain all the code that loads your raw data, cleans it, performs the analyses, and creates and saves visualizations. You can save a script in your computer as a file, so that you can run it again in the future, if you need to, and you can edit the script at any point.
 
-```{r step_3, echo=FALSE, out.width = '100%'}
-knitr::include_graphics("/images/what_is_r_step_3.png")
-```
+![](/images/what_is_r_step_3.png){width=100%}
 
 #### Advantages of working with scripts
 R scripts maintain a record of everything that is done to the raw data to reach the final result:
@@ -684,9 +675,7 @@ When you create a project, RStudio creates a directory containing an `.Rproj` fi
 #### Creating an RStudio project
 RStudio has a simple interface to create and switch between projects, accessed from the button in the top-right corner of the RStudio window (labeled "Project: (None)", initially). Start by clicking the Project button in the upper right or going to the File menu. Select New Project and the following will appear.
 
-```{r new_project, echo=FALSE, out.width = '100%'}
-knitr::include_graphics("/images/create_project.png")
-```
+![](/images/create_project.png){width=100%}
 
 You can either create a project in an existing directory or make a new directory on your computer. Create a new project on your desktop. After your project is created, navigate to its directory using your Finder/File explorer. You will see the `.RProj` file has been created. 
 
