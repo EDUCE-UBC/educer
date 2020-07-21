@@ -1,23 +1,29 @@
 ---
 title: "Introduction to R and RStudio"
+author: "Gil J. B. Henriques<br>
+        Based on notes by Florent Mazel, Kim Dill-McFarland, Kris Hong, and Yue Liu.<br>
+        A tutorial by [ECOSCOPE](http://ecoscope.ubc.ca/) at UBC."
+date: "version `r format(Sys.time(), '%B %d, %Y')`"
+description: In-depth description will follow.
 output: 
   learnr::tutorial:
       progressive: true
       allow_skip: true
 runtime: shiny_prerendered
-author: "Gil J. B. Henriques<br>
-        Based on notes by Florent Mazel, Kim Dill-McFarland, Kris Hong, and Yue Liu.<br>
-        A tutorial by [ECOSCOPE](http://ecoscope.ubc.ca/) at UBC."
-date: "version `r format(Sys.time(), '%B %d, %Y')`"
 ---
 
 ```{r setup, include=FALSE}
+# General learnr setup
 library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+library(educer)
+# Helper function to set path to images to "/images" etc.
+setup_resources()
+
+# Tutorial specific setup
 library(ggplot2)
 library(readr)
-knitr::opts_chunk$set(echo = FALSE)
 ```
-
 
 ## Introduction
 In this tutorial, we introduce you to R and RStudio at the beginner level. This self-guided tutorial is meant to get you started in R and acts as a prerequisite for our other tutorials. 
@@ -34,7 +40,7 @@ It is a language that you use to give instructions to your computer. It interfac
 Why use a language like R instead of point-and-click alternatives like Excel? For many reasons! Firstly, R is *free* and *open-source*. And because it is a programming language, it is vastly more *flexible* and *reproducible* (more on these later).
 
 ```{r step_1, echo=FALSE, out.width = '100%'}
-knitr::include_graphics("images/tutorial_step_1.png")
+knitr::include_graphics("/images/what_is_r_step_1.png")
 ```
 
 ### Let's get started!
@@ -524,13 +530,13 @@ So far, we learned the basics of writing in R by using interactive code boxes. B
 A friendly interface between you and the R console. RStudio is an integrated development and analysis environment (IDE) for R that brings a number of conveniences over using R in a terminal or other editing environments.
 
 ```{r step_2, echo=FALSE, out.width = '100%'}
-knitr::include_graphics("images/tutorial_step_2.png")
+knitr::include_graphics("/images/what_is_r_step_2.png")
 ```
 
 You may be running this tutorial from within RStudio. If that is not the case, open RStudio in your computer. When you start RStudio, you will see something like the following window appear:
 
 ```{r rstudio, echo=FALSE, out.width = '100%'}
-knitr::include_graphics("images/rstudio.png")
+knitr::include_graphics("/images/rstudio.png")
 ```
 
 Notice that it is divided into different "panes". For now we will focus on the *console* (left side). 
@@ -575,7 +581,7 @@ That is very different from the code boxes we used throughout this tutorial. In 
 R scripts are simply text files that contain all the code that loads your raw data, cleans it, performs the analyses, and creates and saves visualizations. You can save a script in your computer as a file, so that you can run it again in the future, if you need to, and you can edit the script at any point.
 
 ```{r step_3, echo=FALSE, out.width = '100%'}
-knitr::include_graphics("images/tutorial_step_3.png")
+knitr::include_graphics("/images/what_is_r_step_3.png")
 ```
 
 #### Advantages of working with scripts
@@ -600,7 +606,7 @@ fluidRow(
 ```
 
 ```{r context = "server"}
-example_script_file <- read_file("example_script.R")
+example_script_file <- read_file("/scripts/example_script.R")
 
 # Download button shiny app server
 output$downloadExampleScript <- downloadHandler(
@@ -679,7 +685,7 @@ When you create a project, RStudio creates a directory containing an `.Rproj` fi
 RStudio has a simple interface to create and switch between projects, accessed from the button in the top-right corner of the RStudio window (labeled "Project: (None)", initially). Start by clicking the Project button in the upper right or going to the File menu. Select New Project and the following will appear.
 
 ```{r new_project, echo=FALSE, out.width = '100%'}
-knitr::include_graphics("images/new_project.png")
+knitr::include_graphics("/images/create_project.png")
 ```
 
 You can either create a project in an existing directory or make a new directory on your computer. Create a new project on your desktop. After your project is created, navigate to its directory using your Finder/File explorer. You will see the `.RProj` file has been created. 
