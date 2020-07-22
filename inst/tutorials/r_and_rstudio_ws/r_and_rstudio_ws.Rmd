@@ -597,7 +597,7 @@ fluidRow(
 ```
 
 ```{r context = "server"}
-example_script_file <- read_file("/scripts/example_script.R")
+example_script_file <- read_file(system.file("resources/scripts", "example_script.R", package = "educer"))
 
 # Download button shiny app server
 output$downloadExampleScript <- downloadHandler(
