@@ -40,6 +40,7 @@ It is a language that you use to give instructions to your computer. It interfac
 Why use a language like R instead of point-and-click alternatives like Excel? For many reasons! Firstly, R is *free* and *open-source*. And because it is a programming language, it is vastly more *flexible* and *reproducible* (more on these later).
 
 ![](/images/what_is_r_step_1.png){width=100%}
+
 ### Let's get started!
 #### R as a calculator
 The window below is a small interactive environment. You can write R code in it, and then, when you click the Run button, the code is executed by the computer and you receive an *output*. 

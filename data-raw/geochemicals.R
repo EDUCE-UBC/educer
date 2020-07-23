@@ -18,6 +18,3 @@ geochemicals <- geochemicals %>%
   dplyr::left_join(other_variables)
 
 usethis::use_data(geochemicals, overwrite = TRUE, compress = "bzip2")
-
-
-
