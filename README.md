@@ -4,24 +4,37 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of educer is to ...
+Please visit the EDUCE homepage for [install instructions of R and RStudio](https://educe-ubc.github.io/r_and_rstudio.html).
+
+
 
 ## Installation
 
-You can install the released version of educer from [CRAN](https://CRAN.R-project.org) with:
+You can install the released version of educer from GitHub with:
 
 ``` r
-install.packages("educer")
+if (!require(devtools)) install.packages("devtools")
+devtools::install_github("EDUCE-UBC/educer")
 ```
 
-## Example
+See the EDUCE homepage for more detailed [install instructions](https://educe-ubc.github.io/educer.html).
 
-This is a basic example which shows you how to solve a common problem:
+
+
+## Loading and getting help on the educer package
 
 ``` r
 library(educer)
-## basic example code
+?educer
 ```
+
+
+
+## Using the interactive tutorials
+
+Please the the EDUCE homepage for information on how to [start the tutorials](https://educe-ubc.github.io/tutorials.html).
+
+
 
 ## For developers
 
@@ -36,4 +49,4 @@ setup_resources()
 
 - To add an image in tutorial.Rmd, you can now give the path to an `image.ext` in `inst/resources/images/` like so (you MUST include the first `/`):
 ![](/images/image.ext)
-- You can learn more about the helper function `setup_resources` with `?setup_resources` and add other paths to resources (css is already established)
+- You can learn more about the helper function `setup_resources` with `?setup_resources` and add other paths to resources (css is already established).
