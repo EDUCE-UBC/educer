@@ -194,7 +194,7 @@ Note how we surrounded the character string by quotation marks. If we don't do t
 A third data type is used for *logical* variables. Logical variables can only have two values: `TRUE` or `FALSE`. You can create a logical variable by assigning one of these values directly. In the box below, assign the value `TRUE` to the variable `x` and then confirm its data type:
 
 ```{r class_logical, exercise=TRUE}
-x <- 
+x <- <logical_variable_here>
 class(x)
 ```
 
@@ -327,7 +327,7 @@ link <- "https://raw.githubusercontent.com/EDUCE-UBC/workshops_access/master/int
 dat <- read.csv(link)
 ```
 
-You can examine the first few rows of `dat` using the `head()` function. Do this in the code box above.
+You can examine the first few rows of `dat` using `head(dat)`. Do this in the code box above.
 
 - The first row, containing the column names, is called *header*. 
 - Each column can be thought of as a vector corresponding to a single data variable. 
