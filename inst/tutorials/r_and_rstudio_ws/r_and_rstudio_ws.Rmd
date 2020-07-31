@@ -214,7 +214,7 @@ But logical variables are most useful when they describe *logical statements* su
 Chose one of the statements above and assign the *entire statement* to variable `x`. Then, use the function `class()` to check the variable's data type.
 
 ```{r class_logical_statement, exercise=TRUE}
-x <- 
+x <- <logical_variable_here>
 class(x)
 ```
 
@@ -326,7 +326,7 @@ link <- "https://raw.githubusercontent.com/EDUCE-UBC/workshops_access/master/int
 dat <- read.csv(link)
 ```
 
-You can examine the first few rows of `dat` using the `head()` function. Do this in the code box above.
+You can examine the first few rows of `dat` using `head(dat)` Do this in the code box above.
 
 - The first row, containing the column names, is called *header*. 
 - Each column can be thought of as a vector corresponding to a single data variable. 
