@@ -1,0 +1,26 @@
+---
+title: "Introduction to the R tidyverse"
+author: "Gil J. B. Henriques<br>
+        Based on notes by Kim Dill-McFarland and Kris Hong.<br>
+        A tutorial by [ECOSCOPE](http://ecoscope.ubc.ca/) at UBC."
+date: "version `r format(Sys.time(), '%B %d, %Y')`"
+description: In-depth description will follow.
+output: 
+  learnr::tutorial:
+      progressive: true
+      allow_skip: true
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+# General learnr setup
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+library(educer)
+# Helper function to set path to images to "/images" etc.
+setup_resources()
+
+# Tutorial specific setup
+library(ggplot2)
+library(readr)
+```
