@@ -1,7 +1,6 @@
 ---
 title: "Introduction to the R tidyverse"
-author: "Gil J. B. Henriques<br>
-        Based on notes by Kim Dill-McFarland and Kris Hong.<br>
+author: "Gil J. B. Henriques, Kim Dill-McFarland and Kris Hong.<br>
         A tutorial by [ECOSCOPE](http://ecoscope.ubc.ca/) at UBC."
 date: "version `r format(Sys.time(), '%B %d, %Y')`"
 description: In-depth description will follow.
@@ -21,6 +20,64 @@ library(educer)
 setup_resources()
 
 # Tutorial specific setup
-library(ggplot2)
+library(tidyverse) # Suite of packages for data manipulation and visualization
+library(lubridate) # Special formatting for dates within data
+library(cowplot) # Multi-panel figures
 library(readr)
+
 ```
+
+## Introduction
+In this tutorial, we will learn to manipulate and plot real-world data using the [tidyverse](https://www.tidyverse.org/), a collection of R packages for data analysis and visualization.
+
+You will learn how to:
+
+* Create subsets of rows or columns from data frames using dplyr,
+* Change your data frames between wide and long formats,
+* Create various types of graphics,
+* Modify the various features of a graphic, and
+* Save your graphic in various formats
+
+This comprehensive introduction to the tidyverse is ideal for beginners but assumes some prior experience with R (such as that in our [Introduction to R and RStudio workshop](https://github.com/EDUCE-UBC/educer/tree/master/inst/tutorials/r_and_rstudio_ws)).
+
+### How to follow the tutorial
+
+Throughout the tutorial, you will encounter a number of coding exercises. Follow the instructions to complete the code in the code exercise window ![](images/one.png){width=0.3in} and then click on the “Run Code” button to see the results ![](images/two.png){width=0.3in}. You can reset the exercise if you get stuck ![](images/three.png){width=0.3in}, or can get hints or the solution ![](images/four.png){width=0.3in}.
+
+![](images/code_exercise_small.png){width=5in}
+
+You can leave this tutorial at any time: it will remember your progress when you return.
+
+### Data description
+
+We will work with real-world data collected as part of an ongoing oceanographic time series program in Saanich Inlet, a seasonally anoxic fjord on the East coast of Vancouver Island, British Columbia:
+
+![](images/saanich_inlet_map.png){width=4in}
+
+The figure shows a map of Saanich Inlet indicating conventional sample collection stations (S1-S9). The data used in this tutorial (sourced from S3) include various geochemical measurements at many depths in Saanich Inlet. Samples were taken approximately monthly from 2006 to 2014, though there is much missing data to contend with.
+
+During this tutorial, the data are accessible as a data frame called `geochemicals`. In the interactive code box below, use the function `head` to peak at the first few rows of this data frame:
+
+```{r geochemicals, exercise = TRUE}
+head(<name_of_the_data_frame>)
+```
+
+```{r geochemicals-solution}
+head(geochemicals)
+```
+
+For more details about these data, see [Hallam SJ *et al*. 2017. Sci Data 4: 170158](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5663219/) "Monitoring microbial responses to ocean deoxygenation in a model oxygen minimum zone". More detailed information on the environmental context and time series data can be found in [Torres-Beltrán M *et al*. 2017. Sci Data 4: 170159.](https://www.nature.com/articles/sdata2017159) "A compendium of geochemical information from the Saanich Inlet water column".
+
+### Loading packages
+
+The [tidyverse](https://www.tidyverse.org/) is a collection of R packages. Packages expand R's capabilities by providing additional functions. Some tidyverse packages that we will use in this tutorial are: dplyr (for data manipulation; pronounced *dee-plier*), tidyr (for rearranging data frames), and ggplot2 (for data visualization).  We will also use the packages lubridate (for working with dates) and cowplot (for multi-panel figures).
+
+When you work in your own projects, always load the packages you need at the top of your script. You can load each one of the tidyverse packages individually, but since they are often used together, you can also download and load the entire suite of tidyverse packages at once. In the future, you can use the code below to load all of the R packages we will use in this tutorial. 
+
+```{r echo = TRUE, message = FALSE}
+library(tidyverse) # Suite of packages for data manipulation and visualization
+library(lubridate) # Special formatting for dates within data
+library(cowplot) # Multi-panel figures
+```
+
+Keep in mind that to use packages in a script, these packages *must already be installed* in your computer (see the [Introduction to R and RStudio workshop](https://github.com/EDUCE-UBC/educer/tree/master/inst/tutorials/r_and_rstudio_ws) for more details about installing packages and working with scripts).
