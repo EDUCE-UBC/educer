@@ -361,3 +361,63 @@ The full list of helper functions can be found by running `?select_helpers` in
 the console. 
 
 ### Filter
+
+You can use `filter` to subset particular rows based on a logical condition of a 
+variable. This is where our practice with R logical conditions comes in handy. The pre-populated code in the box filters `dat` such that we only retain data collected after February 2008. Run it and examine the output. Then, modify the code so that it only retains those data points collected after February 2008 that were sampled deeper than 100 km.
+
+```{r filter-Feb, exercise = TRUE, exercise.setup = "setup_dat"}
+filter(dat, Date >= "2008-02-01")
+```
+
+```{r filter-Feb-hint-1}
+filter(dat, Date >= "2008-02-01" & <logical condition>)
+```
+
+```{r filter-Feb-hint-2}
+filter(dat, Date >= "2008-02-01" & <column> > 100)
+```
+
+```{r filter-Feb-hint-3}
+filter(dat, Date >= "2008-02-01" & Depth > 100)
+```
+
+As we saw earlier, conditional statements and logical expressions in R are extremely powerful and allow us to filter the data in almost any way imaginable. For example, try to modify the code below to obtain observations taken after 2008, in the month of June (using the function `months` from the lubridate package), at depths of either 10 or 20, and where oxygen data is not missing:
+
+```{r filter-June, exercise = TRUE, exercise.setup = "setup_dat"}
+filter(dat, months(Date) == "November" & <other conditions>)
+```
+
+```{r filter-June-hint-1}
+filter(dat, months(Date) == "June" & <other conditions>)
+```
+
+```{r filter-June-hint-2}
+filter(dat, months(Date) == "June" & <column> %in% c(<depth values>) & !is.na(<column>))
+```
+
+```{r filter-June-hint-3}
+filter(dat, months(Date) == "June" & Depth %in% c(10, 20) & !is.na(Mean_O2))
+```
+
+---
+**Note!** Importantly, lubridate operates under the assumption that you are using English. To check what language R is using, run `Sys.getlocale("LC_TIME")`. If your computer is running in another language, replace "June" with the equivalent in your language or set R to English with `Sys.setlocale("LC_TIME", "en_CA.UTF-8")`.
+
+---
+
+### Exercise: Select and Filter
+In the code box below, using the `dat` data:
+
+1. select the `Cruise`, `Date`, `Depth`, and `Mean_O2` variables
+2. save the output into a new variable with a name of your choice
+3. filter the new data so as to retain data on Cruise 72 where Depth is smaller than or equal to 20 km. 
+
+
+```{r exercise-select-filter, exercise = TRUE, exercise.setup = "setup_dat"}
+
+
+```
+
+```{r exercise-select-filter-solution}
+small_data <- select(dat, Cruise, Date, Depth, Mean_O2)
+filter(small_data, Cruise == 72 & Depth <= 20)
+```
