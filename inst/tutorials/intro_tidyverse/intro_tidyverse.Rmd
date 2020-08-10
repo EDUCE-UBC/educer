@@ -381,10 +381,12 @@ filter(dat, Date >= "2008-02-01" & <column> > 100)
 filter(dat, Date >= "2008-02-01" & Depth > 100)
 ```
 
-As we saw earlier, conditional statements and logical expressions in R are extremely powerful and allow us to filter the data in almost any way imaginable. For example, try to modify the code below to obtain observations taken after 2008, in the month of June (using the function `months` from the lubridate package), at depths of either 10 or 20, and where oxygen data is not missing:
+As we saw earlier, conditional statements and logical expressions in R are extremely powerful and allow us to filter the data in almost any way imaginable. The code below filters `dat` to obtain observations taken in the month of June (using the function `months` from the lubridate package\*). Modify it to obtain observations taken in the month of June, after 2008, at depths of either 10 or 20, and where oxygen data is not missing:
+
+\* <font size="2"> Importantly, lubridate operates under the assumption that you are using English. To check what language R is using, run `Sys.getlocale("LC_TIME")`. If your computer is running in another language, replace "June" with the equivalent in your language or set R to English with `Sys.setlocale("LC_TIME", "en_CA.UTF-8")`. </font>
 
 ```{r filter-June, exercise = TRUE, exercise.setup = "setup_dat"}
-filter(dat, months(Date) == "November" & <other conditions>)
+filter(dat, months(Date) == "June")
 ```
 
 ```{r filter-June-hint-1}
@@ -399,18 +401,13 @@ filter(dat, months(Date) == "June" & <column> %in% c(<depth values>) & !is.na(<c
 filter(dat, months(Date) == "June" & Depth %in% c(10, 20) & !is.na(Mean_O2))
 ```
 
----
-**Note!** Importantly, lubridate operates under the assumption that you are using English. To check what language R is using, run `Sys.getlocale("LC_TIME")`. If your computer is running in another language, replace "June" with the equivalent in your language or set R to English with `Sys.setlocale("LC_TIME", "en_CA.UTF-8")`.
+#### Exercise: Select and Filter
 
----
-
-### Exercise: Select and Filter
 In the code box below, using the `dat` data:
 
 1. select the `Cruise`, `Date`, `Depth`, and `Mean_O2` variables
 2. save the output into a new variable with a name of your choice
 3. filter the new data so as to retain data on Cruise 72 where Depth is smaller than or equal to 20 km. 
-
 
 ```{r exercise-select-filter, exercise = TRUE, exercise.setup = "setup_dat"}
 
@@ -421,3 +418,141 @@ In the code box below, using the `dat` data:
 small_data <- select(dat, Cruise, Date, Depth, Mean_O2)
 filter(small_data, Cruise == 72 & Depth <= 20)
 ```
+
+### Rename
+
+You can use the `rename` function to assign new names to your columns. This
+can be very useful when your column names are very long and tedious to type. 
+In the box below, we remove the `Mean_` prefix from some of the columns. 
+Run it and examine the output. Then, modify it so as to remove the prefix from
+the remaining chemicals (CO2, N2O, and CH4).
+
+```{r rename, exercise = TRUE, exercise.setup = "setup_dat"}
+rename(dat, NH4 = Mean_NH4, NO2 = Mean_NO2, 
+       H2S = Mean_H2S, N2 = Mean_N2, O2 = Mean_O2)
+```
+
+```{r rename-solution}
+rename(dat, NH4 = Mean_NH4, NO2 = Mean_NO2, 
+       H2S = Mean_H2S, N2 = Mean_N2, O2 = Mean_O2,
+       CO2 = Mean_CO2, N2O = Mean_N2O, CH4 = Mean_CH4)
+```
+
+### Arrange
+
+Use `arrange(<data_frame>, <x>)` to sort all the rows of a given `<data_frame>` by the value of the column `<x>` in  ascending order. 
+Run the box below and study the order of the first ten rows in the data frame `dat`. 
+Then, comment the first line of code and uncomment the second row.
+Run the code again. Notice how the rows are now in order of ascending CH4.
+
+```{r arrange, exercise = TRUE, exercise.setup = "setup_dat"}
+dat[1:10, ]
+#arrange(dat[1:10, ], Mean_CH4)
+```
+
+To sort rows in descending order, use `arrange(<data_frame>, desc(<x>))`. 
+In the box below, arrange `dat` in descending order of `Mean_O2`:
+
+```{r arrange_descending, exercise = TRUE, exercise.setup = "setup_dat"}
+arrange(<code here>)
+```
+
+```{r arrange_descending-solution}
+arrange(dat, desc(Mean_O2))
+```
+
+
+### Mutate
+
+Mutate is one of the most useful verbs in the dplyr package.
+Use `mutate(y = function(x))` to apply a transformation to some column `x` and assign the output to the column name `y`. 
+The transformation can be a function (e.g., `log(x)`) or a mathematical operation. 
+As an example, run the code below to multiply `Depth` by 1000 (converting its units from kilometers to meters) and assign the output to a new column, `Depth_meters`.
+
+```{r mutate, exercise = TRUE, exercise.setup = "setup_dat"}
+mutate(dat, Depth_meters = Depth*1000)
+```
+
+We can also mutate multiple columns. In the box below, try to use `mutate` to create a new column (with any name of your choice) containing the sum of `Mean_O2` and `Mean_CH4`:
+
+```{r mutate_sum, exercise = TRUE, exercise.setup = "setup_dat"}
+mutate(dat, <new column name> = <sum of old columns>)
+```
+
+```{r mutate_sum-solution}
+mutate(dat, O2_plus_CH4 = Mean_O2 + Mean_CH4)
+```
+
+#### Exercise: Rename and Mutate
+
+Using the data frame `dat`:
+
+1. Select the `Date`, `Depth` and `Mean_O2` variables
+2. Rename the `Mean_O2` column to `O2`
+3. Keep August observations where oxygen data are non-missing using `filter`, `months`, and `!is.na`
+4. Transform `O2` from micromoles/L to micrograms/L using `mutate` (multiply by 32)
+
+At each step, save the output into a new data frame with a name of your choice.
+Use the new data frame as an argument for the next step.
+The final data frame should have sixteen rows. 
+
+```{r exercise_rename_mutate, exercise = TRUE, exercise.setup = "setup_dat"}
+
+
+
+```
+
+```{r exercise_rename_mutate-solution}
+selected_data <- select(dat, Date, Depth, Mean_O2)
+renamed_data <- rename(selected_data, O2 = Mean_O2)
+filtered_data <- filter(renamed_data, months(Date) == "August" & !is.na(O2))
+mutate(filtered_data, O2 = O2 * 32)
+```
+
+### Piping with `%>%`
+
+In the previous exercise, we had to perform quite a large series of data wrangling tasks.
+First, we selected some columns; then, we renamed them; then we filtered them; and finally we mutated one of the columns.
+The most natural way to think about this exercise is as a *chain* (or sequence) of functions: each dplyr verb wrangles the input data frame into a new (output) data frame, which is then provided as the input to the following verb.
+Metaphorically, the output of the first function is *piped into* the following function.
+
+The tidyverse package magrittr introduced the `%>%` (pipe) operator, which uses this metaphor to make code easier to read:
+
+`f(x) %>% g(y)` is the same as `g(f(x),y)`
+
+`select(dat, Cruise)` is the same as `dat %>% select(Cruise)`
+
+Piping works nicely to condense code and to improve readability. It integrates especially well with dplyr. Here is an example:
+
+```{r echo = TRUE}
+geochemicals %>%
+  select(Cruise, Date, Depth, Mean_CH4) %>%
+  filter(Date >= "2008-02-01") %>%
+  rename(CH4 = Mean_CH4) %>%
+  mutate(log_CH4 = log(CH4)) %>% 
+  head()
+```
+
+In the code above, we start by selecting some columns and *pipe* the output into the next step (filter). We keep piping the output into the next step of the chain. After we are done wrangling, we pipe the output to the function `head()` (which prints the first few rows of a data frame). Note how dplyr verbs combined with the pipe operator make this complex series of data wrangling operations read almost like an English sentence (think of `%>%` as the word *"then"*: e.g., "select these columns, *then* filter by date, *then* rename this column...")
+
+#### Exercise: Piping
+
+In the box below, rewrite your code from the previous exercise using pipes.
+**Tip:** In RStudio, you can use the keyboard shortcut <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>m</kbd> to enter the pipe operator.
+
+```{r exercise_pipe, exercise = TRUE, exercise.setup = "setup_dat"}
+
+
+
+```
+
+```{r exercise_pipe-solution}
+dat %>% 
+  select(Date, Depth, Mean_O2) %>% 
+  rename(O2 = Mean_O2) %>% 
+  filter(months(Date) == "August" & !is.na(O2)) %>% 
+  mutate(O2 = O2 * 32)
+```
+
+
+
