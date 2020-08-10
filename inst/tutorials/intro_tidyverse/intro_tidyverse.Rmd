@@ -589,3 +589,89 @@ dat %>%
             IQR_CH4 = IQR(Mean_CH4, na.rm = TRUE),
             sample_size = n())
 ```
+
+### Wide and long data
+
+There are many ways that you could organize your data into a data frame format. For example, the following data frame:
+
+```{r, echo = FALSE}
+set.seed(123)
+wide = tibble(
+  "country" = c("A", "B", "C"),
+  "2015" = runif(3, 0, 1) %>% round(3), 
+  "2016" = runif(3, 0.2, 1.2) %>% round(3),
+  "2017" = runif(3, 0.5, 1.5) %>% round(3)
+)
+
+wide
+```
+
+contains the same information as this other data frame:
+
+```{r, echo = FALSE}
+set.seed(123)
+pivot_longer(wide, names_to = "year", -"country")
+```
+
+In these two data frames, the same information is organized in a different way. 
+The former data frame is **wide**: a single variable (year) takes up many columns. 
+In contrast, the latter data frame is **long**: each column represents one a variable.
+
+All packages in the tidyverse work better with long data (or, as it is also known in the context of the tidyverse, "tidy" data). A data frame is tidy when:
+
+* Each variable is its own column
+* Each row is one observation, or case
+
+Run the code below to take a look at our data frame `dat`:
+
+```{r, long_or_wide, exercise = TRUE, exercise.setup = "setup_dat"}
+head(dat)
+```
+
+```{r long_or_wide_question, echo = FALSE}
+question("Is `dat` in long or wide format?",
+  answer("Long"),
+  answer("Wide", correct = TRUE)
+)
+```
+
+The data frame `dat` would be long if each measurement were its own row. As it is, many different chemical concentrations appear in each row.
+
+We can turn data from wide to long, and vice versa, by "pivoting". To turn `dat` into a longer data frame, we use `pivot_longer`, a function from the tidyverse package tidyr. This function takes the following arguments:
+
+* The data frame to be pivoted;
+* A vector containing the columns that we want to combine into a single, longer column **or** the columns that we do *not* want to combine (indicated by a minus sign);
+* `names_to`: The name of the column that is created from the data stored in the current column names;
+* `values_to`: The name of the column to create from the data stored in cell values.
+
+Here is `pivot_longer` in action:
+
+```{r, pivot_longer, exercise = TRUE, exercise.setup = "setup_dat"}
+long_dat <- dat %>% 
+  pivot_longer(-c(Cruise, Date, Depth), 
+               names_to = "Chemical", 
+               values_to = "Concentration")
+long_dat
+```
+
+```{r setup_long_dat, include = FALSE}
+oxygen <- geochemicals$Mean_O2
+not_na <- !is.na(oxygen)
+oxygen <- oxygen[not_na]
+high_O2 <- oxygen > 400
+dat <- select(geochemicals, Cruise, Date, Depth, starts_with("Mean_"))
+long_dat <- dat %>% 
+  pivot_longer(-c(Cruise, Date, Depth), 
+               names_to = "Chemical", 
+               values_to = "Concentration")
+```
+
+We can undo this operation with the opposite function, `pivot_wider`:
+
+```{r, pivot_wider, exercise = TRUE, exercise.setup = "setup_long_dat"}
+long_dat %>% 
+  pivot_wider(names_from = "Chemical", 
+              values_from = "Concentration")
+```
+
+
