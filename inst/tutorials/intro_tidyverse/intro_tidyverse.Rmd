@@ -555,4 +555,37 @@ dat %>%
 ```
 
 
+### Summarise
 
+`summarise` (or `summarize`) is handy when we want to calculate summaries for
+groups of observations. This is done by first applying the `group_by` verb
+and then feeding it into `summarise`. For example, we can calculate the mean,
+standard deviation, and sample size of oxygen concentrations by depth as follows: 
+
+```{r echo = TRUE}
+geochemicals %>%
+  group_by(Depth) %>%
+  summarise(O2_mean = mean(Mean_O2, na.rm = TRUE),
+            O2_sd = sd(Mean_O2, na.rm = TRUE),
+            nr_observations = n())
+```
+
+In the chain above, the function `n()` returns the number of rows and the argument `na.rm = TRUE` inside functions like `mean()` and `sd()` ensures that `NA` values are ignored when calculating those summary statistics.
+
+#### Exercise: Summarise
+
+In the box below, start with the data frame `dat` and, for each value of `Depth`, calculate the median, interquartile range, and sample size of the `Mean_CH4` column. (The interquartile range can be calculated with the function `IQR`.)
+
+```{r exercise_summarise, exercise = TRUE, exercise.setup = "setup_dat"}
+dat %>%
+  <group here> %>% 
+  <summarise here>
+```
+
+```{r exercise_summarise-solution}
+dat %>% 
+  group_by(Depth) %>%
+  summarise(median_CH4 = median(Mean_CH4, na.rm = TRUE), 
+            IQR_CH4 = IQR(Mean_CH4, na.rm = TRUE),
+            sample_size = n())
+```
