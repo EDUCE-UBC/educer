@@ -674,4 +674,187 @@ long_dat %>%
               values_from = "Concentration")
 ```
 
+## Graphics with ggplot2
 
+ggplot2 is an extremely popular tidyverse package that functions as an alternative to base R plotting.
+The reason why ggplot2 is such a popular tool for data visualization is that all ggplot2 graphics use the same set of logical principles.
+These principles are called the _Grammar of Graphics_, after a 1999 book by Leland Wilkinson.
+
+Learning the grammar of graphics may appear challenging at first, and you may be tempted to resort instead to base R's one-line plotting functions.
+However, the simplicity of base R graphics may be deceitful: while base R makes it easy to plot a scatter plot or histogram, it is hard to scale it up to more complex graphics.
+Each plot type has its names, conventions, data types, and syntax.
+In contrast, ggplot2 graphics take more lines to write, but they all use the same internal logic based on the grammar of graphics.
+
+There is a lot to learn about ggplot2, and this tutorial will not cover all of it.
+If you want to learn more, be sure to read chapters 3 and 28 of Hadley Wickham's book [R for Data Science](https://r4ds.had.co.nz/). For more in-depth information, check out Hadley Wickham's book [ggplot2: Elegant Graphics for Data Analysis](https://ggplot2-book.org/). For a collection of recipes to solve common graphics problems, read Winson Chang's [The R Graphics Cookbook](https://r-graphics.org/). All of these books are available online for free.
+
+### The Grammar of Graphics in ggplot2
+
+The fundamental idea behind the grammar of graphics is that a graphic consists of some *geometric objects* (e.g., points, lines, bars...) whose *aesthetic attributes* (e.g., size, shape, colour, axes...) encode *data*.
+
+To build a ggplot, you combine different elements (called "layers"), like building blocks. Here are some of ggplot2's building blocks:
+
+* **data:** a data frame where each *variable* is one column 
+* **aesthetics:** map variables to visual attributes (e.g., position, color...)
+* **geoms:** geometric objects that represent data (e.g., points, bars...)
+* **stats:** statistical transformations of data (e.g., binning, averaging, smoothing...)
+* **scales:** control *how* to map a variable to an aesthetic, e.g., what colors to use
+* **facets:** represent data as multiple plots, each for a subset of the data
+* **guides:** axes, legend, etc. reflect the variables and their values
+
+The idea is to independently specify and combine the blocks to create the plot
+you want. You need at least the first three building blocks (data, aesthetic map, and geometric objects) to create a plot.
+
+### Your first ggplot: scatterplot
+
+Let's examine the relationship between oxygen (`Mean_O2`) and carbon dioxide (`Mean_CO2`) in the `dat` data frame by creating a scatterplot.
+
+To do so, we need to provide our three basic building blocks:
+
+* The first argument of ggplot is the *data*. Hence, we can pipe our data into the ggplot function. 
+* The second argument is the *aesthetic map*. This argument is a function whose arguments specify the variables (columns) and how they map onto the plot. In this case, the first variable (oxygen) will map into the x-axis and the second variable (carbon dioxide) will map into the y-axis.
+* The final argument is the *geometric object* that represents our data. In this case, we will use `geom_point()` because data is represented as points.
+
+Run the code below to produce your first ggplot:
+
+```{r, scatterplot, exercise = TRUE,  exercise.setup = "setup_long_dat"}
+dat %>%
+  ggplot(aes(x = Mean_O2, y = Mean_CO2)) +
+  geom_point()
+```
+
+Note that above R code has a warning. Warnings do not always indicate that there is an error in your code. For example, this warning tells us that there is missing data in our data frame, which we already know. 
+
+As you can see, there is a negative correlation between oxygen and carbon dioxide. In the code box below, plot the relationship between oxygen, in the x-axis, and depth, in the y-axis (`Depth`):
+
+```{r, scatterplot-2, exercise = TRUE,  exercise.setup = "setup_long_dat"}
+<data frame> %>%
+  ggplot(aes(<aesthetic maps>)) +
+  <geometric object>
+```
+
+```{r, scatterplot-2-solution}
+dat %>%
+  ggplot(aes(x = Mean_O2, y = Depth)) +
+  geom_point()
+```
+
+What if we want to include all three variables (`Mean_O2`, `Mean_CO2`, and `Depth`) in the same plot? We ran out of axes after `x` and `y`, but we can use other aesthetic mappings to represent further variables. For instance, we can use the points' colour to represent depth. Run the code below and examine the output:
+
+```{r, scatterplot-color, exercise = TRUE,  exercise.setup = "setup_long_dat"}
+dat %>%
+  ggplot(aes(x = Mean_O2, y = Mean_CO2, colour = Depth)) +
+  geom_point()
+```
+
+(The `aes()` function accepts both `color` and `colour` as correct argument names.)
+
+As an alternative to point color, we can also map a continuous variable by using differently sized points. Modify the box below so as to use the `size` aesthetic instead of the `colour` aesthetic:
+
+```{r, scatterplot-color-2, exercise = TRUE,  exercise.setup = "setup_long_dat"}
+dat %>%
+  ggplot(aes(x = Mean_O2, y = Mean_CO2, colour = Depth)) +
+  geom_point()
+```
+
+```{r, scatterplot-color-2-solution}
+dat %>%
+  ggplot(aes(x = Mean_O2, y = Mean_CO2, size = Depth)) +
+  geom_point()
+```
+
+We can also color points by a categorical variable. Recall our `long_dat` data frame:
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+dat <- select(geochemicals, Cruise, Date, Depth, starts_with("Mean_"))
+long_dat <- dat %>% 
+  pivot_longer(-c(Cruise, Date, Depth), 
+               names_to = "Chemical", 
+               values_to = "Concentration")
+long_dat
+```
+
+In the box below, `filter` this data frame so that it includes only oxygen and carbon dioxide. Then, plot the relationship between `Concentration` (in the x-axis) and `Depth` (in the y-axis), indicating the `Chemical` variable by point color:
+
+```{r, scatterplot-color-discrete, exercise = TRUE,  exercise.setup = "setup_long_dat"}
+<data frame> %>%
+  filter(<variable> %in% c("Mean_O2", "Mean_CO2")) %>% 
+  ggplot(aes(<aesthetic maps>)) +
+  <geometric object>
+```
+
+```{r, scatterplot-color-discrete-solution}
+long_dat %>%
+  filter(Chemical %in% c("Mean_O2", "Mean_CO2")) %>% 
+  ggplot(aes(x = Concentration, y = Depth, color = Chemical)) +
+  geom_point()
+```
+
+Another aesthetic mapping that is appropriate for categorical variables is point shape. In the box below, remake the above plot, but modify it so that `Chemical` is indicated by `shape` as well as `color`. Additionally, you can try to reverse the direction of the y-axis to obtain a depth profile (i.e., so that the top of the water column is at the top of the plot) by adding a further layer: `scale_y_reverse()`.
+
+```{r, scatterplot-shape-reverse, exercise = TRUE,  exercise.setup = "setup_long_dat"}
+<data frame> %>%
+  filter(<variable> %in% c("Mean_O2", "Mean_CO2")) %>% 
+  ggplot(aes(<aesthetic maps>)) +
+  <geometric object> +
+  <other layers>
+```
+
+```{r, scatterplot-shape-reverse-solution}
+long_dat %>%
+  filter(Chemical %in% c("Mean_O2", "Mean_CO2")) %>% 
+  ggplot(aes(x = Concentration, y = Depth, color = Chemical, shape = Chemical)) +
+  geom_point() +
+  scale_y_reverse()
+```
+
+### Line plot
+`geom_line()` connects observations in the order that they appear in the data. 
+It is especially useful when plotting time series. 
+The code in the box below combines the point
+and line geoms to plot a time series of oxygen at a depth of 200 meters:
+
+```{r lineplot, exercise = TRUE,  exercise.setup = "setup_long_dat"}
+long_dat %>%
+  filter(Depth == 200 & Chemical == "Mean_O2" & !is.na(Concentration)) %>% 
+  ggplot(aes(x = Date, y = Concentration)) +
+  geom_point()  +
+  geom_line()
+```
+In the box below (using the code above as a starting point) create a similar plot showing two lines (distinguished by color): one for `Mean_O2` and another for `Mean_CO2`. Use the Hint button if you need help. 
+
+```{r lineplot-2, exercise = TRUE,  exercise.setup = "setup_long_dat"}
+<data frame> %>%
+  <filter data frame> %>% 
+  ggplot(aes(<aesthetic maps>)) +
+  <geoms>
+```
+
+```{r lineplot-2-hint-1}
+long_dat %>%
+  filter(Depth == 200 & Chemical %in% c(<chemicals of interest>) & !is.na(Concentration)) %>% 
+  ggplot(aes(<aesthetic maps>)) +
+  <geoms>
+```
+
+```{r lineplot-2-hint-2}
+long_dat %>%
+  filter(Depth == 200 & Chemical %in% c("Mean_O2", "Mean_CO2") & !is.na(Concentration)) %>% 
+  ggplot(aes(<aesthetic maps>)) +
+  <geoms>
+```
+
+```{r lineplot-2-hint-3}
+long_dat %>%
+  filter(Depth == 200 & Chemical %in% c("Mean_O2", "Mean_CO2") & !is.na(Concentration)) %>% 
+  ggplot(aes(x = Date, y = Concentration, color = Chemical)) +
+  <geoms>
+```
+
+```{r lineplot-2-hint-4}
+long_dat %>%
+  filter(Depth == 200 & Chemical %in% c("Mean_O2", "Mean_CO2") & !is.na(Concentration)) %>% 
+  ggplot(aes(x = Date, y = Concentration, color = Chemical)) +
+  geom_point() +
+  geom_line()
+```
