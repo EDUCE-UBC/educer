@@ -647,7 +647,7 @@ We can turn data from wide to long, and vice versa, by "pivoting". To turn `dat`
 Here is `pivot_longer` in action:
 
 ```{r, pivot_longer, exercise = TRUE, exercise.setup = "setup_dat"}
-long_dat <- dat %>% 
+long_dat  <- dat %>% 
   pivot_longer(-c(Cruise, Date, Depth), 
                names_to = "Chemical", 
                values_to = "Concentration")
@@ -681,7 +681,7 @@ The reason why ggplot2 is such a popular tool for data visualization is that all
 These principles are called the _Grammar of Graphics_, after a 1999 book by Leland Wilkinson.
 
 Learning the grammar of graphics may appear challenging at first, and you may be tempted to resort instead to base R's one-line plotting functions.
-However, the simplicity of base R graphics may be deceitful: while base R makes it easy to plot a scatter plot or histogram, it is hard to scale it up to more complex graphics.
+However, the simplicity of base R graphics may be deceitful: while base R makes it easy to plot a scatterplot or histogram, it is hard to scale it up to more complex graphics.
 Each plot type has its names, conventions, data types, and syntax.
 In contrast, ggplot2 graphics take more lines to write, but they all use the same internal logic based on the grammar of graphics.
 
@@ -690,7 +690,7 @@ If you want to learn more, be sure to read chapters 3 and 28 of Hadley Wickham's
 
 ### The Grammar of Graphics in ggplot2
 
-The fundamental idea behind the grammar of graphics is that a graphic consists of some *geometric objects* (e.g., points, lines, bars...) whose *aesthetic attributes* (e.g., size, shape, colour, axes...) encode *data*.
+The fundamental idea behind the grammar of graphics is that a graphic consists of some *geometric objects* (e.g., points, lines, bars...) whose *aesthetic attributes* (e.g., size, shape, colour, position along the x and y axes...) encode *data*.
 
 To build a ggplot, you combine different elements (called "layers"), like building blocks. The three mandatory building blocks of a ggplot are:
 
@@ -708,7 +708,7 @@ In addition, there are also many optional layers, such as:
 The idea is to independently specify and combine the layers to create the plot
 you want.
 
-### Your first ggplot: scatterplot
+### Your first ggplot
 
 Let's examine the relationship between oxygen (`Mean_O2`) and carbon dioxide (`Mean_CO2`) in the `dat` data frame by creating a scatterplot.
 
@@ -716,7 +716,7 @@ With ggplot2, you begin a plot with the function `ggplot()`, which creates a bla
 
 * The first argument of ggplot is the *dataset*. So we initiate our plot with `ggplot(dat)` or `dat %>% ggplot()`.
 * The second argument is the *aesthetic map*. This argument is a function, `aes()`, whose arguments specify the dataset's variables (columns) and how they map onto the plot. In this case, the first variable (oxygen) will map into the x-axis and the second variable (carbon dioxide) will map into the y-axis. Hence we write `dat %>% ggplot(aes(x = Mean_O2, y = Mean_CO2))`.
-* You complete the graphic by adding one or more layers representing *geometric objects*, or "geoms". These geometric objects represent our data. In this case, we will use `geom_point()` because data is represented as points. There are many geom functions for different types of data visualization, and we will learn some of them in this tutorial.
+* You complete the graphic by adding one or more layers representing *geometric objects*, or "geoms". These geometric objects represent our data. In this case, we will use `geom_point()` because the data are represented as points. There are many geom functions for different types of data visualization, and we will learn some of them in this tutorial.
 
 Let's put it all together! Run the code below to produce your first ggplot:
 
@@ -839,17 +839,18 @@ See how some points are overlapping each other, especially on the left? Making p
 
 Take a look at the two plots below. What is similar about them, and what is different?
 
-```{r echo=FALSE}
+```{r echo=FALSE, warning=FALSE}
 select(geochemicals, Cruise, Date, Depth, starts_with("Mean_")) %>% 
   ggplot(aes(x = Mean_O2, y = Depth)) +
   geom_point()
 ```
 
-```{r echo=FALSE}
+```{r echo=FALSE, warning=FALSE}
 select(geochemicals, Cruise, Date, Depth, starts_with("Mean_")) %>% 
   ggplot(aes(x = Mean_O2, y = Depth)) +
   geom_smooth()
 ```
+
 Both graphs are similar in that both describe the same variables (`Mean_O2` and `Depth`) of the same data frame (`dat`). Furthermore, they both use the same aesthetic mapping (namely, oxygen is mapped to the x axis and depth to the y axis). 
 
 But they are different because they use different geometric objects ("geoms") to represent those data. The first graph uses points (`geom_point()`) whereas the second one uses a smooth curve fitted to the data (`geom_smooth()`). To go from the first plot to the second, all you need to do is change the geom. The code below creates the scatterplot above. Change the geom to produce the second plot:
@@ -927,3 +928,81 @@ long_dat %>%
   geom_point() +
   geom_line()
 ```
+#### Histograms and distributions
+
+The histogram geom is useful for visualizing the distribution of a continuous
+variable. It accomplishes this by dividing the x-axis into bins and
+counting the number of observations in each bin. 
+Because it shows the distribution of a single variable, it only requires one aesthetic (`x`).
+
+Run the code below to examine the distribution of `Mean_O2` at depths less than 100. Then, modify it to compare the distribution of `Mean_O2` at depths higher than or equal to 100.
+
+```{r histogram, exercise = TRUE,  exercise.setup = "setup_long_dat"}
+dat %>%
+  filter(Depth < 100) %>% 
+  ggplot(aes(x = Mean_O2)) +
+  geom_histogram()
+```
+
+```{r histogram-solution}
+dat %>%
+  filter(Depth >= 100) %>% 
+  ggplot(aes(x = Mean_O2)) +
+  geom_histogram()
+```
+
+This makes sense as we know that oxygen is depleted as we go deeper in Saanich Inlet.
+
+By default, `geom_histogram()` divides the x axis evenly into 30 bins. You can divide the axis into a different number of bins by writing `geom_histogram(bins = <number of bins>)`. You may have to play a little with this number to get a good looking histogram. Try different numbers of bins in the plot above.
+
+As an alternative to histograms, distributions can also be shown using density plots: `geom_density()`. Complete the code below to contrast the density distribution of `Mean_O2` and `Mean_CO2`:
+
+```{r density, exercise = TRUE,  exercise.setup = "setup_long_dat"}
+long_dat %>%
+  filter(Chemical %in% <chemicals of interest>) %>% 
+  ggplot(aes(x = Concentration, colour = Chemical)) +
+  <geometric object>
+```
+
+```{r density-solution}
+long_dat %>%
+  filter(Chemical %in% c("Mean_O2", "Mean_CO2")) %>% 
+  ggplot(aes(x = Concentration, colour = Chemical)) +
+  geom_density()
+```
+
+A good alternative to using `colour = Chemical` (which colours the outlines of the density distribution) is to use `fill = Chemical` (which colours the inside of the distribution). Try it out in the code box above. Combine it with some transparency (e.g., `alpha = 0.5`) in the density geom. 
+
+### Boxplots 
+
+All the plots we encountered so far map continuous variables to the x axis.
+Boxplots (`geom_boxplot()`), in contrast, are ideal for categorical x axis. 
+Complete the code below to compare the `Concentration` of different chemicals in the `Chemical` column (namely: `Mean_O2`, and `Mean_CO2`).
+
+```{r boxplot, exercise = TRUE,  exercise.setup = "setup_long_dat"}
+long_dat %>%
+  filter(Chemicals %in% c(<chemicals of interest>))
+  ggplot(aes(<aesthetic mappings>)) +
+  <geometric object>
+```
+
+```{r boxplot-solution}
+long_dat %>%
+  filter(Chemical %in% c("Mean_O2", "Mean_CO2")) %>% 
+  ggplot(aes(x = Chemical, y = Concentration)) +
+  geom_boxplot()
+```
+
+We know from our previous plots that the oxygen concentration is higher at low depths, whereas the CO2 concentration is higher in deeper waters. We can show this by plotting a pair of boxplots for each chemical: one boxplot showing concentration below 100 meters, and the other showing concentration above 100 meters. Aesthetic mappings like `fill` or `colour` allow us to do this. Examine the code below and run it:
+
+```{r boxplot-paired, exercise = TRUE,  exercise.setup = "setup_long_dat"}
+long_dat %>%
+  filter(Chemical %in% c("Mean_O2", "Mean_CO2")) %>% 
+  ggplot(aes(x = Chemical, y = Concentration, fill = Depth < 100)) +
+  geom_boxplot()
+```
+
+Note that `Depth < 100` is not a column of the data frame, but we can still use it as the aesthetic `fill` argument. Similarly we could also use something like `sqrt(Concentration)` as the aesthetic `y` argument (try it out!). We can use any transformation of an existing column as an aesthetic.
+
+An alternative to the boxplot is the violin plot, which, rather than showing the quartiles of the data, shows its density distribution. Return to the code box above and replace `geom_boxplot()` with `geom_violin()` to see an example.
+
