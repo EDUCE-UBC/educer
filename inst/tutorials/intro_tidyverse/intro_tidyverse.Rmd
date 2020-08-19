@@ -853,7 +853,7 @@ select(geochemicals, Cruise, Date, Depth, starts_with("Mean_")) %>%
 
 Both graphs are similar in that both describe the same variables (`Mean_O2` and `Depth`) of the same data frame (`dat`). Furthermore, they both use the same aesthetic mapping (namely, oxygen is mapped to the x axis and depth to the y axis). 
 
-But they are different because they use different geometric objects ("geoms") to represent those data. The first graph uses points (`geom_point()`) whereas the second one uses a smooth curve fitted to the data (`geom_smooth()`). To go from the first plot to the second, all you need to do is change the geom. The code below creates the scatterplot above. Change the geom to produce the second plot:
+But they are different because they use different geometric objects ("geoms") to represent those data. The first graph uses points (`geom_point()`) whereas the second one uses a smooth curve (with confidence bands) fitted to the data (`geom_smooth()`). To go from the first plot to the second, all you need to do is change the geom. The code below creates the scatterplot above. Change the geom to produce the second plot:
 
 ```{r, scatterplot-geom, exercise = TRUE,  exercise.setup = "setup_long_dat"}
 dat %>%
@@ -875,7 +875,7 @@ dat %>%
   geom_point() +
   geom_smooth()
 ```
-Note: `geom_smooth()` is a convenient and versatile geom. You can use it to quickly plot linear regression models by calling `geom_smooth(method = "lm")`. Try it out in the code box above!
+Note: `geom_smooth()` is a convenient and versatile geom. You can use it to quickly plot linear regression models with confidence bands by calling `geom_smooth(method = "lm")`. Try it out in the code box above!
 
 #### Line plots
 
@@ -973,7 +973,7 @@ long_dat %>%
 
 A good alternative to using `colour = Chemical` (which colours the outlines of the density distribution) is to use `fill = Chemical` (which colours the inside of the distribution). Try it out in the code box above. Combine it with some transparency (e.g., `alpha = 0.5`) in the density geom. 
 
-### Boxplots 
+#### Boxplots and violin plots
 
 All the plots we encountered so far map continuous variables to the x axis.
 Boxplots (`geom_boxplot()`), in contrast, are ideal for categorical x axis. 
@@ -1005,4 +1005,186 @@ long_dat %>%
 Note that `Depth < 100` is not a column of the data frame, but we can still use it as the aesthetic `fill` argument. Similarly we could also use something like `sqrt(Concentration)` as the aesthetic `y` argument (try it out!). We can use any transformation of an existing column as an aesthetic.
 
 An alternative to the boxplot is the violin plot, which, rather than showing the quartiles of the data, shows its density distribution. Return to the code box above and replace `geom_boxplot()` with `geom_violin()` to see an example.
+
+### Facets
+
+We learned that one way to add additional variables is with aesthetics. Another way is to split the graphic into panels, or "facets": one facet for each level of a categorical variable. To facet your plot by a single variable, use `facet_wrap()`.
+
+Run the code in the box below to recall our depth profile plot (for simplicity, we filtered the `dat`  to contain only data from Cruises 10 through 13). Now, imagine that we wanted to represent (in addition to O2 and CO2) the concentrations of N2O and NH4 as well. If we put all of that information into a single plot, it would become very crowded (you can try it out yourself). Instead of using the `color` aesthetic to map `Chemical`, we can add the layer `facet_wrap(~ Chemical)` to separate the single depth profile into four depth profiles -- one for each chemical. Modify the code below to achieve this: 
+
+```{r, scatterplot-facets, exercise = TRUE,  exercise.setup = "setup_long_dat"}
+long_dat %>%
+  filter(Cruise %in% 10:13, 
+         Chemical %in% c("Mean_O2", "Mean_CO2")) %>% 
+  ggplot(aes(x = Concentration, y = Depth, color = Chemical)) +
+  geom_point() +
+  scale_y_reverse()
+```
+
+```{r, scatterplot-facets-solution}
+long_dat %>%
+  filter(Cruise %in% 10:13,
+         Chemical %in% c("Mean_O2", "Mean_CO2", "Mean_N2O", "Mean_NH4")) %>% 
+  ggplot(aes(x = Concentration, y = Depth)) +
+  geom_point() +
+  scale_y_reverse() +
+  facet_wrap(~ Chemical)
+```
+
+You may be wondering what is going on with the tilde `~` in front of the variable. That is because the argument of `facet_wrap()` is an R data structure called "formula". In R, formulas are indicated with a tilde. This notation appears confusing until you realize that formulas can take two variables, one on each side of the tilde. 
+
+To facet your plot on the combination of two variables, add the layer `facet_grid()` instead of `facet_wrap()`. The argument should also be a formula, but this time the formula should contain two variable names separated by `~`. 
+
+Modify the code below to facet the plot by both `Cruise` and `Chemical`.
+
+```{r, scatterplot-facet-grid, exercise = TRUE,  exercise.setup = "setup_long_dat"}
+long_dat %>%
+  filter(Cruise %in% 10:13, 
+         Chemical %in% c("Mean_O2", "Mean_CO2")) %>% 
+  ggplot(aes(x = Concentration, y = Depth)) +
+  geom_point() +
+  scale_y_reverse() +
+  <facet by Cruise and Chemical>
+```
+
+```{r, scatterplot-facet-grid-solution}
+long_dat %>%
+  filter(Cruise %in% 10:13, 
+         Chemical %in% c("Mean_O2", "Mean_CO2")) %>% 
+  ggplot(aes(x = Concentration, y = Depth)) +
+  geom_point() +
+  scale_y_reverse() +
+  facet_grid(Cruise ~ Chemical)
+```
+
+### Fine-tuning your plot
+
+So far, we have produced plots for data *exploration*. We didn't care too much about how they looked. But when we create plots for *communication* (i.e., for slideshows, posters, or scientific articles) we need to make sure that they also look good. 
+
+In this section, we will work to create a beautiful multi-panel figure. Each panel will be based on a plot that we produced so far. Panel A will show the negative correlation between O2 and CO2 concentration, and panel B will show paired boxplots for CO2 and O2 above and below 100 meters. 
+
+#### Labels
+
+We can change the labels of the previous plot with the `labs` function, specifying exactly what we want as the title, x-, and y-axis labels:
+
+```{r, scatterplot-labels, exercise = TRUE,  exercise.setup = "setup_long_dat"}
+dat %>%
+  ggplot(aes(x = Mean_O2, y = Mean_CO2)) +
+  geom_point(alpha = 0.7) +
+  geom_smooth(method = "lm") +
+  labs(x = "Oxygen concentration", y = "Carbon dioxide concentration",
+       title = "Oxygen and carbon dioxide in the Saanich Inlet")
+```
+
+The code below produces our box plot. Its x and y labels already look good, but let's add a title ("Effect of depth"). We can also modify the label of the `fill` aesthetic (currently titled "`Depth < 100`") using the same function. Let's call it "Depth" instead.
+
+```{r boxplot-labels, exercise = TRUE,  exercise.setup = "setup_long_dat"}
+long_dat %>%
+  filter(Chemical %in% c("Mean_O2", "Mean_CO2")) %>% 
+  ggplot(aes(x = Chemical, y = Concentration, fill = Depth < 100)) +
+  geom_boxplot() +
+  labs(<labels>)
+```
+
+```{r boxplot-labels-solution}
+long_dat %>%
+  filter(Chemical %in% c("Mean_O2", "Mean_CO2")) %>% 
+  ggplot(aes(x = Chemical, y = Concentration, fill = Depth < 100)) +
+  geom_boxplot() +
+  labs(title = "Effect of depth", fill = "Depth")
+```
+
+#### Scales (axes and legends)
+
+The next thing to change are the scales, particularly in the boxplot panel. Both the fill scale labels (`FALSE`, `TRUE`) and the x scale labels (`Mean_CO2`, `Mean_O2`) need to be changed. We do this using scale layers. We already encountered a scale layer (`scale_y_reverse()`). 
+
+We will use two scale layers: `scale_x_discrete()` and `scale_fill_discrete()`. Note that scale layers always start with the prefix `scale_`, followed by the scale being modified (`x`, `y`, `fill`, `colour`, `shape`, `size`, etc). In this case, we are modifying scales for categorical variables, hence the suffix `_discrete()`.
+
+The code below shows how to change the scale labels in our figure. Run it and examine the output.
+
+```{r boxplot-labels-scale, exercise = TRUE,  exercise.setup = "setup_long_dat"}
+long_dat %>%
+  filter(Chemical %in% c("Mean_O2", "Mean_CO2")) %>% 
+  ggplot(aes(x = Chemical, y = Concentration, fill = Depth < 100)) +
+  geom_boxplot() +
+  labs(title = "Effect of depth", fill = "Depth") +
+  scale_fill_discrete(labels = c("> 100 m", "< 100 m")) +
+  scale_x_discrete(labels = c("Carbon dioxide", "Oxygen"))
+```
+
+#### Themes
+
+By default, ggplot uses a characteristic gray colour scheme. 
+We can chose to use a "classic" black and white theme and add it to a ggplot object. 
+There are also many [pre-made themes](http://ggplot2.tidyverse.org/reference/ggtheme.html), and with some experience
+you can also learn to create your own themes.
+
+```{r boxplot-theme, exercise = TRUE,  exercise.setup = "setup_long_dat"}
+long_dat %>%
+  filter(Chemical %in% c("Mean_O2", "Mean_CO2")) %>% 
+  ggplot(aes(x = Chemical, y = Concentration, fill = Depth < 100)) +
+  geom_boxplot() +
+  labs(title = "Effect of depth", fill = "Depth") +
+  scale_fill_discrete(labels = c("> 100 m", "< 100 m")) +
+  scale_x_discrete(labels = c("Carbon dioxide", "Oxygen")) +
+  theme_classic()
+```
+
+Modify the scatterplot code below to use the classic theme:
+
+```{r, scatterplot-theme, exercise = TRUE,  exercise.setup = "setup_long_dat"}
+dat %>%
+  ggplot(aes(x = Mean_O2, y = Mean_CO2)) +
+  geom_point(alpha = 0.7) +
+  geom_smooth(method = "lm") +
+  labs(x = "Oxygen concentration", y = "Carbon dioxide concentration",
+       title = "Oxygen and carbon dioxide in the Saanich Inlet") +
+  <theme>
+```
+
+```{r, scatterplot-theme-solution}
+dat %>%
+  ggplot(aes(x = Mean_O2, y = Mean_CO2)) +
+  geom_point(alpha = 0.7) +
+  geom_smooth(method = "lm") +
+  labs(x = "Oxygen concentration", y = "Carbon dioxide concentration",
+       title = "Oxygen and carbon dioxide in the Saanich Inlet") +
+  theme_classic()
+```
+
+#### Multi-panel figures
+
+To create multi-panel figures, we will use the package cowplot. First, we assign each plot to a variable. For example, in the code below we assigned the plots to variables named `p1` and `p2`. Then, we use the cowplot function `plot_grid()` to create the multipanel figure. We make use of the `labels` argument to add tags to our panels, and the `rel_widths` argument to specify the relative width of each panel.
+
+```{r, multipanel, exercise = TRUE,  exercise.setup = "setup_long_dat"}
+p1 <- dat %>%
+  ggplot(aes(x = Mean_O2, y = Mean_CO2)) +
+  geom_point(alpha = 0.7) +
+  geom_smooth(method = "lm") +
+  labs(x = "Oxygen concentration", y = "Carbon dioxide concentration",
+       title = "O2 and CO2") +
+  theme_classic()
+
+p2 <- long_dat %>%
+  filter(Chemical %in% c("Mean_O2", "Mean_CO2")) %>% 
+  ggplot(aes(x = Chemical, y = Concentration, fill = Depth < 100)) +
+  geom_boxplot() +
+  labs(title = "Effect of depth", fill = "Depth") +
+  scale_fill_discrete(labels = c("> 100 m", "< 100 m")) +
+  scale_x_discrete(labels = c("Carbon dioxide", "Oxygen")) +
+  theme_classic()
+
+plot_grid(p1, p2, labels = c("A", "B"), rel_widths = c(1, 1.5))
+```
+
+#### Saving a ggplot
+
+Using `ggsave()` you can save your ggplots to many different file types just by
+changing the extension in the file name. For instance, to save the most recently produced ggplot as a pdf, all you need to do is run the following code:
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+ggsave("saanich.pdf", width = 10, height = 6)
+```
+
+It's a good idea to iteratively adjust the width and height of your pdf file until it looks just right.
 
