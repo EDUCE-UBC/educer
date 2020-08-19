@@ -692,30 +692,33 @@ If you want to learn more, be sure to read chapters 3 and 28 of Hadley Wickham's
 
 The fundamental idea behind the grammar of graphics is that a graphic consists of some *geometric objects* (e.g., points, lines, bars...) whose *aesthetic attributes* (e.g., size, shape, colour, axes...) encode *data*.
 
-To build a ggplot, you combine different elements (called "layers"), like building blocks. Here are some of ggplot2's building blocks:
+To build a ggplot, you combine different elements (called "layers"), like building blocks. The three mandatory building blocks of a ggplot are:
 
 * **data:** a data frame where each *variable* is one column 
 * **aesthetics:** map variables to visual attributes (e.g., position, color...)
-* **geoms:** geometric objects that represent data (e.g., points, bars...)
+* **geoms:** geometric objects that represent data (e.g., points, bars, lines...)
+
+In addition, there are also many optional layers, such as:
+
 * **stats:** statistical transformations of data (e.g., binning, averaging, smoothing...)
 * **scales:** control *how* to map a variable to an aesthetic, e.g., what colors to use
 * **facets:** represent data as multiple plots, each for a subset of the data
 * **guides:** axes, legend, etc. reflect the variables and their values
 
-The idea is to independently specify and combine the blocks to create the plot
-you want. You need at least the first three building blocks (data, aesthetic map, and geometric objects) to create a plot.
+The idea is to independently specify and combine the layers to create the plot
+you want.
 
 ### Your first ggplot: scatterplot
 
 Let's examine the relationship between oxygen (`Mean_O2`) and carbon dioxide (`Mean_CO2`) in the `dat` data frame by creating a scatterplot.
 
-To do so, we need to provide our three basic building blocks:
+With ggplot2, you begin a plot with the function `ggplot()`, which creates a blank canvas that you can add layers to. Remember that to create a plot, you need at least three building blocks:
 
-* The first argument of ggplot is the *data*. Hence, we can pipe our data into the ggplot function. 
-* The second argument is the *aesthetic map*. This argument is a function whose arguments specify the variables (columns) and how they map onto the plot. In this case, the first variable (oxygen) will map into the x-axis and the second variable (carbon dioxide) will map into the y-axis.
-* The final argument is the *geometric object* that represents our data. In this case, we will use `geom_point()` because data is represented as points.
+* The first argument of ggplot is the *dataset*. So we initiate our plot with `ggplot(dat)` or `dat %>% ggplot()`.
+* The second argument is the *aesthetic map*. This argument is a function, `aes()`, whose arguments specify the dataset's variables (columns) and how they map onto the plot. In this case, the first variable (oxygen) will map into the x-axis and the second variable (carbon dioxide) will map into the y-axis. Hence we write `dat %>% ggplot(aes(x = Mean_O2, y = Mean_CO2))`.
+* You complete the graphic by adding one or more layers representing *geometric objects*, or "geoms". These geometric objects represent our data. In this case, we will use `geom_point()` because data is represented as points. There are many geom functions for different types of data visualization, and we will learn some of them in this tutorial.
 
-Run the code below to produce your first ggplot:
+Let's put it all together! Run the code below to produce your first ggplot:
 
 ```{r, scatterplot, exercise = TRUE,  exercise.setup = "setup_long_dat"}
 dat %>%
@@ -739,7 +742,11 @@ dat %>%
   geom_point()
 ```
 
-What if we want to include all three variables (`Mean_O2`, `Mean_CO2`, and `Depth`) in the same plot? We ran out of axes after `x` and `y`, but we can use other aesthetic mappings to represent further variables. For instance, we can use the points' colour to represent depth. Run the code below and examine the output:
+### Aesthetics
+
+What if we want to include all three variables (`Mean_O2`, `Mean_CO2`, and `Depth`) in the same two-dimensional plot? We ran out of axes after `x` and `y`, but we can use other aesthetic mappings to represent further variables. Aesthetic mappings include things like the `size`, the `shape`, or the `colour` of your points. 
+
+For instance, we can use the points' colour to represent depth. Run the code below and examine the output:
 
 ```{r, scatterplot-color, exercise = TRUE,  exercise.setup = "setup_long_dat"}
 dat %>%
@@ -749,7 +756,7 @@ dat %>%
 
 (The `aes()` function accepts both `color` and `colour` as correct argument names.)
 
-As an alternative to point color, we can also map a continuous variable by using differently sized points. Modify the box below so as to use the `size` aesthetic instead of the `colour` aesthetic:
+As an alternative to point colour, we can also map a continuous variable by using differently sized points. Modify the box below so as to use the `size` aesthetic instead of the `colour` aesthetic:
 
 ```{r, scatterplot-color-2, exercise = TRUE,  exercise.setup = "setup_long_dat"}
 dat %>%
@@ -763,7 +770,7 @@ dat %>%
   geom_point()
 ```
 
-We can also color points by a categorical variable. Recall our `long_dat` data frame:
+We can also colour points by a categorical variable. Recall our `long_dat` data frame:
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 dat <- select(geochemicals, Cruise, Date, Depth, starts_with("Mean_"))
@@ -790,7 +797,7 @@ long_dat %>%
   geom_point()
 ```
 
-Another aesthetic mapping that is appropriate for categorical variables is point shape. In the box below, remake the above plot, but modify it so that `Chemical` is indicated by `shape` as well as `color`. Additionally, you can try to reverse the direction of the y-axis to obtain a depth profile (i.e., so that the top of the water column is at the top of the plot) by adding a further layer: `scale_y_reverse()`.
+Another aesthetic mapping that is appropriate for categorical variables is point shape. In the box below, remake the above plot, but modify it so that `Chemical` is indicated by `shape` as well as `color`. Additionally, try to reverse the direction of the y-axis to obtain a depth profile (i.e., so that the top of the water column is at the top of the plot) by adding a further layer: `scale_y_reverse()`.
 
 ```{r, scatterplot-shape-reverse, exercise = TRUE,  exercise.setup = "setup_long_dat"}
 <data frame> %>%
@@ -808,7 +815,69 @@ long_dat %>%
   scale_y_reverse()
 ```
 
-### Line plot
+#### Scales and aesthetics
+
+The layer we just added, `scale_y_reverse()`, is not a geom layer but rather an example of a scale layer. The word "scale" here refers to the key that explains the mapping between a variable and the geometric object. A straightforward example of a scale is the color legend: it explains the mapping between point color and the values of the `Chemicals` variable. The axis line, with its tick marks and labels, is also a scale: it explains the mapping between point location and the value of the `Concentration` variable.
+
+Scale layers modify the rules of this mapping between geometry and variable (`scale_y_reverse()` reverses the order of the mapping). There are many scale layers that help you achieve more control over your mappings.
+
+#### Decorative aesthetics
+
+You can also set the aesthetic properties of your geom manually. Sometimes, we want the aesthetic properties to serve a merely decorative purpose. For instance, maybe we want to remake our original scatterplot relating O2 to CO2 but color all points in red, and in a larger size. If we decide to do so, those aesthetic properties (`color` and `size`) will not represent any variables. Hence, they are not called inside the `aes()` function, but outside of it, as arguments to our geom layer. Study the code in the box below and run it:
+
+```{r, aes, exercise = TRUE,  exercise.setup = "setup_long_dat"}
+dat %>%
+  ggplot(aes(x = Mean_O2, y = Mean_CO2)) +
+  geom_point(color = "red", size = 3)
+```
+
+Note that, because size and color are not aesthetic mappings in the plot above, ggplot does not create any associated color or size scale. 
+
+See how some points are overlapping each other, especially on the left? Making points semi-transparent can help tell them apart. The aesthetic controlling transparency is called `alpha`, and it takes values ranging from zero (fully transparent) to one (fully opaque). Return to the previous box and add the argument `alpha = 0.5` to `geom_point()`. Run the code to see the result.
+
+### Geoms
+
+Take a look at the two plots below. What is similar about them, and what is different?
+
+```{r echo=FALSE}
+select(geochemicals, Cruise, Date, Depth, starts_with("Mean_")) %>% 
+  ggplot(aes(x = Mean_O2, y = Depth)) +
+  geom_point()
+```
+
+```{r echo=FALSE}
+select(geochemicals, Cruise, Date, Depth, starts_with("Mean_")) %>% 
+  ggplot(aes(x = Mean_O2, y = Depth)) +
+  geom_smooth()
+```
+Both graphs are similar in that both describe the same variables (`Mean_O2` and `Depth`) of the same data frame (`dat`). Furthermore, they both use the same aesthetic mapping (namely, oxygen is mapped to the x axis and depth to the y axis). 
+
+But they are different because they use different geometric objects ("geoms") to represent those data. The first graph uses points (`geom_point()`) whereas the second one uses a smooth curve fitted to the data (`geom_smooth()`). To go from the first plot to the second, all you need to do is change the geom. The code below creates the scatterplot above. Change the geom to produce the second plot:
+
+```{r, scatterplot-geom, exercise = TRUE,  exercise.setup = "setup_long_dat"}
+dat %>%
+  ggplot(aes(x = Mean_O2, y = Depth)) +
+  geom_point()
+```
+
+```{r, scatterplot-geom-solution}
+dat %>%
+  ggplot(aes(x = Mean_O2, y = Depth)) +
+  geom_smooth()
+```
+
+This is what the grammar of graphics is all about: a language to describe what is fundamentally similar and different about different plots. Note that there is no reason why you should restrict yourself to a single geom. The code below produces a scatterplot with a smoothed curve to help guide the eye:
+
+```{r, scatterplot-geom-2, exercise = TRUE,  exercise.setup = "setup_long_dat"}
+dat %>%
+  ggplot(aes(x = Mean_O2, y = Depth)) +
+  geom_point() +
+  geom_smooth()
+```
+Note: `geom_smooth()` is a convenient and versatile geom. You can use it to quickly plot linear regression models by calling `geom_smooth(method = "lm")`. Try it out in the code box above!
+
+#### Line plots
+
 `geom_line()` connects observations in the order that they appear in the data. 
 It is especially useful when plotting time series. 
 The code in the box below combines the point
