@@ -1098,9 +1098,9 @@ long_dat %>%
 
 The next thing to change are the scales, particularly in the boxplot panel. Both the fill scale labels (`FALSE`, `TRUE`) and the x scale labels (`Mean_CO2`, `Mean_O2`) need to be changed. We do this using scale layers. We already encountered a scale layer (`scale_y_reverse()`). 
 
-We will use two scale layers: `scale_x_discrete()` and `scale_fill_discrete()`. Note that scale layers always start with the prefix `scale_`, followed by the scale being modified (`x`, `y`, `fill`, `colour`, `shape`, `size`, etc). In this case, we are modifying scales for categorical variables, hence the suffix `_discrete()`.
+We will use two scale layers: `scale_x_discrete()` and `scale_fill_discrete()`. Note that scale layers always start with the prefix `scale_`, followed by the scale being modified (`x`, `y`, `fill`, `colour`, `shape`, `size`, etc). In this case, we are modifying scales for categorical variables, hence the suffix `_discrete()`. Analogous layers for continuous variables end in `_continuous()`.
 
-The code below shows how to change the scale labels in our figure. Run it and examine the output.
+The code below shows how to change the `fill` scale labels. Change the `x` scale labels to something like "Carbon dioxide" and "Oxygen":
 
 ```{r boxplot-labels-scale, exercise = TRUE,  exercise.setup = "setup_long_dat"}
 long_dat %>%
@@ -1109,7 +1109,17 @@ long_dat %>%
   geom_boxplot() +
   labs(title = "Effect of depth", fill = "Depth") +
   scale_fill_discrete(labels = c("> 100 m", "< 100 m")) +
-  scale_x_discrete(labels = c("Carbon dioxide", "Oxygen"))
+  <x axis scale layer>
+```
+
+```{r boxplot-labels-scale-solution}
+long_dat %>%
+  filter(Chemical %in% c("Mean_O2", "Mean_CO2")) %>% 
+  ggplot(aes(x = Chemical, y = Concentration, fill = Depth < 100)) +
+  geom_boxplot() +
+  labs(title = "Effect of depth", fill = "Depth") +
+  scale_fill_discrete(labels = c("> 100 m", "< 100 m")) +
+  scale_x_discrete(labels = c("Carbon dioxide", "Oxygen")) 
 ```
 
 #### Themes
@@ -1154,7 +1164,7 @@ dat %>%
 
 #### Multi-panel figures
 
-To create multi-panel figures, we will use the package cowplot. First, we assign each plot to a variable. For example, in the code below we assigned the plots to variables named `p1` and `p2`. Then, we use the cowplot function `plot_grid()` to create the multipanel figure. We make use of the `labels` argument to add tags to our panels, and the `rel_widths` argument to specify the relative width of each panel.
+To create multi-panel figures, we can use the package cowplot. First, we assign each plot to a variable. For example, in the code below we assigned the plots to variables named `p1` and `p2`. Then, we use the cowplot function `plot_grid()` to create the multipanel figure. We make use of the `labels` argument to add tags to our panels, and the `rel_widths` argument to specify the relative width of each panel.
 
 ```{r, multipanel, exercise = TRUE,  exercise.setup = "setup_long_dat"}
 p1 <- dat %>%
@@ -1188,3 +1198,18 @@ ggsave("saanich.pdf", width = 10, height = 6)
 
 It's a good idea to iteratively adjust the width and height of your pdf file until it looks just right.
 
+## Additional resources
+In this tutorial, we have gone over just some of the functions and graphics within the tidyverse. Below are some resources for further learning and practice!
+
+* [R cheatsheets](https://www.rstudio.com/resources/cheatsheets/) also available in RStudio under Help > Cheatsheets
+
+* [Introduction to dplyr](https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html)
+* [dplyr tutorial](https://rpubs.com/justmarkham/dplyr-tutorial)
+* [dplyr video tutorial](https://www.r-bloggers.com/hands-on-dplyr-tutorial-for-faster-data-manipulation-in-r/)
+* [More functions in dplyr and tidyr](https://rpubs.com/bradleyboehmke/data_wrangling)
+* [R for data science (online free book)](https://r4ds.had.co.nz/)
+
+* [ggplot tutorial 1](http://r-statistics.co/Complete-Ggplot2-Tutorial-Part1-With-R-Code.html)
+* [ggplot tutorial 2](https://rpubs.com/g_jw/ggplot2_tutorial)
+* [ggplot tutorial 3](http://tutorials.iq.harvard.edu/R/Rgraphics/Rgraphics.html#the_1_faq)
+* [ggplot2: Elegant Graphics for Data Analysis (online free book)](https://ggplot2-book.org/)
