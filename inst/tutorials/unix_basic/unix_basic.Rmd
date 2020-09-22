@@ -193,12 +193,14 @@ This is a text document with information on every possible modifier of the `pwd`
 
 Manuals are very comprehensive, large documents that make them often difficult to navigate. Here a few tips on how to use your <kbd>keyboard</kbd>:
 
-- **List** all keyboard shortcuts for <kbd>H</kbd>elp (including the examples below).
-- **Jump** to very beginning with <kbd>G</kbd> and very end with <kbd>Shift + G</kbd>.
-- **Scroll** with <kbd>&#8593;</kbd> and <kbd>&#8595;</kbd>. 
-- **Page** <kbd>F</kbd>orward and <kbd>B</kbd>ackward a screen at a time.
-- **Search** by first pressing <kbd>/</kbd>, then enter your search term followed by <kbd>Return</kbd>. Now you can cycle to the <kbd>N</kbd>ext instance or backwards with <kbd>Shift + N</kbd> (great to search for the effects of flags.).
-- **Exit the manual** with <kbd>q</kbd> (for "quit").
+| Action | <kbd>keyboard</kbd> | Description |
+|--:|---|-------------|
+| List shortcuts | <kbd>H</kbd>elp | For all keyboard shortcuts (including the examples below)|
+| Jump to<br> beginning<br> or end | <br> <kbd>G</kbd><br> <kbd>Shift + G</kbd>| |
+| Scroll up<br> down | <kbd>&#8593;</kbd> <br> <kbd>&#8595;</kbd> | |
+| Page | <kbd>F</kbd>orward <br> <kbd>B</kbd>ackward | One screen at a time |
+| Search | <kbd>/</kbd> <br> <kbd>Return</kbd> <br> <kbd>N</kbd>ext <br> <kbd>Shift + N</kbd> | Enter search mode then enter your search term (great for searching flags)<br> Execute search<br> Go to next instance<br> Go to previous instance |
+| Exit manual | <kbd>Q</kbd>uit | |
 
 
 
