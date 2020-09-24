@@ -1,0 +1,118 @@
+---
+title: "Introduction to QIIME2 - Moving Pictures tutorial"
+author: "Dr. Stephan Koenig"
+date: "version `r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: yes
+    toc_float:
+      collapsed: no
+---
+
+```{r echo = FALSE, include = FALSE}
+#Reset wd to home
+knitr::opts_knit$set(root.dir = '/Users/stephan', eval = FALSE)
+library(educer)
+# Helper function to set path to images to "/images" etc.
+setup_resources()
+```
+
+## Overview
+
+This tutorial covers the complete QIIME2 workflow for the "Moving Pictures" tutorial.
+
+## Importing and demultiplexing
+
+Open your terminal, connect to your server (`ssh root@<IP>`) and run the commands below.
+
+```{bash eval = FALSE}
+# Connected to the server
+# Activate tab completion for qiime
+source tab_qiime
+
+# Create a directory for your project and navigate to it
+mkdir /data/moving_pictures_tutorial
+cd /data/moving_pictures_tutorial
+
+# Import data while working directory is `/data/moving_pictures_tutorial`
+qiime tools import \
+  --type EMPSingleEndSequences \
+  --input-path /mnt/datasets/moving_pictures/emp-single-end-sequences \
+  --output-path emp-single-end-sequences.qza
+  
+# Look at artifact information
+qiime tools peek emp-single-end-sequences.qza
+
+# Demultiplexing
+qiime demux emp-single \
+  --i-seqs emp-single-end-sequences.qza \
+  --m-barcodes-file /mnt/datasets/moving_pictures/sample-metadata.tsv \
+  --m-barcodes-column barcode-sequence \
+  --o-per-sample-sequences demux.qza \
+  --o-error-correction-details demux-details.qza
+
+# Create visulatiozation of demultiplexed samples
+qiime demux summarize \
+  --i-data demux.qza \
+  --o-visualization demux.qzv
+```
+
+We need a web browser to look at a `.qzv` file. Unfortunately, our server cannot provide a web browser because it is "headless", i.e. it does not allow any graphical output other than printing to our terminal. To work around this limitation, we will copy any `.qzv` to our local machine and use its web browser to look at them.
+
+Open a **new** terminal window. You should have two terminal windows open now, the old one connected to the server, the new one connected to your local machine. In the terminal connected to your local machine, navigate to your home directory (`cd ~` or just `cd`).
+
+When copying a small single file, a straighforward command to copy files between local machine and a server is `scp` (for **s**ecure **c**o**p**y) following this structure:
+
+```{bash eval = FALSE}
+scp <source> <target>
+```
+
+In our case, the source (i.e. the file you want to copy) is on a remote machine and must be given as `<username>@<IP address>:<file path>`. The target is on our local machine and is given as `<file path>`. We will create a corresponding `moving_pictures_tutorial` directory inside the home directory on your local machine and move into it before issuing the `scp` command. The target is given as `.` which is short for the current working directory.
+
+```{bash eval = FALSE}
+# Make directory in home directory on local machine
+mkdir moving_picture_tutorial
+cd moving_picture_tutorial
+
+# Copy file
+scp root@<IP>:/data/moving_pictures_tutorial/demux.qzv . # Include period!!!
+```
+
+You can now open the current working directory in the file browser on your local machine by entering `open .` on macOS or `explorer.exe .` on WSL. You should now see the `demux.qzv` file in your files browser and can look at it using [QIIME2 view website](https://view.qiime2.org/).
+
+
+
+## Generating ASVs
+
+Switch back to the terminal window connected to the server. Continue with the analysis on the server and determine ASVs and their frequencies as well as number of reads per sample. Copy any `.qzv` files to your local machine to look at the visualization.
+
+```{bash eval = FALSE}
+# Determine ASVs with DADA2
+qiime dada2 denoise-single \
+  --i-demultiplexed-seqs demux.qza \
+  --p-trim-left 0 \
+  --p-trunc-len 120 \
+  --o-representative-sequences rep-seqs.qza \
+  --o-table table.qza \
+  --o-denoising-stats stats.qza
+  
+# Create visualization for DADA2 stats
+qiime metadata tabulate \
+  --m-input-file stats.qza \
+  --o-visualization stats.qzv
+
+# Visualize information on ASVs
+qiime feature-table summarize \
+  --i-table table.qza \
+  --o-visualization table.qzv \
+  --m-sample-metadata-file /mnt/datasets/moving_pictures/sample-metadata.tsv
+qiime feature-table tabulate-seqs \
+  --i-data rep-seqs.qza \
+  --o-visualization rep-seqs.qzv
+```
+
+
+
+## Additional resources
+
+[QIIME2 Moving Pictures tutorial](https://docs.qiime2.org/2020.8/tutorials/moving-pictures/)
