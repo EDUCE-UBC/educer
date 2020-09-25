@@ -56,22 +56,22 @@ To change the look of RStudio, you can go to Tools &rarr; Global Options &rarr; 
 
 ## RStudio Projects
 
-Projects are a great feature of RStudio. When you create a project, RStudio creates an ".Rproj" file that links all of your files and outputs to the project directory. When you import data from a file, R automatically looks for it in the project directory instead of you having to specify a full file path on your computer like "/Users/username/Desktop/". R also automatically saves any output to the project directory. Finally, projects allow you to save your R environment in ".RData" so that when you close RStudio and then re-open it, you can start right where you left off without re-importing any data or re-calculating any intermediate steps.
+Projects are a great feature of RStudio. When you create a project, RStudio creates an `.Rproj` file that links all of your files and outputs to the project directory. When you import data from a file, R automatically looks for it in the project directory instead of you having to specify a full file path on your computer (like `/Users/<username>/Desktop/`). R also automatically saves any output to the project directory. Finally, projects allow you to save your R environment in `.RData` so that when you close RStudio and then re-open it, you can start right where you left off without re-importing any data or re-calculating any intermediate steps.
 
-RStudio has a simple interface to create and switch between projects, accessed from the button in the top-right corner of the RStudio window. (Labelled "Project: (None)", initially.)
+RStudio has a simple interface to create and switch between projects, accessed from the button in the top-right corner of the RStudio window. (Labeled "Project: (None)", initially.)
 
 Let's create a project to work in for this tutorial. Start by clicking the "Project" button in the upper right or going to the "File" menu. Select "New Project", and the following will appear:
 
 ![](/images/create_project.png){width=75%}
 
 
-Choose "New Directory" followed by "New Project" and click on "Browse...". Navigate to your Desktop, and name the directory "\<course_name\> R"(replace \<course_name\> with the name of your class, e.g. "MICB301") for this project.
+Choose "New Directory" followed by "New Project" and click on "Browse...". Navigate to your Desktop, and name the directory `<course_name> R`(replace `<course_name>` with the name of your class, e.g. `MICB301`) for this project.
 
 After your project is created, navigate to its directory using your Finder/File explorer or the integrated Terminal in RStudio. You will see the ".RProj" file has been created.
 
 You can open this project in the future in one of three ways:
 
-- In your Finder/file browser, simply double-click on the ".RProj" file 
+- In your file browser (e.g. Finder or Explorer), simply double-click on the `.RProj` file 
 - In an open RStudio window, choose "File" &rarr; "Open Project"
 - Switch among projects by clicking on the R project symbol in the upper left
 corner of RStudio
@@ -153,23 +153,11 @@ In this tutorial, we will be using the "tidyverse" package. This package contain
 
 You should have already installed the "tidyverse" package using RStudio's graphical interface. Packages can also be installed by entering the function `install.packages()` in the console (to install a different package just replace "tidyverse" with the name of the desired package):
 
-**For R v3.4 or newer**
 ```{r eval = FALSE}
 install.packages("tidyverse")
 ```
 
-**For R v3.3 or older**  
-Unfortunately, tidyverse does not work on older versions of R. Instead, you will need to individually install each package within the tidyverse.
-```{r eval = FALSE}
-install.packages("tibble")
-install.packages("readr")
-install.packages("dplyr")
-install.packages("tidyr")
-install.packages("ggplot2")
-install.packages("stringr")
-install.packages("purrr")
-install.packages("forcats")
-```
+
 
 ### Loading packages
 
@@ -189,7 +177,7 @@ library(tidyverse)
 
 The data used throughout this module were collected as part of an on-going oceanographic time-series program in Saanich Inlet, a seasonally anoxic fjord on the East coast of Vancouver Island, British Columbia.
 
-The data that you will use in R are 16S amplicon profiles of microbial communities at several depths in Saanich Inlet from one time-point in this series (August 2012). These ~300 bp sequences were processed using [mothur](https://www.mothur.org/wiki/Main_Page) to yield 97% (approximately species-level) operational taxonomic units (OTUs). 
+The data that you will use in R are 16S rRNA amplicon profiles of microbial communities at several depths in Saanich Inlet from one time-point in this series (August 2012). These ~300 bp sequences were processed using [mothur](https://www.mothur.org/wiki/Main_Page) to yield 97% (approximately species-level) operational taxonomic units (OTUs). 
 
 `Saanich_OTU_metadata.csv` is a comma-delimited table of counts of four OTUs in each sample, normalized to 100,000 sequences per sample and the corresponding conditions of each sample (Depth, NO2, NO3 etc.). 
 
@@ -197,7 +185,9 @@ For a brief introduction to these data, see Hallam SJ et al. 2017. Monitoring mi
 
 ### Loading tabular data
 
-Data tables can be loaded into R using the tidyverse `read_*` function. 
+Data tables can be loaded into R using the tidyverse `read_*` function.
+
+in your file browser, create a `data` directory in your project directory. Download the [`Saanich_OTU_metadata.csv`](https://github.com/EDUCE-UBC/educer/blob/master/data-raw/Saanich_OTU_metadata.csv) file and save it in your `data` directory.
 
 For example, we can load our Saanich data into R with `read_csv` for a comma-separated file and specify the arguments that describe our data as follows:
 
@@ -247,7 +237,7 @@ restricted_columns <- select(OTU_metadata_table, Depth, OTU0001, OTU0002,
                              OTU0004)
 ```
 
-We can filter for specific rows based on a column value using the `filter()` function. Here we restrict for rows where the value for `Depth` is < 135. 
+We can filter for specific rows based on a column value using the `filter()` function. Here we restrict for rows where the value for `Depth` is smaller than 135. 
 
 ```{r}
 above_135_depth <- filter(OTU_metadata_table, Depth < 135)
@@ -273,7 +263,7 @@ The **Description** section tells us that `read_delim()` is a general case of th
 The **Usage** section tells us the inputs that need to be specified and default inputs of read_delim:
 
 - `file` and `delim` need to be specified as they are not followed by `=`
-- all other parameters have a default value e.g. `quote = "\""` and do not have to be specified to run the function.
+- all other parameters have a default value e.g. `quote = "\"` and do not have to be specified to run the function.
 
 The **Arguments** Section describes the requirements of each input argument in detail.   
 
