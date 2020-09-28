@@ -91,7 +91,7 @@ This section is a reminder of how to manipulate data in base R. If *all* of thes
 A variable's *type* is the kind of information that can be stored in that variable. 
 
 * **Numeric** variables are numbers (e.g., `1`, `1.41`, `pi`).
-* **Character** variables are alphanumeric strings and are always surrounded by quotes `"` or apostrophes `'` (e.g., `"x"`, `"date"` `"1.41"`, `"TRUE"`)
+* **Character** variables are alphanumeric strings and are always surrounded by quotes `"` or apostrophes `'` (e.g., `"x"`, `"date"` `"1.41"`, `"TRUE"`).
 * **Logical** variables can only have two possible values: `TRUE` or `FALSE`.
 
 A variable can contain one or more elements of the above data types. Variables can have different *structures*, of which the most important are the *vector* and the *data frame*.
