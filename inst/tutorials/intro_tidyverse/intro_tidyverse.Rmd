@@ -553,7 +553,7 @@ dat %>%
 ```
 
 
-### Summarise
+### `group_by()` and `summarise()`
 
 `summarise()` (or `summarize()`) is handy when we want to calculate summaries for
 groups of observations. This is done by first applying the `group_by()` verb
