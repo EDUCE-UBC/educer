@@ -96,7 +96,7 @@ A variable's *type* is the kind of information that can be stored in that variab
 
 A variable can contain one or more elements of the above data types. Variables can have different *structures*, of which the most important are the *vector* and the *data frame*.
 
-* A **vector** is a one-dimensional set of elements with the same type. A variable with a single element is also a vector (of length 1)
+* A **vector** is a one-dimensional set of elements with the same type. A variable with a single element is also a vector (of length 1).
 * A **data frame** is two-dimensional (i.e., it is like a table). Each column in a data frame is like a vector
 
 Identifying what type and structure of data you are working with is important because certain functions can only be applied to certain types/structures.
