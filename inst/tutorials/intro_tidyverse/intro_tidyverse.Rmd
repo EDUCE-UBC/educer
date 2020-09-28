@@ -290,7 +290,7 @@ Each verb works similarly:
 
 ### `select()`
 
-You can use the `select` verb to focus on a subset of columns. For example, suppose we are only interested in the longitude and latitude of our geochemical observations. Then, we could subset the `geochemicals` data frame to include only the appropriate columns. Run the box below to see `select` in action:
+You can use the `select()` verb to focus on a subset of columns. For example, suppose we are only interested in the longitude and latitude of our geochemical observations. Then, we could subset the `geochemicals` data frame to include only the appropriate columns. Run the box below to see `select()` in action:
 
 ```{r select, exercise = TRUE, exercise.setup = "setup_high_O2"}
 select(geochemicals, Longitude, Latitude)
