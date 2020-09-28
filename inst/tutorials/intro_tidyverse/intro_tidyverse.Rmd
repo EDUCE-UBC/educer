@@ -726,7 +726,7 @@ dat %>%
 
 Note that above R code has a warning. Warnings do not always indicate that there is an error in your code. For example, this warning tells us that there is missing data in our data frame, which we already know. 
 
-As you can see, there is a negative correlation between oxygen and carbon dioxide. In the code box below, plot the relationship between oxygen, in the x-axis, and depth, in the y-axis (`Depth`):
+As you can see, there is a negative correlation between oxygen and carbon dioxide. In the code box below, plot the relationship between oxygen, on the x-axis, and depth, on the y-axis (`Depth`):
 
 ```{r, scatterplot-2, exercise = TRUE,  exercise.setup = "setup_long_dat"}
 <data frame> %>%
