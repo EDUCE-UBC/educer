@@ -460,7 +460,7 @@ arrange(dat, desc(Mean_O2))
 ```
 
 
-### Mutate
+### `mutate()`
 
 Mutate is one of the most useful verbs in the dplyr package.
 Use `mutate(y = function(x))` to apply a transformation to some column `x` and assign the output to the column name `y`. 
