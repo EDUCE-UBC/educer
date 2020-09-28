@@ -288,7 +288,7 @@ Each verb works similarly:
 * Other arguments refer to the columns that we want to manipulate
 * The output is another data frame
 
-### Select
+### `select()`
 
 You can use the `select` verb to focus on a subset of columns. For example, suppose we are only interested in the longitude and latitude of our geochemical observations. Then, we could subset the `geochemicals` data frame to include only the appropriate columns. Run the box below to see `select` in action:
 
