@@ -80,7 +80,7 @@ library(lubridate) # Special formatting for dates within data
 library(cowplot) # Multi-panel figures
 ```
 
-Keep in mind that to use packages in a script, these packages *must already be installed* in your computer (see the [Introduction to R and RStudio tutorial](https://github.com/EDUCE-UBC/educer/tree/master/inst/tutorials/r_and_rstudio_ws) for more details about installing packages and working with scripts).
+Keep in mind that to use packages in a script, these packages *must already be installed* on your computer (see the "Introduction to R and RStudio" tutorial for more details about installing packages and working with scripts).
 
 ## Data in R
 
