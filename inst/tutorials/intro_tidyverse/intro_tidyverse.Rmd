@@ -951,7 +951,7 @@ dat %>%
 
 This makes sense as we know that oxygen is depleted as we go deeper in Saanich Inlet.
 
-By default, `geom_histogram()` divides the x axis evenly into 30 bins. You can divide the axis into a different number of bins by writing `geom_histogram(bins = <number of bins>)`. You may have to play a little with this number to get a good looking histogram. Try different numbers of bins in the plot above.
+By default, `geom_histogram()` divides the x-axis evenly into 30 bins. You can divide the axis into a different number of bins by writing `geom_histogram(bins = <number of bins>)`. You may have to play a little with this number to get a histogram capturing the distribution of your data. Try different numbers of bins in the plot above.
 
 As an alternative to histograms, distributions can also be shown using density plots: `geom_density()`. Complete the code below to contrast the density distribution of `Mean_O2` and `Mean_CO2`:
 
