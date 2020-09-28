@@ -531,7 +531,7 @@ geochemicals %>%
   head()
 ```
 
-In the code above, we start by selecting some columns and *pipe* the output into the next step (filter). We keep piping the output into the next step of the chain. After we are done wrangling, we pipe the output to the function `head()` (which prints the first few rows of a data frame). Note how dplyr verbs combined with the pipe operator make this complex series of data wrangling operations read almost like an English sentence (think of `%>%` as the word *"then"*: e.g., "select these columns, *then* filter by date, *then* rename this column...")
+In the code above, we start by selecting some columns and *pipe* the output into the next step (`filter()`). We keep piping the output into the next step of the chain. After we are done wrangling, we pipe the output to the function `head()` (which prints the first few rows of a data frame). Note how dplyr verbs combined with the pipe operator make this complex series of data wrangling operations read almost like an English sentence (think of `%>%` as the word *"then"*: e.g., "select these columns, *then* filter by date, *then* rename this column...")
 
 #### Exercise: Piping
 
