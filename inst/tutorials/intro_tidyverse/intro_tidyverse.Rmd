@@ -635,7 +635,7 @@ question("Is `dat` in long or wide format?",
 
 The data frame `dat` would be long if each measurement were its own row. As it is, many different chemical concentrations appear in each row.
 
-We can turn data from wide to long, and vice versa, by "pivoting". To turn `dat` into a longer data frame, we use `pivot_longer`, a function from the tidyverse package tidyr. This function takes the following arguments:
+We can turn data from wide to long, and vice versa, by "pivoting". To turn `dat` into a longer data frame, we use `pivot_longer()`, a function from the tidyverse package tidyr. This function takes the following arguments:
 
 * The data frame to be pivoted;
 * A vector containing the columns that we want to combine into a single, longer column **or** the columns that we do *not* want to combine (indicated by a minus sign);
