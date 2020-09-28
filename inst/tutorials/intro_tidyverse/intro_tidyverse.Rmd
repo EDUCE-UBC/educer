@@ -323,7 +323,7 @@ select(geochemicals, Cruise, Date, Depth, Mean_NH4, Mean_NO2, Mean_H2S,
        Mean_N2, Mean_O2, Mean_CO2, Mean_N2O, Mean_CH4)
 ```
 
-That was a lot of typing! It would be nice if we could select all of those columns without writing so much... In fact, there are several helper functions that can be used with `select` to describe which column to keep:
+That was a lot of typing! It would be nice if we could select all of those columns without writing so much... In fact, there are several helper functions that can be used with `select()` to describe which column to keep:
 
 - `starts_with("abc")`: column names that start with `"abc"`
 - `ends_with("abc")`: column names that end with `"abc"`
