@@ -38,7 +38,7 @@ You will learn how to:
 * Modify the various features of a graphic, and
 * Save your graphic in various formats
 
-This comprehensive introduction to the tidyverse is ideal for beginners but assumes some prior experience with R (such as that in our [Introduction to R and RStudio tutorial](https://github.com/EDUCE-UBC/educer/tree/master/inst/tutorials/r_and_rstudio_ws)).
+This comprehensive introduction to the tidyverse is ideal for beginners but assumes some prior experience with R (e.g. as provided in our "Introduction to R and RStudio" tutorial).
 
 ### How to follow the tutorial
 
