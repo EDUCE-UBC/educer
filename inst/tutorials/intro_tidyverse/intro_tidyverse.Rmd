@@ -436,7 +436,7 @@ rename(dat, NH4 = Mean_NH4, NO2 = Mean_NO2,
        CO2 = Mean_CO2, N2O = Mean_N2O, CH4 = Mean_CH4)
 ```
 
-### Arrange
+### `arrange()`
 
 Use `arrange(<data_frame>, <x>)` to sort all the rows of a given `<data_frame>` by the value of the column `<x>` in  ascending order. 
 Run the box below and study the order of the first ten rows in the data frame `dat`. 
