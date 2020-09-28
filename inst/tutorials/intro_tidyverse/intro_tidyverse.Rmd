@@ -143,7 +143,7 @@ Note that what we just did is equivalent from first extracting rows 64, 66, and 
 
 #### Subsetting vectors by condition
 
-As we saw above, there are a lot of missing data in the `oxygen` vector. Let's say we want to find all `NA` elements. This can be done using the `is.na()` function, which returns `TRUE` when the function's argument is equal to `NA`. In the box below, use this function to print a logical vector that is `TRUE` when `oxygen` is `NA`:
+As we saw above, there are a lot of missing data in the `oxygen` vector. Let's say we want to find all `NA` elements. The function `is.na()` returns `TRUE` for each element of the argument (e.g. if the argument is a vector) that is equal to `NA`. In the box below, use this function to print a logical vector that is `TRUE` when `oxygen` is `NA`:
 
 ```{r is_na, exercise = TRUE, exercise.setup = "setup_oxygen"}
 is.na(<vector>)
