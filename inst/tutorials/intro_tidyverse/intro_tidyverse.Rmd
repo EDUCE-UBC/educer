@@ -284,9 +284,9 @@ Compared to base R, dplyr code is very readable. Instead of base R’s indexing 
 
 Each verb works similarly:
 
-* input data frame in the first argument
-* other arguments refer to the columns that we want to manipulate
-* the output is another data frame
+* Input data frame as the first argument
+* Other arguments refer to the columns that we want to manipulate
+* The output is another data frame
 
 ### Select
 
