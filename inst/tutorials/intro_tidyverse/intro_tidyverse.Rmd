@@ -991,7 +991,7 @@ long_dat %>%
   geom_boxplot()
 ```
 
-We know from our previous plots that the oxygen concentration is higher at low depths, whereas the CO2 concentration is higher in deeper waters. We can show this by plotting a pair of boxplots for each chemical: one boxplot showing concentration below 100 meters, and the other showing concentration above 100 meters. Aesthetic mappings like `fill` or `colour` allow us to do this. Examine the code below and run it:
+We know from our previous plots that the oxygen concentration is higher at low depths, whereas the CO$$_2$$ concentration is higher in deeper waters. We can show this by plotting a pair of boxplots for each chemical: one boxplot showing concentration below 100 meters, and the other showing concentration above 100 meters. Aesthetic mappings like `fill` or `colour` allow us to do this. Examine the code below and run it:
 
 ```{r boxplot-paired, exercise = TRUE,  exercise.setup = "setup_long_dat"}
 long_dat %>%
