@@ -570,7 +570,7 @@ geochemicals %>%
 
 In the chain above, the function `n()` returns the number of rows corresponding to each depth and the argument `na.rm = TRUE` inside functions like `mean()` and `sd()` ensures that `NA` values are ignored when calculating those summary statistics.
 
-#### Exercise: Summarise
+#### Exercise: `summarise()`
 
 In the box below, start with the data frame `dat` and, for each value of `Depth`, calculate the median, interquartile range, and sample size of the `Mean_CH4` column. (The interquartile range can be calculated with the function `IQR`.)
 
