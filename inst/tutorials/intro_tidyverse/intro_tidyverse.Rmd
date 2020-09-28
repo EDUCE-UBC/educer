@@ -84,7 +84,7 @@ Keep in mind that to use packages in a script, these packages *must already be i
 
 ## Data in R
 
-This section is a reminder of how to manipulate data in base R. If *all* of these concepts are completely new to you, consider doing our [Introduction to R and RStudio tutorial](https://github.com/EDUCE-UBC/educer/tree/master/inst/tutorials/r_and_rstudio_ws). If you feel comfortable extracting columns from data frames and subsetting vector elements by index or by logical conditions, feel free to skip ahead to the next section ("Data wrangling").
+This section is a reminder of how to manipulate data in base R. If *all* of these concepts are completely new to you, consider doing our "Introduction to R and RStudio" tutorial. If you feel comfortable extracting columns from data frames and subsetting vector elements by index or by logical conditions, feel free to skip ahead to the next section ("Data wrangling").
 
 ### Data types and structures
 
