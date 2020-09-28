@@ -417,7 +417,7 @@ small_data <- select(dat, Cruise, Date, Depth, Mean_O2)
 filter(small_data, Cruise == 72 & Depth <= 20)
 ```
 
-### Rename
+### `rename()`
 
 You can use the `rename` function to assign new names to your columns. This
 can be very useful when your column names are very long and tedious to type. 
