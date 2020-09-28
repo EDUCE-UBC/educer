@@ -557,7 +557,7 @@ dat %>%
 
 `summarise()` (or `summarize()`) is handy when we want to calculate summaries for
 groups of observations. This is done by first applying the `group_by()` verb
-and then feeding it into `summarise`. For example, we can calculate the mean,
+and then feeding it into `summarise()`. For example, we can calculate the mean,
 standard deviation, and sample size of oxygen concentrations by depth as follows: 
 
 ```{r echo = TRUE}
