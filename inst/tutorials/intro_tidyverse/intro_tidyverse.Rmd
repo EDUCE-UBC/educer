@@ -359,7 +359,7 @@ We will use the `dat` data frame in the rest of this tutorial.
 The full list of helper functions can be found by running `?select_helpers` in 
 the console. 
 
-### Filter
+### `filter()`
 
 You can use `filter` to subset particular rows based on a logical condition of a 
 variable. This is where our practice with R logical conditions comes in handy. The pre-populated code in the box filters `dat` such that we only retain data collected after February 2008. Run it and examine the output. Then, modify the code so that it only retains those data points collected after February 2008 that were sampled deeper than 100 km.
