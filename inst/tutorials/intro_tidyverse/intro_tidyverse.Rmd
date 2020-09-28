@@ -612,7 +612,7 @@ pivot_longer(wide, names_to = "year", -"country")
 ```
 
 In these two data frames, the same information is organized in a different way. 
-The former data frame is **wide**: a single variable (year) takes up many columns. 
+The former data frame is **wide**: a single variable (`year`) takes up many columns. 
 In contrast, the latter data frame is **long**: each column represents one a variable.
 
 All packages in the tidyverse work better with long data (or, as it is also known in the context of the tidyverse, "tidy" data). A data frame is tidy when:
