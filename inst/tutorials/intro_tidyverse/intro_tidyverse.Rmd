@@ -568,7 +568,7 @@ geochemicals %>%
             nr_observations = n())
 ```
 
-In the chain above, the function `n()` returns the number of rows and the argument `na.rm = TRUE` inside functions like `mean()` and `sd()` ensures that `NA` values are ignored when calculating those summary statistics.
+In the chain above, the function `n()` returns the number of rows corresponding to each depth and the argument `na.rm = TRUE` inside functions like `mean()` and `sd()` ensures that `NA` values are ignored when calculating those summary statistics.
 
 #### Exercise: Summarise
 
