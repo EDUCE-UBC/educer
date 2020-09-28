@@ -274,13 +274,13 @@ Subsetting data frames and vectors in base R, like we did in the previous sectio
 
 Compared to base R, dplyr code is very readable. Instead of base R’s indexing system (with its brackets and parentheses), which is difficult to read, dplyr operations are based around a small set of functions that match English-language "verbs". The most common verbs are:
 
-* `select` a subset of columns based on their names
-* `filter` out a subset of rows based on their values
-* `rename` columns
-* `arrange` a column in ascending or descending order
-* `mutate` all values of a column, i.e., add a new column that is a function of existing columns
-* `group_by` a variable and `summarise` data by the grouped variable
-* `*_join` two data frames into a single data frame
+* `select()` a subset of columns based on their names.
+* `filter()` out a subset of rows based on their values.
+* `rename()` columns.
+* `arrange()` a column in ascending or descending order.
+* `mutate()` all values of a column, i.e., add a new column that is a function of existing columns.
+* `group_by()` a variable and `summarise` data by the grouped variable.
+* `*_join()` two data frames into a single data frame.
 
 Each verb works similarly:
 
