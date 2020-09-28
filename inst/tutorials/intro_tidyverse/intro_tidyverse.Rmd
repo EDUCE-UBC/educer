@@ -829,7 +829,7 @@ dat %>%
   geom_point(color = "red", size = 3)
 ```
 
-Note that, because size and color are not aesthetic mappings in the plot above, ggplot does not create any associated color or size scale. 
+Note that, because `size` and `color` are not aesthetic mappings in the plot above, ggplot does not create any associated color or size scale. 
 
 See how some points are overlapping each other, especially on the left? Making points semi-transparent can help tell them apart. The aesthetic controlling transparency is called `alpha`, and it takes values ranging from zero (fully transparent) to one (fully opaque). Return to the previous box and add the argument `alpha = 0.5` to `geom_point()`. Run the code to see the result.
 
