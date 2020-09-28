@@ -329,7 +329,7 @@ That was a lot of typing! It would be nice if we could select all of those colum
 - `ends_with("abc")`: column names that end with `"abc"`
 - `contains("abc")`: column names containing `"abc"`
 
-In the box below, create a new data frame names `dat` that contains the same `geochemicals` columns that you selected above --- but this time, use the `starts_with` helper function to quickly select all of the chemicals.
+In the box below, create a new data frame names `dat` that contains the same `geochemicals` columns that you selected above --- but this time, use the `starts_with()` helper function to quickly select all of the chemicals.
 
 ```{r dat, exercise = TRUE, exercise.setup = "setup_high_O2"}
 dat <- select(<data_frame>, <variables>) # create dat
