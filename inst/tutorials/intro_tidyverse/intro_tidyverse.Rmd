@@ -183,8 +183,7 @@ oxygen[!is.na(oxygen)] # another possible solution
 
 ```{r setup_redefine_oxygen, include = FALSE}
 oxygen <- geochemicals$Mean_O2
-not_na <- !is.na(oxygen)
-oxygen <- oxygen[not_na]
+oxygen <- oxygen[!is.na(oxygen)]
 ```
 
 **Note:** that there are multiple ways of performing this task. Click the Solution button on top of the exercise box to ensure that you understand them.
