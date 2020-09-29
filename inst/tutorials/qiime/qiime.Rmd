@@ -51,7 +51,7 @@ qiime demux emp-single \
   --o-per-sample-sequences demux.qza \
   --o-error-correction-details demux-details.qza
 
-# Create visulatiozation of demultiplexed samples
+# Create visualization of demultiplexed samples
 qiime demux summarize \
   --i-data demux.qza \
   --o-visualization demux.qzv
@@ -78,11 +78,11 @@ cd moving_picture_tutorial
 scp root@<IP>:/data/moving_pictures_tutorial/demux.qzv . # Include period!!!
 ```
 
-You can now open the current working directory in the file browser on your local machine by entering `open .` on macOS or `explorer.exe .` on WSL. You should now see the `demux.qzv` file in your files browser and can look at it using [QIIME2 view website](https://view.qiime2.org/).
+You can now open the current working directory in the file browser on your local machine by entering `open .` on macOS or `explorer.exe .` on WSL. You should now see the `demux.qzv` file in your file browser and drag it onto the [QIIME2 view website](https://view.qiime2.org/) to view it.
 
 
 
-## Generating ASVs
+## Determining ASVs
 
 Switch back to the terminal window connected to the server. Continue with the analysis on the server and determine ASVs and their frequencies as well as number of reads per sample. Copy any `.qzv` files to your local machine to look at the visualization.
 
@@ -96,19 +96,101 @@ qiime dada2 denoise-single \
   --o-table table.qza \
   --o-denoising-stats stats.qza
   
-# Create visualization for DADA2 stats
+# Visualize DADA2 stats
 qiime metadata tabulate \
   --m-input-file stats.qza \
   --o-visualization stats.qzv
 
-# Visualize information on ASVs
+# Visualize ASVs stats
 qiime feature-table summarize \
   --i-table table.qza \
   --o-visualization table.qzv \
   --m-sample-metadata-file /mnt/datasets/moving_pictures/sample-metadata.tsv
+  
 qiime feature-table tabulate-seqs \
   --i-data rep-seqs.qza \
   --o-visualization rep-seqs.qzv
+```
+
+## Diversity metrics
+
+```{bash eval = FALSE}
+# Generate a tree for phylogenetic diversity analyses
+qiime phylogeny align-to-tree-mafft-fasttree \
+  --i-sequences rep-seqs.qza \
+  --o-alignment aligned-rep-seqs.qza \
+  --o-masked-alignment masked-aligned-rep-seqs.qza \
+  --o-tree unrooted-tree.qza \
+  --o-rooted-tree rooted-tree.qza
+
+# Calculate alpha- and beta-diversity metrics
+qiime diversity core-metrics-phylogenetic \
+  --i-phylogeny rooted-tree.qza \
+  --i-table table.qza \
+  --p-sampling-depth 1103 \
+  --m-metadata-file /mnt/datasets/moving_pictures/sample-metadata.tsv \
+  --output-dir core-metrics-results
+
+# Calculate alpha-group-significance
+qiime diversity alpha-group-significance \
+  --i-alpha-diversity core-metrics-results/faith_pd_vector.qza \
+  --m-metadata-file /mnt/datasets/moving_pictures/sample-metadata.tsv \
+  --o-visualization core-metrics-results/faith-pd-group-significance.qzv
+
+qiime diversity alpha-group-significance \
+  --i-alpha-diversity core-metrics-results/evenness_vector.qza \
+  --m-metadata-file /mnt/datasets/moving_pictures/sample-metadata.tsv \
+  --o-visualization core-metrics-results/evenness-group-significance.qzv
+  
+# Calculate beta-group-significance
+qiime diversity beta-group-significance \
+  --i-distance-matrix core-metrics-results/unweighted_unifrac_distance_matrix.qza \
+  --m-metadata-file /mnt/datasets/moving_pictures/sample-metadata.tsv \
+  --m-metadata-column body-site \
+  --o-visualization core-metrics-results/unweighted-unifrac-body-site-significance.qzv \
+  --p-pairwise
+
+qiime diversity beta-group-significance \
+  --i-distance-matrix core-metrics-results/unweighted_unifrac_distance_matrix.qza \
+  --m-metadata-file /mnt/datasets/moving_pictures/sample-metadata.tsv \
+  --m-metadata-column subject \
+  --o-visualization core-metrics-results/unweighted-unifrac-subject-group-significance.qzv \
+  --p-pairwise
+  
+# Principal Coordinates Analysis (PCoA)
+qiime emperor plot \
+  --i-pcoa core-metrics-results/unweighted_unifrac_pcoa_results.qza \
+  --m-metadata-file /mnt/datasets/moving_pictures/sample-metadata.tsv \
+  --p-custom-axes days-since-experiment-start \
+  --o-visualization core-metrics-results/unweighted-unifrac-emperor-days-since-experiment-start.qzv
+
+qiime emperor plot \
+  --i-pcoa core-metrics-results/bray_curtis_pcoa_results.qza \
+  --m-metadata-file /mnt/datasets/moving_pictures/sample-metadata.tsv \
+  --p-custom-axes days-since-experiment-start \
+  --o-visualization core-metrics-results/bray-curtis-emperor-days-since-experiment-start.qzv
+
+# Alpha-rarefaction
+qiime diversity alpha-rarefaction \
+  --i-table table.qza \
+  --i-phylogeny rooted-tree.qza \
+  --p-max-depth 4000 \
+  --m-metadata-file /mnt/datasets/moving_pictures/sample-metadata.tsv \
+  --o-visualization alpha-rarefaction.qzv
+```
+
+## Taxonomy
+
+```{bash eval = FALSE}
+# Taxonomic analysis
+qiime feature-classifier classify-sklearn \
+  --i-classifier /mnt/datasets/moving_pictures/gg-13-8-99-515-806-nb-classifier.qza \
+  --i-reads rep-seqs.qza \
+  --o-classification taxonomy.qza
+
+qiime metadata tabulate \
+  --m-input-file taxonomy.qza \
+  --o-visualization taxonomy.qzv
 ```
 
 
