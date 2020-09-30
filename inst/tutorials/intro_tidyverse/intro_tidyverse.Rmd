@@ -301,14 +301,14 @@ In the box below, subset the following columns from `geochemicals`:
 * cruise number, `Cruise`
 * date, `Date`
 * depth in kilometers, `Depth`
-* ammonium (NH4) concentration, `Mean_NH4`
-* nitrogen dioxide (NO2) concentration, `Mean_NO2`
-* hydrogen sulfide (H2S) concentration, `Mean_H2S`
-* dinitrogen (N2) concentration, `Mean_N2`
-* oxygen (O2) concentration, `Mean_O2`
-* carbon dioxide (CO2) concentration, `Mean_CO2`
-* nitrous oxide (N2O) concentration, `Mean_N2O`
-* methane (CH4) concentration, `Mean_CH4`
+* ammonium (NH$_4$) concentration, `Mean_NH4`
+* nitrogen dioxide (NO$_2$) concentration, `Mean_NO2`
+* hydrogen sulfide (H$_2$S) concentration, `Mean_H2S`
+* dinitrogen (N$_2$) concentration, `Mean_N2`
+* oxygen (O$_2$) concentration, `Mean_O2`
+* carbon dioxide (CO$_2$) concentration, `Mean_CO2`
+* nitrous oxide (N$_2$O) concentration, `Mean_N2O`
+* methane (CH$_4$) concentration, `Mean_CH4`
 
 ```{r select2, exercise = TRUE, exercise.setup = "setup_high_O2"}
 select(<data_frame>, <variable1>, <variable2>, <...>)
@@ -423,7 +423,7 @@ You can use the `rename` function to assign new names to your columns. This
 can be very useful when your column names are very long and tedious to type. 
 In the box below, we remove the `Mean_` prefix from some of the columns. 
 Run it and examine the output. Then, modify it so as to remove the prefix from
-the remaining chemicals (CO2, N2O, and CH4).
+the remaining chemicals (CO$_2$, N$_2$O, and CH$_4$).
 
 ```{r rename, exercise = TRUE, exercise.setup = "setup_dat"}
 rename(dat, NH4 = Mean_NH4, NO2 = Mean_NO2, 
@@ -821,7 +821,7 @@ Scale layers modify the rules of this mapping between geometry and variable (`sc
 
 #### Decorative aesthetics
 
-You can also set the aesthetic properties of your geom manually. Sometimes, we want the aesthetic properties to serve a merely decorative purpose. For instance, maybe we want to remake our original scatterplot relating O2 to CO2 but color all points in red, and in a larger size. If we decide to do so, those aesthetic properties (`color` and `size`) will not represent any variables. Hence, they are not called inside the `aes()` function, but outside of it, as arguments to our geom layer. Study the code in the box below and run it:
+You can also set the aesthetic properties of your geom manually. Sometimes, we want the aesthetic properties to serve a merely decorative purpose. For instance, maybe we want to remake our original scatterplot relating O$_2$ to CO$_2$ but color all points in red, and in a larger size. If we decide to do so, those aesthetic properties (`color` and `size`) will not represent any variables. Hence, they are not called inside the `aes()` function, but outside of it, as arguments to our geom layer. Study the code in the box below and run it:
 
 ```{r, aes, exercise = TRUE,  exercise.setup = "setup_long_dat"}
 dat %>%
@@ -991,7 +991,7 @@ long_dat %>%
   geom_boxplot()
 ```
 
-We know from our previous plots that the oxygen concentration is higher at low depths, whereas the CO$$_2$$ concentration is higher in deeper waters. We can show this by plotting a pair of boxplots for each chemical: one boxplot showing concentration below 100 meters, and the other showing concentration above 100 meters. Aesthetic mappings like `fill` or `colour` allow us to do this. Examine the code below and run it:
+We know from our previous plots that the oxygen concentration is higher at low depths, whereas the CO$_2$ concentration is higher in deeper waters. We can show this by plotting a pair of boxplots for each chemical: one boxplot showing concentration below 100 meters, and the other showing concentration above 100 meters. Aesthetic mappings like `fill` or `colour` allow us to do this. Examine the code below and run it:
 
 ```{r boxplot-paired, exercise = TRUE,  exercise.setup = "setup_long_dat"}
 long_dat %>%
@@ -1008,7 +1008,7 @@ An alternative to the boxplot is the violin plot, which, rather than showing the
 
 We learned that one way to add additional variables is with aesthetics. Another way is to split the graphic into panels, or "facets": one facet for each level of a categorical variable. To facet your plot by a single variable, use `facet_wrap()`.
 
-Run the code in the box below to recall our depth profile plot (for simplicity, we filtered the `dat`  to contain only data from Cruises 10 through 13). Now, imagine that we wanted to represent (in addition to O2 and CO2) the concentrations of N2O and NH4 as well. If we put all of that information into a single plot, it would become very crowded (you can try it out yourself). Instead of using the `color` aesthetic to map `Chemical`, we can add the layer `facet_wrap(~ Chemical)` to separate the single depth profile into four depth profiles -- one for each chemical. Modify the code below to achieve this: 
+Run the code in the box below to recall our depth profile plot (for simplicity, we filtered the `dat`  to contain only data from Cruises 10 through 13). Now, imagine that we wanted to represent (in addition to O$_2$ and CO$_2$) the concentrations of N$_2$O and NH$_4$ as well. If we put all of that information into a single plot, it would become very crowded (you can try it out yourself). Instead of using the `color` aesthetic to map `Chemical`, we can add the layer `facet_wrap(~ Chemical)` to separate the single depth profile into four depth profiles -- one for each chemical. Modify the code below to achieve this: 
 
 ```{r, scatterplot-facets, exercise = TRUE,  exercise.setup = "setup_long_dat"}
 long_dat %>%
@@ -1059,7 +1059,7 @@ long_dat %>%
 
 So far, we have produced plots for data *exploration*. We didn't care too much about how they looked. But when we create plots for *communication* (i.e., for slideshows, posters, or scientific articles) we need to make sure that they also look good. 
 
-In this section, we will work to create a beautiful multi-panel figure. Each panel will be based on a plot that we produced so far. Panel A will show the negative correlation between O2 and CO2 concentration, and panel B will show paired boxplots for CO2 and O2 above and below 100 meters. 
+In this section, we will work to create a beautiful multi-panel figure. Each panel will be based on a plot that we produced so far. Panel A will show the negative correlation between O$_2$ and CO$_2$ concentration, and panel B will show paired boxplots for CO$_2$ and O$_2$ above and below 100 meters. 
 
 #### Labels
 
