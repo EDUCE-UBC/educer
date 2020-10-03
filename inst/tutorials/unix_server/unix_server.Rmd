@@ -10,56 +10,55 @@ output:
 ---
 
 ## Overview
-This tutorial provides a guided, hands-on introduction to working on a server. Instead of connecting the terminal to the local computer, you will connect to a remote one. It also provides an opportunity to practice the Unix shell skills from before. After this tutorial, you will be able to:
 
-* Log in to your account on a server.
-* Navigate the server directory and file structure.
-* Transfer files to and from server.
-* Run jobs in the background
+This tutorial provides a guided, hands-on introduction to working on a server. Instead of connecting the terminal to the local computer, you will connect to a server. It also provides an opportunity to practice the Unix shell skills from before. After this tutorial, you will be able to:
 
-
+-   Log in to your account on a server.
+-   Navigate the server directory and file structure.
+-   Transfer files to and from server.
+-   Run jobs in the background
 
 ## Setup
 
-You should have received a username and the address for the server you are going to access (either an IP address or domain name). Depending on the server, you might also have to connect via a VPN to the network of the server (for example, "myVPN" to connect to UBC's servers). We will use the command `ssh` to connect to the server, which stands for "**s**ecure **sh**ell", i.e. it provides functionality to authenticate a user before providing access
+You should have received a `<username>`, the `<server address>` (either an IP address or domain name), and a password. Depending on the server, you might also have to connect via a VPN to the network of the server (for example, "myVPN" to connect to UBC's servers). We will use the command `ssh` to connect to the server (which stands for **s**ecure **sh**ell) i.e. it will prompt you to authenticate before providing access
 
-```{}
+```{bash eval = FALSE}
 ssh <username>@<server address>
 ```
 
 Your terminal should read something like this.
 
-```{}
-<username>@<server name> ~$
+```{bash eval = FALSE}
+<username>@<server name> ~ $
 ```
 
-The command prompt `$` or `#`  works the same as the one on your own computer; you're now just accessing a different computer!
+The command prompt ending in `$` or `#` works the same as the one on your own computer; you're now just accessing a different computer!
 
 ### Exercise
 
 Using basic Unix shell commands, navigate around the server and create an outline of the root folder. Determine which directory is your home directory.
 
 ## Working with files on the server
+
 ### Creating a directory
+
 Let's make a directory to hold all of the files we will use today. When you first log into the server, you will be in your home directory so you can make a directory here using `mkdir`.
 
-```{}
+```{bash eval = FALSE}
 mkdir practice
 ```
 
-Using `ls`, you will now see this directory exists!
+Using `ls`, you can confirm that the `practice` directory exists.
 
 #### Exercise
 
-1. Switch to the newly created `practice` directory
-2. Inside `practice`, create a new directory called  `folder_naming_exercise`.
-3. Switch to `folder_naming_exercise`.
-4. Run the following command: `mkdir this_is_the_first_folder`. Check the contents
-using `ls`.
-5. Now run the command `mkdir "this is the second folder"` and again list all
-the contents.
-6. Finally, enter the command `mkdir this is the third folder` and look at all the objects in `folder_names_exercise` for a third time.
-7. How do you explain the results that you see? *Hint*: Check the `man` or `--help` page of `mkdir`. 
+1.  Switch to the newly created `practice` directory
+2.  Inside `practice`, create a new directory called `folder_naming_exercise`.
+3.  Switch to `folder_naming_exercise`.
+4.  Run the following command: `mkdir this_is_the_first_folder`. Check the contents using `ls`.
+5.  Now run the command `mkdir "this is the second folder"` and again list all the contents.
+6.  Finally, enter the command `mkdir this is the third folder` and look at all the objects in `folder_naming_exercise` for a third time.
+7.  How do you explain the results that you see? *Hint*: Check the `man` or `--help` page of `mkdir`.
 
 ### Creating text files
 
@@ -67,11 +66,9 @@ There are a number of ways to create files using the command line. Here, we will
 
 Let's create a text file with nano. First, move into your `practice` directory and then open nano.
 
-```{}
+```{bash eval = FALSE}
 nano
-```
 
-```{}
 GNU nano 2.7.4                    New Buffer
 
 
@@ -82,73 +79,101 @@ GNU nano 2.7.4                    New Buffer
 ^X Exit      ^R Read File ^\ Replace   ^U Uncut Text^T To Spell  ^_ Go To Line
 ```
 
-Enter some text like "mew mew mew!" Then write out/save (by pressing ^O or Ctrl+O) and name the file `kitten.txt`.
+Enter some text like "mew mew mew!" Then write out/save (by pressing \^O or Ctrl+O) and name the file `kitten.txt`.
 
-Then exit (^X or Ctrl+X) and use `ls` to see your new file!
+Then exit (<kbd>Ctrl</kbd>+<kbd>X</kbd>) and use `ls` to see your new file!
 
-```{}
+```{bash eval = FALSE}
 ssh-keygen -t rsa -b 4096
 ssh-copy-id -i ~/.ssh/tatu-key-ecdsa <username>@<server
 ```
 
-```{}
-rsync -ahRvu --stats <from/> <to>
-rsync -ahnvu --stats from to
-rsync -ahRvu --stats ~/Documents/ ~/Documents
+
+
+## File transfer to/from the server
+
+In our next step, we will copy files between our computer and the server. It is simplest to do so when your terminal is connected to your own computer. Open a second terminal window. By default, it should connect to your local machine.
+
+Similar to copying files on your own computer, you can copy files on the cloud using `cp <source> <target>`. However, to copy a file from the cloud to your computer or vice versa, you must use `scp` (for **s**ecure **c**o**p**y) because the server (and possibly your own computer) requires you to athenticate (i.e. you have to provide your password).
+
+The basic structure of `scp` is the same as `cp`, only now you need to provide the name of the server you want to access and *should be extra careful about the exact paths you are providing because you won't be able to use tab-completion for the path on the server*. You use the the following commands to copy **from your computer to the server**
+
+```{bash eval = FALSE}
+scp <local source> <username>@<server address>:<remote target>
 ```
 
-In our next step, we will copy files between our computer and the server. It is simplest to do so when you are logged into your own computer. Open a second terminal window so let's first log off and exit GCP.
+or **from the server to your computer**
 
-
-
-### File transfer to/from GCP
-Similar to copying files on your own computer, you can copy files on the cloud using `cp [source file] [destination]`.
-
-However, to copy a file from the cloud to your computer or vice versa, you must use `scp`, or secure copy. This is because the cloud (and possibly your own computer) requires security credentials, (*e.g.* you have to log in).
-
-The basic setup of `scp` is the same as `cp`, only now you need to provide the name of the remote computer (or instance) you want to access and *should be extra careful about the exact paths you are providing*.
-
-Now we can use the following basic setup to transfer files **from your computer to GCP** 
-```{}
-gcloud compute scp <local source file> <INSTANCE_NAME>:<remote destination>
+```{bash eval = FALSE}
+scp <username>@<server address>:<remote source> <local target>
 ```
 
-or **from GCP to your computer**
-```{}
-gcloud compute scp <INSTANCE_NAME>:<remote source file> <local destination>
-```
+The target, i.e. the corresponding directory, already has to exist. For our transfer, we will create the directory `my_first_transfer` in our home directory:
 
-The destination, i.e. the corresponding directory, already has to exist. For our transfer, we will create the directory `my_first_transfer` in our home directory:
-```{}
+```{bash eval = FALSE}
+cd
 mkdir my_first_transfer
 ```
 
-**Important**: In general, it is good practice to avoid any spaces in directory or file names. But sometimes this cannot be avoided (e.g. on **Windows**, your user folder might contain a space, e.g. `FirstName LastName`). If this is the case, you must wrap the whole file path in quotes, e.g. `/why/do/your/directories/contain spaces?"`.
-
 Let's copy the `kitten.txt` file from the server `sandbox` to our local directory `my_first_transfer`.
+
+```{bash eval = FALSE}
+scp <username>@<server address>:~/practice/kitten.txt ~/my_first_transfer
+```
+
+    rsync -ahRvu --stats <from/> <to>
+    rsync -ahnvu --stats from to
+    rsync -ahRvu --stats ~/Documents/ ~/Documents
+
+### Running jobs in the background
+
+Many commands you will run will take considerable time to finish. Unfortunately, when your terminal does not receive any inputs for a period of time, the server will drop the connection to your terminal and this would terminate any running jobs. To prevent this from happening, we will use `screen` sessions. `screen` basically creates a virtual terminal that is able to maintain running jobs even when you are not connected to it.
+
+To create a new session use
+
+```{bash eval = FALSE}
+screen -S <session name>
+```
+
+You will start a new session.
+
+To detach from the session use <kbd>Ctrl</kbd>+<kbd>A</kbd> immediatley followed by <kbd>Ctrl</kbd>+<kbd>D</kbd>.
+
+No you can confirm that the session is still by printing a list of all `screen` sessions with
+
+```{bash eval = FALSE}
+screen -ls
+```
+
+If you want to resume a session, you use
+
+```{bash eval = FALSE}
+screen -r <running session name>
+```
+
+To complete close a session, enter `exit` while in it.
 
 ### Logging off
 
-```{}
+```{bash eval = FALSE}
 exit
 ```
 
-
-
 #### After the copy operation
-Now you should be able to see `kitten.txt` on your local `my_first_transfer` directory. 
 
-*Note: There are no size limits for transfers; however, your connection speed/stability will have an affect!! If your files are several GB, you would use a different .*
+Now you should be able to see `kitten.txt` on your local `my_first_transfer` directory.
+
+*Note: There are no size limits for transfers; however, your connection speed/stability will have an affect!! If your files are several GB, you would use a different approach.*
 
 ### Exercise
 
-1. Modify your local (in `my_first_transfer`) copy of `kitten.txt` by adding additional text.
-2. Rename the file to `kitten2.txt`.
-3. Using `scp`, copy this new file to your `practice` directory in the `sandbox`.
-4. Log back into GCP to see if your transfer worked!
-5. Back on the server, copy `kitten2.txt` to a new file called `kitten3.txt`.
-6. Modify the text of `kitten3.txt` on `sandbox`.
-7. Returning to your local machine, create a new folder `my second transfer` in your home directory. make sure to include the spaces in the folder name. Why will this make your life harder?
-8. Again using  `scp`, copy `kitten3.txt` from the server to local `my second transfer` directory.
+1.  Modify your local (in `my_first_transfer`) copy of `kitten.txt` by adding additional text.
+2.  Rename the file to `kitten2.txt`.
+3.  Using `scp`, copy this new file to your `practice` directory in the `sandbox`.
+4.  Log back into GCP to see if your transfer worked!
+5.  Back on the server, copy `kitten2.txt` to a new file called `kitten3.txt`.
+6.  Modify the text of `kitten3.txt` on `sandbox`.
+7.  Returning to your local machine, create a new folder `my second transfer` in your home directory. make sure to include the spaces in the folder name. Why will this make your life harder?
+8.  Again using `scp`, copy `kitten3.txt` from the server to local `my second transfer` directory.
 
-***
+------------------------------------------------------------------------
