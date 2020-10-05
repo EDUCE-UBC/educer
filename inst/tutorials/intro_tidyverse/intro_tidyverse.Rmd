@@ -66,7 +66,7 @@ head(<name_of_the_data_frame>)
 head(geochemicals)
 ```
 
-For more details about these data, see [Hallam SJ *et al*. 2017. Sci Data 4: 170158](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5663219/) "Monitoring microbial responses to ocean deoxygenation in a model oxygen minimum zone". More detailed information on the environmental context and time series data can be found in [Torres-Beltrán M *et al*. 2017. Sci Data 4: 170159.](https://www.nature.com/articles/sdata2017159) "A compendium of geochemical information from the Saanich Inlet water column".
+For more details about these data, run `?geochemicals` or see [Hallam SJ *et al*. 2017. Sci Data 4: 170158](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5663219/) "Monitoring microbial responses to ocean deoxygenation in a model oxygen minimum zone". More detailed information on the environmental context and time series data can be found in [Torres-Beltrán M *et al*. 2017. Sci Data 4: 170159.](https://www.nature.com/articles/sdata2017159) "A compendium of geochemical information from the Saanich Inlet water column".
 
 ### Loading packages
 
@@ -311,7 +311,7 @@ Each verb works similarly:
 
 You can use the `select()` verb to focus on a subset of columns. For example, suppose we are only interested in the longitude and latitude of our geochemical observations. Then, we could subset the `geochemicals` data frame to include only the appropriate columns. Run the box below to see `select()` in action:
 
-```{r select, exercise = TRUE, exercise.setup = "setup_high_O2"}
+```{r select, exercise = TRUE}
 select(geochemicals, Longitude, Latitude)
 ```
 
