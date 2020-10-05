@@ -180,15 +180,18 @@ oxygen <- geochemicals$Mean_O2
 not_na <- !is.na(oxygen)
 ```
 
-You can then use the logical vector `not_na` to subset the `oxygen` vector (just like you would use a vector of indices) using the square bracket notation from above. In the box below, let's re-define `oxygen` so as to contain only non-NA values:
+You can then use the logical vector `not_na` to subset the `oxygen` vector (just like you would use a vector of indices) using the square bracket notation from above. In the box below, let's re-define `oxygen` so as to contain only non-NA values. Then, use `sum()` to prove that there are actually no `NA`s left.
 
 ```{r oxygen_no_na, exercise = TRUE, exercise.setup = "setup_na"}
 oxygen <- oxygen[<logical_vector_here>]
+sum(<your_work_here>)
 ```
 
 ```{r oxygen_no_na-solution}
-oxygen[not_na] # one possible solution
-oxygen[!is.na(oxygen)] # another possible solution
+#oxygen <- oxygen[not_na] # one possible solution
+oxygen <- oxygen[!is.na(oxygen)] # another possible solution
+
+sum(is.na(oxygen))
 ```
 
 ```{r setup_redefine_oxygen, include = FALSE}
@@ -206,6 +209,12 @@ Subsetting by condition is particularly powerful when using conditional statemen
 - `a != b` returns `TRUE` when `a` does not match `b`
 - `a > b` returns `TRUE` when `a` is greater than `b`
 - `a <= b` returns `TRUE` when `a` is smaller than or equal to `b`
+
+In the statements above, `a` and `b` may be single elements (scalars) or they may be vectors:
+
+- When both are scalars, the output will be a logical scalar (i.e. either `TRUE` or `FALSE`).
+- When one is a scalar and the other is a vector, each element of the vector is compared to the scalar (so that the output will be a logical vector).
+- Finally, when both `a` and `b` are vectors of the same length, elements with the same index are compared with each other, and the output is again a logical vector. You can't compare vectors of different lengths.
 
 In the box below, use a conditional statement to create and print a logical vector called `high_O2`, which is `TRUE` only when the `oxygen` measurement is above 400:
 
