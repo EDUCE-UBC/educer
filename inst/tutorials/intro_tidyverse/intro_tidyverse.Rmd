@@ -1027,7 +1027,7 @@ An alternative to the boxplot is the violin plot, which, rather than showing the
 
 We learned that one way to add additional variables is with aesthetics. Another way is to split the graphic into panels, or "facets": one facet for each level of a categorical variable. To facet your plot by a single variable, use `facet_wrap()`.
 
-Run the code in the box below to recall our depth profile plot (for simplicity, we filtered the `dat`  to contain only data from Cruises 10 through 13). Now, imagine that we wanted to represent (in addition to O$_2$ and CO$_2$) the concentrations of N$_2$O and NH$_4$ as well. If we put all of that information into a single plot, it would become very crowded (you can try it out yourself). Instead of using the `color` aesthetic to map `Chemical`, we can add the layer `facet_wrap(~ Chemical)` to separate the single depth profile into four depth profiles -- one for each chemical. Modify the code below to achieve this: 
+Run the code in the box below to recall our depth profile plot (for simplicity, we filtered the `dat`  to contain only data from Cruises 10 through 13). Now, imagine that we wanted to represent (in addition to O$_2$ and CO$_2$) the concentrations of N$_2$O and NH$_4$ as well. If we put all of that information into a single plot, it would become very crowded (you can try it out yourself). Instead of using the `color` aesthetic to map `Chemical`, we can add the layer `facet_wrap(vars(Chemical))` to separate the single depth profile into four depth profiles -- one for each chemical. Modify the code below to achieve this: 
 
 ```{r, scatterplot-facets, exercise = TRUE,  exercise.setup = "setup_long_dat"}
 long_dat %>%
@@ -1045,12 +1045,10 @@ long_dat %>%
   ggplot(aes(x = Concentration, y = Depth)) +
   geom_point() +
   scale_y_reverse() +
-  facet_wrap(~ Chemical)
+  facet_wrap(vars(Chemical))
 ```
 
-You may be wondering what is going on with the tilde `~` in front of the variable. That is because the argument of `facet_wrap()` is an R data structure called "formula". In R, formulas are indicated with a tilde. This notation appears confusing until you realize that formulas can take two variables, one on each side of the tilde. 
-
-To facet your plot on the combination of two variables, add the layer `facet_grid()` instead of `facet_wrap()`. The argument should also be a formula, but this time the formula should contain two variable names separated by `~`. 
+You can also facet your plot on the combination of two variables. To do this, add the layer `facet_grid()` instead of `facet_wrap()`. The only other difference is that `vars()` will now take two arguments, one for each variable name. 
 
 Modify the code below to facet the plot by both `Cruise` and `Chemical`.
 
@@ -1071,7 +1069,7 @@ long_dat %>%
   ggplot(aes(x = Concentration, y = Depth)) +
   geom_point() +
   scale_y_reverse() +
-  facet_grid(Cruise ~ Chemical)
+  facet_grid(vars(Cruise, Chemical))
 ```
 
 ### Fine-tuning your plot
