@@ -32,11 +32,11 @@ In this tutorial, we will learn to manipulate and plot real-world data using the
 
 You will learn how to:
 
-* Create subsets of rows or columns from data frames using dplyr,
-* Change your data frames between wide and long formats,
-* Create various types of graphics,
-* Modify the various features of a graphic, and
-* Save your graphic in various formats
+- Create subsets of rows or columns from data frames using dplyr,
+- Change your data frames between wide and long formats,
+- Create various types of graphics,
+- Modify the various features of a graphic, and
+- Save your graphic in various formats
 
 This comprehensive introduction to the tidyverse is ideal for beginners but assumes some prior experience with R (e.g. as provided in our "Introduction to R and RStudio" tutorial).
 
@@ -90,14 +90,14 @@ This section is a reminder of how to manipulate data in base R. If *all* of thes
 
 A variable's *type* is the kind of information that can be stored in that variable. 
 
-* **Numeric** variables are numbers (e.g., `1`, `1.41`, `pi`).
-* **Character** variables are alphanumeric strings and are always surrounded by quotes `"` or apostrophes `'` (e.g., `"x"`, `"date"` `"1.41"`, `"TRUE"`).
-* **Logical** variables can only have two possible values: `TRUE` or `FALSE`.
+- **Numeric** variables are numbers (e.g., `1`, `1.41`, `pi`).
+- **Character** variables are alphanumeric strings and are always surrounded by quotes `"` or apostrophes `'` (e.g., `"x"`, `"date"` `"1.41"`, `"TRUE"`).
+- **Logical** variables can only have two possible values: `TRUE` or `FALSE`.
 
 A variable can contain one or more elements of the above data types. Variables can have different *structures*, of which the most important are the *vector* and the *data frame*.
 
-* A **vector** is a one-dimensional set of elements with the same type. A variable with a single element is also a vector (of length 1).
-* A **data frame** is two-dimensional (i.e., it is like a table). Each column in a data frame is like a vector.
+- A **vector** is a one-dimensional set of elements with the same type. A variable with a single element is also a vector (of length 1).
+- A **data frame** is two-dimensional (i.e., it is like a table). Each column in a data frame is like a vector.
 
 Identifying what type and structure of data you are working with is important because certain functions can only be applied to certain types/structures.
 
@@ -153,6 +153,16 @@ is.na(<vector>)
 is.na(oxygen)
 ```
 
+You can also use the `sum()` function to count the number of `TRUE`s in a logical vector:
+
+```{r sum_na, exercise = TRUE, exercise.setup = "setup_oxygen"}
+sum(is.na(<vector>))
+```
+
+```{r sum_na-solution}
+sum(is.na(oxygen))
+```
+
 Let's say we want to subset `oxygen` to include only non-NA values. The first thing we need is the opposite of the vector we just printed: a vector that is `TRUE` whenever `oxygen` is NOT `NA`. When we place the operator `!` in front of a logical vector, it reverses the value of all of its elements: from `TRUE` to `FALSE` and vice-versa. In the box below, combine the `!` operator and the `is.na()` function to create a vector that is `TRUE` whenever `oxygen` is not `NA`. Call this vector `not_na`:
 
 ```{r na_values, exercise = TRUE, exercise.setup = "setup_oxygen"}
@@ -192,10 +202,10 @@ What we just did was an example of *subsetting by condition*: instead of choosin
 
 Subsetting by condition is particularly powerful when using conditional statements. Here are some examples of conditional statements:
 
-* `a == b` returns `TRUE` when `a` matches `b`
-* `a != b` returns `TRUE` when `a` does not match `b`
-* `a > b` returns `TRUE` when `a` is greater than `b`
-* `a <= b` returns `TRUE` when `a` is smaller than or equal to `b`
+- `a == b` returns `TRUE` when `a` matches `b`
+- `a != b` returns `TRUE` when `a` does not match `b`
+- `a > b` returns `TRUE` when `a` is greater than `b`
+- `a <= b` returns `TRUE` when `a` is smaller than or equal to `b`
 
 In the box below, use a conditional statement to create and print a logical vector called `high_O2`, which is `TRUE` only when the `oxygen` measurement is above 400:
 
@@ -274,19 +284,19 @@ Subsetting data frames and vectors in base R, like we did in the previous sectio
 
 Compared to base R, dplyr code is very readable. Instead of base R’s indexing system (with its brackets and parentheses), which is difficult to read, dplyr operations are based around a small set of functions that match English-language "verbs". The most common verbs are:
 
-* `select()` a subset of columns based on their names.
-* `filter()` out a subset of rows based on their values.
-* `rename()` columns.
-* `arrange()` a column in ascending or descending order.
-* `mutate()` all values of a column, i.e., add a new column that is a function of existing columns.
-* `group_by()` a variable and `summarise` data by the grouped variable.
-* `*_join()` two data frames into a single data frame.
+- `select()` a subset of columns based on their names.
+- `filter()` out a subset of rows based on their values.
+- `rename()` columns.
+- `arrange()` a column in ascending or descending order.
+- `mutate()` all values of a column, i.e., add a new column that is a function of existing columns.
+- `group_by()` a variable and `summarise` data by the grouped variable.
+- `*_join()` two data frames into a single data frame.
 
 Each verb works similarly:
 
-* Input data frame as the first argument
-* Other arguments refer to the columns that we want to manipulate
-* The output is another data frame
+- Input data frame as the first argument
+- Other arguments refer to the columns that we want to manipulate
+- The output is another data frame
 
 ### `select()`
 
@@ -298,17 +308,17 @@ select(geochemicals, Longitude, Latitude)
 
 In the box below, subset the following columns from `geochemicals`:
 
-* cruise number, `Cruise`
-* date, `Date`
-* depth in kilometers, `Depth`
-* ammonium (NH$_4$) concentration, `Mean_NH4`
-* nitrogen dioxide (NO$_2$) concentration, `Mean_NO2`
-* hydrogen sulfide (H$_2$S) concentration, `Mean_H2S`
-* dinitrogen (N$_2$) concentration, `Mean_N2`
-* oxygen (O$_2$) concentration, `Mean_O2`
-* carbon dioxide (CO$_2$) concentration, `Mean_CO2`
-* nitrous oxide (N$_2$O) concentration, `Mean_N2O`
-* methane (CH$_4$) concentration, `Mean_CH4`
+- cruise number, `Cruise`
+- date, `Date`
+- depth in kilometers, `Depth`
+- ammonium (NH$_4$) concentration, `Mean_NH4`
+- nitrogen dioxide (NO$_2$) concentration, `Mean_NO2`
+- hydrogen sulfide (H$_2$S) concentration, `Mean_H2S`
+- dinitrogen (N$_2$) concentration, `Mean_N2`
+- oxygen (O$_2$) concentration, `Mean_O2`
+- carbon dioxide (CO$_2$) concentration, `Mean_CO2`
+- nitrous oxide (N$_2$O) concentration, `Mean_N2O`
+- methane (CH$_4$) concentration, `Mean_CH4`
 
 ```{r select2, exercise = TRUE, exercise.setup = "setup_high_O2"}
 select(<data_frame>, <variable1>, <variable2>, <...>)
@@ -617,8 +627,8 @@ In contrast, the latter data frame is **long**: each column represents one a var
 
 All packages in the tidyverse work better with long data (or, as it is also known in the context of the tidyverse, "tidy" data). A data frame is tidy when:
 
-* Each variable is its own column
-* Each row is one observation, or case
+- Each variable is its own column
+- Each row is one observation, or case
 
 Run the code below to take a look at our data frame `dat`:
 
@@ -637,10 +647,10 @@ The data frame `dat` would be long if each measurement were its own row. As it i
 
 We can turn data from wide to long, and vice versa, by "pivoting". To turn `dat` into a longer data frame, we use `pivot_longer()`, a function from the tidyverse package tidyr. This function takes the following arguments:
 
-* The data frame to be pivoted;
-* A vector containing the columns that we want to combine into a single, longer column **or** the columns that we do *not* want to combine (indicated by a minus sign);
-* `names_to`: The name of the column that is created from the data stored in the current column names;
-* `values_to`: The name of the column to create from the data stored in cell values.
+- The data frame to be pivoted;
+- A vector containing the columns that we want to combine into a single, longer column **or** the columns that we do *not* want to combine (indicated by a minus sign);
+- `names_to`: The name of the column that is created from the data stored in the current column names;
+- `values_to`: The name of the column to create from the data stored in cell values.
 
 Here is `pivot_longer` in action:
 
@@ -692,16 +702,16 @@ The fundamental idea behind the grammar of graphics is that a graphic consists o
 
 To build a ggplot, you combine different elements (called "layers"), like building blocks. The three mandatory building blocks of a ggplot are:
 
-* **data:** a data frame where each *variable* is one column 
-* **aesthetics:** map variables to visual attributes (e.g., position, color...)
-* **geoms:** geometric objects that represent data (e.g., points, bars, lines...)
+- **data:** a data frame where each *variable* is one column 
+- **aesthetics:** map variables to visual attributes (e.g., position, color...)
+- **geoms:** geometric objects that represent data (e.g., points, bars, lines...)
 
 In addition, there are also many optional layers, such as:
 
-* **stats:** statistical transformations of data (e.g., binning, averaging, smoothing...)
-* **scales:** control *how* to map a variable to an aesthetic, e.g., what colors to use
-* **facets:** represent data as multiple plots, each for a subset of the data
-* **guides:** axes, legend, etc. reflect the variables and their values
+- **stats:** statistical transformations of data (e.g., binning, averaging, smoothing...)
+- **scales:** control *how* to map a variable to an aesthetic, e.g., what colors to use
+- **facets:** represent data as multiple plots, each for a subset of the data
+- **guides:** axes, legend, etc. reflect the variables and their values
 
 The idea is to independently specify and combine the layers to create the plot
 you want.
@@ -712,9 +722,9 @@ Let's examine the relationship between oxygen (`Mean_O2`) and carbon dioxide (`M
 
 With ggplot2, you begin a plot with the function `ggplot()`, which creates a blank canvas that you can add layers to. Remember that to create a plot, you need at least three building blocks:
 
-* The first argument of ggplot is the *dataset*. So we initiate our plot with `ggplot(dat)` or `dat %>% ggplot()`.
-* The second argument is the *aesthetic map*. This argument is a function, `aes()`, whose arguments specify the dataset's variables (columns) and how they map onto the plot. In this case, the first variable (oxygen) will map into the x-axis and the second variable (carbon dioxide) will map into the y-axis. Hence we write `dat %>% ggplot(aes(x = Mean_O2, y = Mean_CO2))`.
-* You complete the graphic by adding one or more layers representing *geometric objects*, or "geoms". These geometric objects represent our data. In this case, we will use `geom_point()` because the data are represented as points. There are many geom functions for different types of data visualization, and we will learn some of them in this tutorial.
+- The first argument of ggplot is the *dataset*. So we initiate our plot with `ggplot(dat)` or `dat %>% ggplot()`.
+- The second argument is the *aesthetic map*. This argument is a function, `aes()`, whose arguments specify the dataset's variables (columns) and how they map onto the plot. In this case, the first variable (oxygen) will map into the x-axis and the second variable (carbon dioxide) will map into the y-axis. Hence we write `dat %>% ggplot(aes(x = Mean_O2, y = Mean_CO2))`.
+- You complete the graphic by adding one or more layers representing *geometric objects*, or "geoms". These geometric objects represent our data. In this case, we will use `geom_point()` because the data are represented as points. There are many geom functions for different types of data visualization, and we will learn some of them in this tutorial.
 
 Let's put it all together! Run the code below to produce your first ggplot:
 
@@ -849,7 +859,7 @@ select(geochemicals, Cruise, Date, Depth, starts_with("Mean_")) %>%
   geom_smooth()
 ```
 
-Both graphs are similar in that both describe the same variables (`Mean_O2` and `Depth`) of the same data frame (`dat`). Furthermore, they both use the same aesthetic mapping (namely, oxygen is mapped to the x axis and depth to the y axis). 
+Both graphs are similar in that both describe the same variables (`Mean_O2` and `Depth`) of the same data frame (`dat`). Furthermore, they both use the same aesthetic mapping (namely, oxygen is mapped to the x-axis and depth to the y-axis). 
 
 But they are different because they use different geometric objects ("geoms") to represent those data. The first graph uses points (`geom_point()`) whereas the second one uses a smooth curve (with confidence bands) fitted to the data (`geom_smooth()`). To go from the first plot to the second, all you need to do is change the geom. The code below creates the scatterplot above. Change the geom to produce the second plot:
 
@@ -973,8 +983,8 @@ A good alternative to using `colour = Chemical` (which colours the outlines of t
 
 #### Boxplots and violin plots
 
-All the plots we encountered so far map continuous variables to the x axis.
-Boxplots (`geom_boxplot()`), in contrast, are ideal for categorical x axis. 
+All the plots we encountered so far map continuous variables to the x-axis.
+Boxplots (`geom_boxplot()`), in contrast, are ideal for categorical x-axis. 
 Complete the code below to compare the `Concentration` of different chemicals in the `Chemical` column (namely: `Mean_O2`, and `Mean_CO2`).
 
 ```{r boxplot, exercise = TRUE,  exercise.setup = "setup_long_dat"}
@@ -1074,7 +1084,7 @@ dat %>%
        title = "Oxygen and carbon dioxide in the Saanich Inlet")
 ```
 
-The code below produces our box plot. Its x and y labels already look good, but let's add a title ("Effect of depth"). We can also modify the label of the `fill` aesthetic (currently titled "`Depth < 100`") using the same function. Let's call it "Depth" instead.
+The code below produces our box plot. Its x- and y-axis labels already look good, but let's add a title ("Effect of depth"). We can also modify the label of the `fill` aesthetic (currently titled "`Depth < 100`") using the same function. Let's call it "Depth" instead.
 
 ```{r boxplot-labels, exercise = TRUE,  exercise.setup = "setup_long_dat"}
 long_dat %>%
@@ -1107,7 +1117,7 @@ long_dat %>%
   geom_boxplot() +
   labs(title = "Effect of depth", fill = "Depth") +
   scale_fill_discrete(labels = c("> 100 m", "< 100 m")) +
-  <x axis scale layer>
+  <x-axis scale layer>
 ```
 
 ```{r boxplot-labels-scale-solution}
@@ -1199,15 +1209,15 @@ It's a good idea to iteratively adjust the width and height of your pdf file unt
 ## Additional resources
 In this tutorial, we have gone over just some of the functions and graphics within the tidyverse. Below are some resources for further learning and practice!
 
-* [R cheatsheets](https://www.rstudio.com/resources/cheatsheets/) also available in RStudio under Help > Cheatsheets
+- [R cheatsheets](https://www.rstudio.com/resources/cheatsheets/) also available in RStudio under Help > Cheatsheets
 
-* [Introduction to dplyr](https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html)
-* [dplyr tutorial](https://rpubs.com/justmarkham/dplyr-tutorial)
-* [dplyr video tutorial](https://www.r-bloggers.com/hands-on-dplyr-tutorial-for-faster-data-manipulation-in-r/)
-* [More functions in dplyr and tidyr](https://rpubs.com/bradleyboehmke/data_wrangling)
-* [R for data science (online free book)](https://r4ds.had.co.nz/)
+- [Introduction to dplyr](https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html)
+- [dplyr tutorial](https://rpubs.com/justmarkham/dplyr-tutorial)
+- [dplyr video tutorial](https://www.r-bloggers.com/hands-on-dplyr-tutorial-for-faster-data-manipulation-in-r/)
+- [More functions in dplyr and tidyr](https://rpubs.com/bradleyboehmke/data_wrangling)
+- [R for data science (online free book)](https://r4ds.had.co.nz/)
 
-* [ggplot tutorial 1](http://r-statistics.co/Complete-Ggplot2-Tutorial-Part1-With-R-Code.html)
-* [ggplot tutorial 2](https://rpubs.com/g_jw/ggplot2_tutorial)
-* [ggplot tutorial 3](http://tutorials.iq.harvard.edu/R/Rgraphics/Rgraphics.html#the_1_faq)
-* [ggplot2: Elegant Graphics for Data Analysis (online free book)](https://ggplot2-book.org/)
+- [ggplot tutorial 1](http://r-statistics.co/Complete-Ggplot2-Tutorial-Part1-With-R-Code.html)
+- [ggplot tutorial 2](https://rpubs.com/g_jw/ggplot2_tutorial)
+- [ggplot tutorial 3](http://tutorials.iq.harvard.edu/R/Rgraphics/Rgraphics.html#the_1_faq)
+- [ggplot2: Elegant Graphics for Data Analysis (online free book)](https://ggplot2-book.org/)
