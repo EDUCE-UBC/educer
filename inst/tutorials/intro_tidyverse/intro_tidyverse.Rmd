@@ -398,24 +398,23 @@ filter(dat, Date >= "2008-02-01" & <column> > 100)
 filter(dat, Date >= "2008-02-01" & Depth > 100)
 ```
 
-As we saw earlier, conditional statements and logical expressions in R are extremely powerful and allow us to filter the data in almost any way imaginable. The code below filters `dat` to obtain observations taken in the month of June (using the function `months` from the lubridate package\*). Modify it to obtain observations taken in the month of June, after 2008, at depths of either 10 or 20, and where oxygen data is not missing:
+As we saw earlier, conditional statements and logical expressions in R are extremely powerful and allow us to filter the data in almost any way imaginable. The code below filters `dat` to obtain observations taken in the month of June. It does this using the function `month()` from the lubridate package, which takes in a date as an input and returns the month number as an output (e.g., `month("2008-02-01")` returns `2`). Modify it to obtain observations taken in the month of June, after 2008, at depths of either 10 or 20, and where oxygen data is not missing:
 
-\* <font size="2"> Importantly, lubridate operates under the assumption that you are using English. To check what language R is using, run `Sys.getlocale("LC_TIME")`. If your computer is running in another language, replace "June" with the equivalent in your language or set R to English with `Sys.setlocale("LC_TIME", "en_CA.UTF-8")`. </font>
 
 ```{r filter-June, exercise = TRUE, exercise.setup = "setup_dat"}
-filter(dat, months(Date) == "June")
+filter(dat, month(Date) == 6)
 ```
 
 ```{r filter-June-hint-1}
-filter(dat, months(Date) == "June" & <other conditions>)
+filter(dat, month(Date) == 6 & <other conditions>)
 ```
 
 ```{r filter-June-hint-2}
-filter(dat, months(Date) == "June" & <column> %in% c(<depth values>) & !is.na(<column>))
+filter(dat, month(Date) == 6 & <column> %in% c(<depth values>) & !is.na(<column>))
 ```
 
 ```{r filter-June-hint-3}
-filter(dat, months(Date) == "June" & Depth %in% c(10, 20) & !is.na(Mean_O2))
+filter(dat, month(Date) == 6 & Depth %in% c(10, 20) & !is.na(Mean_O2))
 ```
 
 #### Exercise: Select and Filter
@@ -438,9 +437,9 @@ filter(small_data, Cruise == 72 & Depth <= 20)
 
 ### `rename()`
 
-You can use the `rename` function to assign new names to your columns. This
-can be very useful when your column names are very long and tedious to type. 
-In the box below, we remove the `Mean_` prefix from some of the columns. 
+You can use `rename(<data_frame>, <new_name> = <old_name>)` to assign new names to your columns. 
+You can rename as many columns as you want at the same time.
+For example, in the box below, we remove the `Mean_` prefix from some of the columns. 
 Run it and examine the output. Then, modify it so as to remove the prefix from
 the remaining chemicals (CO$_2$, N$_2$O, and CH$_4$).
 
@@ -482,12 +481,12 @@ arrange(dat, desc(Mean_O2))
 ### `mutate()`
 
 Mutate is one of the most useful verbs in the dplyr package.
-Use `mutate(y = function(x))` to apply a transformation to some column `x` and assign the output to the column name `y`. 
+Use `mutate(data_frame, y = function(x))` to apply a transformation to some column `x` and assign the output to the column name `y`. 
 The transformation can be a function (e.g., `log(x)`) or a mathematical operation. 
-As an example, run the code below to multiply `Depth` by 1000 (converting its units from kilometers to meters) and assign the output to a new column, `Depth_meters`.
+As an example, run the code below to divide `Depth` by 1000 (converting its units from metres to kilometers) and assign the output to a new column, `Depth_km`.
 
 ```{r mutate, exercise = TRUE, exercise.setup = "setup_dat"}
-mutate(dat, Depth_meters = Depth*1000)
+mutate(dat, Depth_km = Depth/1000)
 ```
 
 We can also mutate multiple columns. In the box below, try to use `mutate` to create a new column (with any name of your choice) containing the sum of `Mean_O2` and `Mean_CH4`:
@@ -506,8 +505,8 @@ Using the data frame `dat`:
 
 1. Select the `Date`, `Depth` and `Mean_O2` variables
 2. Rename the `Mean_O2` column to `O2`
-3. Keep August observations where oxygen data are non-missing using `filter`, `months`, and `!is.na`
-4. Transform `O2` from micromoles/L to micrograms/L using `mutate` (multiply by 32)
+3. Keep August observations where oxygen data are non-missing using `filter()`, `month()`, and `!is.na()`
+4. Transform `O2` from micromoles/L to micrograms/L using `mutate()` (multiply by 32)
 
 At each step, save the output into a new data frame with a name of your choice.
 Use the new data frame as an argument for the next step.
@@ -522,7 +521,7 @@ The final data frame should have sixteen rows.
 ```{r exercise_rename_mutate-solution}
 selected_data <- select(dat, Date, Depth, Mean_O2)
 renamed_data <- rename(selected_data, O2 = Mean_O2)
-filtered_data <- filter(renamed_data, months(Date) == "August" & !is.na(O2))
+filtered_data <- filter(renamed_data, month(Date) == 8 & !is.na(O2))
 mutate(filtered_data, O2 = O2 * 32)
 ```
 
@@ -567,7 +566,7 @@ In the box below, rewrite your code from the previous exercise using pipes.
 dat %>% 
   select(Date, Depth, Mean_O2) %>% 
   rename(O2 = Mean_O2) %>% 
-  filter(months(Date) == "August" & !is.na(O2)) %>% 
+  filter(month(Date) == 8 & !is.na(O2)) %>% 
   mutate(O2 = O2 * 32)
 ```
 
@@ -856,13 +855,13 @@ See how some points are overlapping each other, especially on the left? Making p
 
 Take a look at the two plots below. What is similar about them, and what is different?
 
-```{r echo=FALSE, warning=FALSE}
+```{r echo = FALSE, warning = FALSE, message = FALSE}
 select(geochemicals, Cruise, Date, Depth, starts_with("Mean_")) %>% 
   ggplot(aes(x = Mean_O2, y = Depth)) +
   geom_point()
 ```
 
-```{r echo=FALSE, warning=FALSE}
+```{r echo = FALSE, warning = FALSE, message = FALSE}
 select(geochemicals, Cruise, Date, Depth, starts_with("Mean_")) %>% 
   ggplot(aes(x = Mean_O2, y = Depth)) +
   geom_smooth()
