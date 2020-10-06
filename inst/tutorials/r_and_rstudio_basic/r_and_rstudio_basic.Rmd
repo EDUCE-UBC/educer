@@ -7,7 +7,7 @@ output:
     progressive: true
     allow_skip: true
 runtime: shiny_prerendered
-description: In-depth description will follow.
+description: This tutorial covers the basics of R and RStudio. You will learn about the different panes and features of RStudio that make coding in R easier, as well as basic skills of the R language itself, such as creating functions and loading packages.
 ---
 
 ```{r setup, include = FALSE}
@@ -21,6 +21,7 @@ setup_resources()
 # Tutorial specific setup
 library(dplyr)
 library(readr)
+total <- 4
 ```
 
 ## Learning objectives
@@ -33,7 +34,7 @@ By the end of this tutorial you should be able to:
 - Install and load R packages.
 - Load and subset tabular data using tidyverse.
 - Use the `help` function in R console to troubleshoot given a new function.
-
+The last bullet point can be more descriptive saying, "Use the `help` function in R console to troubleshoot and *identify mandatory parameters* given a new function."
 
 
 ## A Tour of RStudio
@@ -51,7 +52,7 @@ Notice that the window has three "panes":
 - Files/Help/Plots/Packages (tabbed in the lower right): as their names suggest, you can view the contents of the current directory, the built-in help pages, and the graphics you created, as well as manage R packages.
 
 To change the look of RStudio, you can go to Tools &rarr; Global Options &rarr; Appearance and select colours, font size, etc. If you plan to be working for longer periods, we suggest choosing a dark background colour scheme to save your computer battery and your eyes.
-
+You can also change the sizes of the panes by dragging the dividers or clicking on the expand and compress icons at the top right corner of each pane. 
 
 
 ## RStudio Projects
@@ -84,37 +85,34 @@ We use variables to store data that we want to access or manipulate later. Varia
 
 Without declaring a variable the sum of these two numbers will be printed to console but cannot be accessed for future use:
 
-```{r}
+```{r novar, exercise=TRUE}
 2 + 2 
 ```
 
 To declare a variable, follow the pattern of: `variable <- value`. Let's declare a variable `total` as the sum of two numbers.
 
-```{r}
+```{r d_var, exercise=TRUE}
 total <- 2 + 2
 ```
 
 We access the value of `total`:
 
-```{r}
+```{r var, exercise=TRUE}
 total
 ```
 
 We can use the value stored in `total`:
 
-```{r}
+```{r sub_var, exercise=TRUE}
 total - 1
 ```
 
 After declaring a variable, we can perform operations to change the value stored in the variable:
 
-```{r}
+```{r sub_var2, exercise=TRUE}
 total <- total - 1
-```
 
-Now `total` stores a new value:
 
-```{r}
 total
 ```
 
@@ -122,26 +120,49 @@ total
 
 ## Functions
 
-Functions are one of the basic units in programming. Generally speaking, a function takes some input and generates some output. Every R function follows the same basic syntax, where `function()` is the name of the function and `arguments` are the different parameters you can specify (i.e. your input):
+Functions are one of the basic units in programming. Generally speaking, a function takes some input and generates some output, in a reproducible way. Every R function follows the same basic syntax, where `function()` is the name of the function and `arguments` are the different parameters you can specify (i.e. your input):
 
 `function(argument1 = ..., argument2 = ..., ...)`
 
-You can treat functions as a black box and do not necessarily need to know how it works under the hood as long as your provided input conforms to a specific shape.
+You can treat functions as a black box and do not necessarily need to know how it works under the hood as long as your provided input conforms to a specific format.
 
 ![](/images/function.png){width=75%}
 
-For example, the function `sum()` expects numbers:
+For example, the function `sum()` (which outputs the sum of the arguments) expects numbers:
 
-```{r}
+```{r sum_function, exercise=TRUE}
 sum(3, 5, 9, 18)
 ```
 
 If you instead pass text as arguments to `sum()` you will receive an error:
 
-```{r error = TRUE}
+```{r sum_text, exercise=TRUE, error = TRUE}
 sum("Sum", "does", "not", "accept", "text!")
 ```
+The use of functions isn't limited to mathematical calculations. Function can also be used to transform data.
 
+For example, the function `t()` can be used to transpose a matrix. In the example below, we generate a matrix (`example_matrix`) using the functions `c()` and `as.matrix()`, which were used to combine values into a vector and transform the vector into a matrix. We then use the `t()` function to transpose `example_matrix` into the matrix `example_transposed`.
+
+```{r t_function, exercise=TRUE}
+# Generate Matrix
+example_list <- c("T", "does", "accept", "text!")
+example_matrix <- as.matrix(example_list)
+
+#Transpose Matrix
+example_transposed <- t(example_matrix)
+
+#Display Original and Transposed Matrices
+example_matrix
+example_transposed
+```
+### The most helpful function of all: the 'help' function
+You can get information about a specific function by running the command `?<function>` or `help(<function>)` (replace `<function>` by the name of the function you are interested in). This command opens the help page, where you can find all information about a function's purpose and its arguments. For beginners, it is useful to concentrate on the "Examples" and "Arguments" section to understand the typical usage of the function better.
+
+Run the code below to read the documentation for the `t()` function.
+
+```{r transpose_help, exercise=TRUE}
+?t
+```
 
 ## R packages
 
@@ -168,7 +189,16 @@ Packages can be loaded like this:
 ```{r eval = FALSE}
 library(tidyverse)
 ```
+It is a little tricker to load Bioconductor packages, as they are often not stored on the Comprehensive R Archive Network (CRAN) where most packages live. There is a package, however, that lives on CRAN and serves as an interface between CRAN and the Bioconductor packages.
 
+To load a Bioconductor package, you must first install and load the BiocManager package, like so.
+
+`install.packages("BiocManager")`
+`library("BiocManager)`
+
+You can then use the function `BiocManager::install()` to install a Bioconductor package. To install the Annotate package, we would execute the following code.
+
+`BiocManager::install("annotate")`
 
 
 ## Working with data
@@ -269,8 +299,59 @@ The **Arguments** Section describes the requirements of each input argument in d
 
 The **Examples** Section has examples of the function that can be directly copy and pasted into your terminal and ran. 
 
+Another example from base R that may be widely used is the function `nrow()` 
+
+```{r eval = FALSE}
+?nrow
+```
+
+The **Description** section tells us that `nrow()` from a matrix or an array.
+
+The **Usage** section tells us the inputs that need to be specified and default inputs of `nrow()`:
+
+- `x` is the data matrix or array for which the user is interested in identifying the number of rows
+
+The **Arguments** Section describes the requirements of each input argument in detail.
+
+The **Examples** Section has examples of the function that can be directly copy and pasted into your terminal and ran.
 
 
+
+Tidyverse is a wrapper for many valuable functions widely used in R. One of the examples from Tidyverse would be `select()`
+
+```{r eval = FALSE}
+if (!require("tidyverse")) install.packages("tidyverse")
+library(tidyverse)
+?select
+```
+
+The **Description** section tells us that `select()` can be used to select certain columns from a parent dataset, or optionally rename the columns
+
+The **Overview of selection features** section provides the user a list of operators and selection helpers to fully realize the power of `select()` 
+
+The **Usage** section tells us the inputs that need to be specified and default inputs of `select()`
+
+- `.data` is a mandatory input which refers to the parent dataset or tibble to subset from
+- the helper functions and list of operators could be used to specify the columns to subset
+
+The **Value** section describes an object integral to `select()`. A more descriptive account can be read in the help section
+
+The **Method** section describes the implementation method of the function `select()`
+
+The **Examples** Section has examples of the function that can be directly copy and pasted into your terminal and ran. 
+```{r quiz: navigating help, echo=FALSE}
+question("How would you launch a help section for a given function",
+  answer("Place an exclamation mark in front of the function"),
+  answer("Place an question mark in front of the function", correct = TRUE),
+  answer("Place an question mark after of the function"),
+  answer("Type out help and function name in the console")
+)
+
+question("What does an = sign indicate in the help section",
+         answer("There exists a default and is not mandatory", correct = TRUE),
+         answer("Is a mandatory input in the function")
+)
+```
 ## R Scripts
 
 R script files are the primary way in which R facilitates reproducible research. They contain the code that loads your raw data, cleans it, performs the analyses, and creates and saves visualizations. R scripts maintain a record of everything that is done to the raw data to reach the final result. That way, it is very easy to write up and communicate your methods because you have a document listing the precise steps you used to conduct your analyses. This is one of R's primary advantages compared to traditional tools like Excel, where it may be unclear how to reproduce the results. 
@@ -282,3 +363,16 @@ Additionally, you should annotate your R scripts with comments. In each line of 
 Let's create an R script (File > New File > R Script) and save it as `tidyverse.R` in your main project directory. If you again look to the project directory on your computer, you will see `tidyverse.R` is now saved there.
 
 We can copy and paste the previous commands in this tutorial and aggregate it in our R script.
+
+```{r quiz: R Scripts, echo=FALSE}
+question("How do R scripts make your work reproducible?",
+    answer("Trick question: they work just like Excel and don't make work reproducible"),
+    answer("They keep a record of all actions done to get from raw data to final results", correct=TRUE),
+    answer("You can use them to test different operations on your data")
+)
+
+question("How do you annotate R scripts with comments?",
+    answer("You start the line with 'comment:'),
+    answer("You start the line with the # symbol", correct=TRUE),
+    answer("You can just start typing and R will know it's a comment automatically")
+)
