@@ -118,7 +118,7 @@ In the box below, subset the following columns from `geochemicals`:
 - nitrous oxide (N$_2$O) concentration, `Mean_N2O`
 - methane (CH$_4$) concentration, `Mean_CH4`
 
-```{r select2, exercise = TRUE, exercise.setup = "setup_high_O2"}
+```{r select2, exercise = TRUE}
 select(<data_frame>, <variable1>, <variable2>, <...>)
 ```
 
@@ -139,7 +139,7 @@ That was a lot of typing! It would be nice if we could select all of those colum
 
 In the box below, create a new data frame names `dat` that contains the same `geochemicals` columns that you selected above --- but this time, use the `starts_with()` helper function to quickly select all of the chemicals.
 
-```{r dat, exercise = TRUE, exercise.setup = "setup_high_O2"}
+```{r dat, exercise = TRUE}
 dat <- select(<data_frame>, <variables>) # create dat
 dat # print dat
 ```
@@ -826,7 +826,7 @@ long_dat %>%
   facet_wrap(vars(Chemical))
 ```
 
-You can also facet your plot on the combination of two variables. To do this, add the layer `facet_grid()` instead of `facet_wrap()`. The only other difference is that `vars()` will now take two arguments, one for each variable name. 
+You can also facet your plot on the combination of two variables. To do this, add the layer `facet_grid()` instead of `facet_wrap()`. The only other difference is that we now need to provide two instances of `vars()`, one for each variable name. 
 
 Modify the code below to facet the plot by both `Cruise` and `Chemical`.
 
@@ -847,7 +847,7 @@ long_dat %>%
   ggplot(aes(x = Concentration, y = Depth)) +
   geom_point() +
   scale_y_reverse() +
-  facet_grid(vars(Cruise, Chemical))
+  facet_grid(vars(Cruise), vars(Chemical))
 ```
 
 ### Fine-tuning your plot
@@ -991,7 +991,58 @@ ggsave("saanich.pdf", width = 10, height = 6)
 
 It's a good idea to iteratively adjust the width and height of your pdf file until it looks just right.
 
-## Additional resources
+## Exercise and additional resources
+
+### Exercise
+
+As an exercise, try to replicate the following plot. 
+
+```{r echo = FALSE, message = FALSE, warning = FALSE}
+pA <- dat %>% 
+  filter(log(Mean_CH4) > 0) %>% 
+  ggplot(aes(x = Mean_O2, y = log(Mean_CH4), color = Depth)) + 
+  geom_point() +
+  labs(x = "O2 concentration", y = "CH4 concentration (log)") 
+
+pB <- long_dat %>% 
+  filter(Depth %in% c(10, 100, 200), Chemical %in% c("Mean_O2", "Mean_CO2")) %>% 
+  filter(!is.na(Concentration)) %>% 
+  ggplot(aes(x = Date, y = Concentration, color = Chemical)) +
+  scale_y_reverse() +
+  geom_point() +
+  geom_line() +
+  facet_wrap(vars(Depth)) 
+
+cowplot::plot_grid(pA, pB, ncol = 1, labels = c("A", "B"), rel_heights = c(1.5, 1))
+```
+
+Do your work in the code chunk below:
+
+```{r, final_exercise, exercise = TRUE,  exercise.lines = 20, exercise.setup = "setup_long_dat"}
+
+```
+
+```{r, final_exercise-solution}
+pA <- dat %>% 
+  filter(log(Mean_CH4) > 0) %>% 
+  ggplot(aes(x = Mean_O2, y = log(Mean_CH4), color = Depth)) + 
+  geom_point() +
+  labs(x = "O2 concentration", y = "CH4 concentration (log)") 
+
+pB <- long_dat %>% 
+  filter(Depth %in% c(10, 100, 200), Chemical %in% c("Mean_O2", "Mean_CO2")) %>% 
+  filter(!is.na(Concentration)) %>% 
+  ggplot(aes(x = Date, y = Concentration, color = Chemical)) +
+  scale_y_reverse() +
+  geom_point() +
+  geom_line() +
+  facet_wrap(vars(Depth)) 
+
+plot_grid(pA, pB, ncol = 1, labels = c("A", "B"), rel_heights = c(1.5, 1))
+```
+
+### Additional resources
+
 In this tutorial, we have gone over just some of the functions and graphics within the tidyverse. Below are some resources for further learning and practice!
 
 - [R cheatsheets](https://www.rstudio.com/resources/cheatsheets/) also available in RStudio under Help > Cheatsheets
