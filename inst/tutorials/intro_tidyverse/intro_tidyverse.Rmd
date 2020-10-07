@@ -11,7 +11,7 @@ output:
 runtime: shiny_prerendered
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE}
 # General learnr setup
 library(learnr)
 knitr::opts_chunk$set(echo = FALSE)
@@ -39,14 +39,6 @@ You will learn how to:
 - Save your graphic in various formats
 
 This comprehensive introduction to the tidyverse is ideal for beginners but assumes some prior experience with R (e.g. as provided in our "Introduction to R and RStudio" tutorial).
-
-### How to follow the tutorial
-
-Throughout the tutorial, you will encounter a number of coding exercises. Follow the instructions to complete the code in the code exercise window ![](images/one.png){width=0.3in} and then click on the “Run Code” button to see the results ![](images/two.png){width=0.3in}. You can reset the exercise if you get stuck ![](images/three.png){width=0.3in}, or can get hints or the solution ![](images/four.png){width=0.3in}.
-
-![](images/code_exercise_small.png){width=5in}
-
-You can leave this tutorial at any time: it will remember your progress when you return.
 
 ### Data description
 
@@ -81,209 +73,6 @@ library(cowplot) # Multi-panel figures
 ```
 
 Keep in mind that to use packages in a script, these packages *must already be installed* on your computer (see the "Introduction to R and RStudio" tutorial for more details about installing packages and working with scripts).
-
-## Data in R
-
-This section is a reminder of how to manipulate data in base R. If *all* of these concepts are completely new to you, consider doing our "Introduction to R and RStudio" tutorial. If you feel comfortable extracting columns from data frames and subsetting vector elements by index or by logical conditions, feel free to skip ahead to the next section ("Data wrangling").
-
-### Data types and structures
-
-A variable's *type* is the kind of information that can be stored in that variable. 
-
-- **Numeric** variables are numbers (e.g., `1`, `1.41`, `pi`).
-- **Character** variables are alphanumeric strings and are always surrounded by quotes `"` or apostrophes `'` (e.g., `"x"`, `"date"` `"1.41"`, `"TRUE"`).
-- **Logical** variables can only have two possible values: `TRUE` or `FALSE`.
-
-A variable can contain one or more elements of the above data types. Variables can have different *structures*, of which the most important are the *vector* and the *data frame*.
-
-- A **vector** is a one-dimensional set of elements with the same type. A variable with a single element is also a vector (of length 1).
-- A **data frame** is two-dimensional (i.e., it is like a table). Each column in a data frame is like a vector.
-
-Identifying what type and structure of data you are working with is important because certain functions can only be applied to certain types/structures.
-
-### Subsetting data in base R
-
-#### Subsetting columns from a data frame
-
-In base R, we can create a vector equal to a data frame's column using the `$` notation. In the box below, create a vector called `oxygen` equal to the column `Mean_O2` in our `geochemicals` data frame:
-
-```{r extract_column, exercise = TRUE}
-oxygen <- <data_frame>$<column_name> # create vector
-oxygen # print vector
-```
-
-```{r extract_column-solution}
-oxygen <- geochemicals$Mean_O2 # create vector
-oxygen # print vector
-```
-
-```{r setup_oxygen, include = FALSE}
-oxygen <- geochemicals$Mean_O2
-```
-
-That the newly created `oxygen` vector is of type numeric: it contains numbers. Some of its elements are `NA`: this is not a character string (note that it is not surrounded by quotation marks), but rather R's symbol for indicating missing data (it stands for "not available").
-
-#### Subsetting vetors by index
-
-We can further subset these data by pulling out specific measurements using the square bracket `[ ]` notation. In the box below, subset the elements 64, 66, and 69 through 75 of the `oxygen` vector. If you need help, use the Hint button.
-
-```{r subset_elements, exercise = TRUE, exercise.setup = "setup_oxygen"}
-oxygen[<vector_of_element_indices>] 
-```
-
-```{r subset_elements-hint-1}
-oxygen <- oxygen[c(<indices>)] 
-```
-
-```{r subset_elements-hint-2}
-oxygen <- oxygen[c(64, 66, 69:75)] 
-```
-
-Note that what we just did is equivalent from first extracting rows 64, 66, and 69 through 75 of the `geochemicals` data frame, and then subsetting the `Mean_O2` column.
-
-#### Subsetting vectors by condition
-
-As we saw above, there are a lot of missing data in the `oxygen` vector. Let's say we want to find all `NA` elements. The function `is.na()` returns `TRUE` for each element of the argument (e.g. if the argument is a vector) that is equal to `NA`. In the box below, use this function to print a logical vector that is `TRUE` when `oxygen` is `NA`:
-
-```{r is_na, exercise = TRUE, exercise.setup = "setup_oxygen"}
-is.na(<vector>)
-```
-
-```{r is_na-solution}
-is.na(oxygen)
-```
-
-You can also use the `sum()` function to count the number of `TRUE`s in a logical vector:
-
-```{r sum_na, exercise = TRUE, exercise.setup = "setup_oxygen"}
-sum(is.na(<vector>))
-```
-
-```{r sum_na-solution}
-sum(is.na(oxygen))
-```
-
-Let's say we want to subset `oxygen` to include only non-NA values. The first thing we need is the opposite of the vector we just printed: a vector that is `TRUE` whenever `oxygen` is NOT `NA`. When we place the operator `!` in front of a logical vector, it reverses the value of all of its elements: from `TRUE` to `FALSE` and vice-versa. In the box below, combine the `!` operator and the `is.na()` function to create a vector that is `TRUE` whenever `oxygen` is not `NA`. Call this vector `not_na`:
-
-```{r na_values, exercise = TRUE, exercise.setup = "setup_oxygen"}
-not_na <- <your_work_here> # create vector
-not_na # print vector
-```
-
-```{r na_values-solution}
-not_na <- !is.na(oxygen) # create vector
-not_na # print vector
-```
-
-```{r setup_na, include = FALSE}
-oxygen <- geochemicals$Mean_O2
-not_na <- !is.na(oxygen)
-```
-
-You can then use the logical vector `not_na` to subset the `oxygen` vector (just like you would use a vector of indices) using the square bracket notation from above. In the box below, let's re-define `oxygen` so as to contain only non-NA values. Then, use `sum()` to prove that there are actually no `NA`s left.
-
-```{r oxygen_no_na, exercise = TRUE, exercise.setup = "setup_na"}
-oxygen <- oxygen[<logical_vector_here>]
-sum(<your_work_here>)
-```
-
-```{r oxygen_no_na-solution}
-#oxygen <- oxygen[not_na] # one possible solution
-oxygen <- oxygen[!is.na(oxygen)] # another possible solution
-
-sum(is.na(oxygen))
-```
-
-```{r setup_redefine_oxygen, include = FALSE}
-oxygen <- geochemicals$Mean_O2
-oxygen <- oxygen[!is.na(oxygen)]
-```
-
-**Note:** that there are multiple ways of performing this task. Click the Solution button on top of the exercise box to ensure that you understand them.
-
-What we just did was an example of *subsetting by condition*: instead of choosing (by index) which of the hundreds of elements of oxygen to keep, we chose to keep only those elements that obey a specific *logical condition* (in this case, the condition of not being `NA`).
-
-Subsetting by condition is particularly powerful when using conditional statements. Here are some examples of conditional statements:
-
-- `a == b` returns `TRUE` when `a` matches `b`
-- `a != b` returns `TRUE` when `a` does not match `b`
-- `a > b` returns `TRUE` when `a` is greater than `b`
-- `a <= b` returns `TRUE` when `a` is smaller than or equal to `b`
-
-In the statements above, `a` and `b` may be single elements (scalars) or they may be vectors:
-
-- When both are scalars, the output will be a logical scalar (i.e. either `TRUE` or `FALSE`).
-- When one is a scalar and the other is a vector, each element of the vector is compared to the scalar (so that the output will be a logical vector).
-- Finally, when both `a` and `b` are vectors of the same length, elements with the same index are compared with each other, and the output is again a logical vector. You can't compare vectors of different lengths.
-
-In the box below, use a conditional statement to create and print a logical vector called `high_O2`, which is `TRUE` only when the `oxygen` measurement is above 400:
-
-```{r conditional_statements, exercise = TRUE, exercise.setup = "setup_redefine_oxygen"}
-high_O2 <- <conditional_statement_here> # create logical vector
-high_O2 # print logical vector
-```
-
-```{r conditional_statements-solution}
-high_O2 <- oxygen > 400
-high_O2
-```
-
-```{r setup_high_O2, include = FALSE}
-oxygen <- geochemicals$Mean_O2
-not_na <- !is.na(oxygen)
-oxygen <- oxygen[not_na]
-high_O2 <- oxygen > 400
-```
-
-Now, use the logical vector `high_O2` to subset `oxygen`, using the square bracket notation, so as to return only those values that are above 400:
-
-```{r subset_logical, exercise = TRUE, exercise.setup = "setup_high_O2"}
-oxygen[<logical_vector_here>]
-```
-
-```{r subset_logical-solution}
-oxygen[high_O2] # one possible solution
-oxygen[oxygen > 400] # another possible solution
-```
-
-You can also combine multiple conditions. The logical **AND** operator `a & b` returns `TRUE` when both `a` and `b` are themselves `TRUE`. The logical **OR** operator `a | b` returns `TRUE` when *at least* one of `a` and `b` are themselves `TRUE`. In the box below, subset `oxygen` to return only the cases when the measurement is larger than 20 but smaller or equal to 120:
-
-```{r subset_logical_and, exercise = TRUE, exercise.setup = "setup_high_O2"}
-oxygen[<logical_vector_here>]
-```
-
-```{r subset_logical_and-solution}
-oxygen[oxygen > 20 & oxygen <= 120]
-```
-
-Another useful logical operator is the `%in%` operator: `a %in% b` returns `TRUE` if the value of `a` is one of the elements in the vector `b`. In the box below, find out whether there is any measurement of `oxygen` that is *exactly* equal to `3.5`:
-
-```{r in_operator, exercise = TRUE, exercise.setup = "setup_high_O2"}
-<value> %in% <vector>
-```
-
-```{r in_operator-solution}
-3.5 %in% oxygen
-```
-
-#### Exercise: subsetting data
-In the box below, use the first 16 elements of the `Depth` column to:
-
-1. Find the indices where depth is greater or equal to 0.055
-2. Check if the value 0.111 is in the depth data
-3. Find values of depth that are less than 0.060 *or* greater than 0.140
-
-```{r subsetting_exercises, exercise = TRUE}
-
-```
-
-```{r subsetting_exercises-solution}
-depth <- geochemicals$Depth
-
-depth >= 0.055 # exercise 1
-0.111 %in% depth # exercise 2
-depth[depth < 0.06 | depth > 0.14] # exercise 3
-```
 
 ## Data wrangling with dplyr
 
@@ -366,10 +155,6 @@ dat # print dat
 ```
 
 ```{r setup_dat, include = FALSE}
-oxygen <- geochemicals$Mean_O2
-not_na <- !is.na(oxygen)
-oxygen <- oxygen[not_na]
-high_O2 <- oxygen > 400
 dat <- select(geochemicals, Cruise, Date, Depth, starts_with("Mean_"))
 ```
 
@@ -380,7 +165,22 @@ the console.
 
 ### `filter()`
 
-You can use `filter()` to subset particular rows based on a logical condition of a variable. This is where our practice with R logical conditions comes in handy. The pre-populated code in the box filters `dat` such that we only retain data collected after February 2008. Run it and examine the output. Then, modify the code so that it only retains those data points collected after February 2008 that were sampled deeper than 100 km.
+You can use `filter()` to subset particular rows based on a *logical condition* of a variable: instead of choosing (by index) which of the hundreds of rows to keep, we chose to keep only those rows that obey a specific condition: for example, we might want to keep only those observations taken at a depth of 100 m.
+
+To define the logical condition, we use *logical operators*. Here are some examples of logical operators:
+
+R code     | meaning
+---------- | ---------------
+`==`       | equals
+`< or >`   | less/greater than
+`<= or >= `| less/greater than or equal to
+`%in%`     | in
+`is.na`    | is missing (`NA`)
+`!`        | not (e.g. not equal to `!=`; not missing `!is.na()`)
+`&`        | and
+`\|`        | or
+
+Let's try some concrete examples! The pre-populated code in the box filters `dat` such that we only retain data collected after February 2008 (i.e., such that the `Date` is *greater than* the 2008-02-01). Pay attention to the syntax: `filter(<data_frame>, <logical_statement>)`. Run it and examine the output. Then, modify the code so that it only retains those data points collected after February 2008 that were sampled deeper than 100 m. Use the Hint button if you are not sure how to do this.
 
 ```{r filter-Feb, exercise = TRUE, exercise.setup = "setup_dat"}
 filter(dat, Date >= "2008-02-01")
@@ -398,7 +198,7 @@ filter(dat, Date >= "2008-02-01" & <column> > 100)
 filter(dat, Date >= "2008-02-01" & Depth > 100)
 ```
 
-As we saw earlier, conditional statements and logical expressions in R are extremely powerful and allow us to filter the data in almost any way imaginable. The code below filters `dat` to obtain observations taken in the month of June. It does this using the function `month()` from the lubridate package, which takes in a date as an input and returns the month number as an output (e.g., `month("2008-02-01")` returns `2`). Modify it to obtain observations taken in the month of June, after 2008, at depths of either 10 or 20, and where oxygen data is not missing:
+Logical operators in R are extremely powerful and allow us to filter the data in almost any way imaginable. The code below filters `dat` to obtain observations taken in the month of June. It does this using the function `month()` from the lubridate package, which takes in a date as an input and returns the month number as an output (e.g., `month("2008-02-01")` returns `2`). Modify it to obtain observations taken in the month of June, after 2008, at depths of either 10 or 20, and where oxygen data is not missing. Again, use the Hint button for help.
 
 
 ```{r filter-June, exercise = TRUE, exercise.setup = "setup_dat"}
@@ -423,7 +223,7 @@ In the code box below, using the `dat` data:
 
 1. select the `Cruise`, `Date`, `Depth`, and `Mean_O2` variables
 2. save the output into a new variable with a name of your choice
-3. filter the new data so as to retain data on Cruise 72 where Depth is smaller than or equal to 20 km. 
+3. filter the new data so as to retain data on Cruise 72 where Depth is smaller than or equal to 20 m. 
 
 ```{r exercise-select-filter, exercise = TRUE, exercise.setup = "setup_dat"}
 
@@ -457,13 +257,13 @@ rename(dat, NH4 = Mean_NH4, NO2 = Mean_NO2,
 ### `arrange()`
 
 Use `arrange(<data_frame>, <x>)` to sort all the rows of a given `<data_frame>` by the value of the column `<x>` in  ascending order. 
-Run the box below and study the order of the first ten rows in the data frame `dat`. 
+Run the box below and study the order of the first few rows in the data frame `dat`. 
 Then, comment the first line of code and uncomment the second row.
 Run the code again. Notice how the rows are now in order of ascending CH4.
 
 ```{r arrange, exercise = TRUE, exercise.setup = "setup_dat"}
-dat[1:10, ]
-#arrange(dat[1:10, ], Mean_CH4)
+dat
+#arrange(dat, Mean_CH4)
 ```
 
 To sort rows in descending order, use `arrange(<data_frame>, desc(<x>))`. 
@@ -671,10 +471,6 @@ long_dat
 ```
 
 ```{r setup_long_dat, include = FALSE}
-oxygen <- geochemicals$Mean_O2
-not_na <- !is.na(oxygen)
-oxygen <- oxygen[not_na]
-high_O2 <- oxygen > 400
 dat <- select(geochemicals, Cruise, Date, Depth, starts_with("Mean_"))
 long_dat <- dat %>% 
   pivot_longer(-c(Cruise, Date, Depth), 
