@@ -408,29 +408,12 @@ dat %>%
 
 ### Wide and long data
 
-There are many ways that you could organize your data into a data frame format. For example, the following data frame:
+There are many ways that you could organize your data into a data frame format. For example, the following data:
 
-```{r, echo = FALSE}
-set.seed(123)
-wide = tibble(
-  "country" = c("A", "B", "C"),
-  "2015" = runif(3, 0, 1) %>% round(3), 
-  "2016" = runif(3, 0.2, 1.2) %>% round(3),
-  "2017" = runif(3, 0.5, 1.5) %>% round(3)
-)
-
-wide
-```
-
-contains the same information as this other data frame:
-
-```{r, echo = FALSE}
-set.seed(123)
-pivot_longer(wide, names_to = "year", -"country")
-```
+![](images/pivot_longer.gif)
 
 In these two data frames, the same information is organized in a different way. 
-The former data frame is **wide**: a single variable (`year`) takes up many columns. 
+The former data frame is **wide**: a single variable (`Year`) takes up many columns. 
 In contrast, the latter data frame is **long**: each column represents one a variable.
 
 All packages in the tidyverse work better with long data (or, as it is also known in the context of the tidyverse, "tidy" data). A data frame is tidy when:
