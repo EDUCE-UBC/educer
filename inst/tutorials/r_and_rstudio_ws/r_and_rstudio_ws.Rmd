@@ -42,10 +42,14 @@ Why use a language like R instead of point-and-click alternatives like Excel? Fo
 ![](/images/what_is_r_step_1.png){width=100%}
 
 ### Let's get started!
-#### R as a calculator
-The window below is a small interactive environment. You can write R code in it, and then, when you click the Run button, the code is executed by the computer and you receive an *output*. 
 
-We can use it to perform simple calculator-style operations, such as addition (`+`), subtraction (`-`), multiplication (`*`), division (`/`), or power (`^`).
+#### How to follow this tutorial?
+
+```{r child = system.file("resources/markdown", "how_to_follow_tutorials.Rmd", package = "educer")}
+```
+
+#### R as a calculator
+We will start by using interactive code boxes to perform simple calculator-style operations, such as addition (`+`), subtraction (`-`), multiplication (`*`), division (`/`), or power (`^`).
 
 The following code computes the answer to $1 + 1$. Change it so that it computes the answer to $3^2$, then run it:
 
@@ -300,18 +304,19 @@ As you can see, when you multiply two vectors with the same length, R multiplies
 ### Data frames
 Whereas a vector is a one-dimensional structure, *data frames* are two-dimensional. You can think of a data frame as a collection of vectors. Data frames are one of R's most essential data structures. They organise data into a tabular format with rows and columns. 
 
-If you have some data from an experiment or study, you will typically save it as a table in a format such as `.csv`, `.txt`, or `.xlsx`. When you load those files into R, you will create a data frame object. At the end of this tutorial (section *Using R in your own computer*) you will learn how to load a data file stored in your computer into R.
+If you have some data from an experiment or study, you will typically save it as a table in a format such as `.csv`, `.txt`, or `.xlsx`. When you load those files into R, you will create a data frame object. At the end of this tutorial (section *Using R in your own computer*) you will learn how to load a data file stored in your computer into R. Instead of loading data from your computer, you can also use an online data set.
 
-Instead of loading data from your computer, you can also use an online data set: we will use [this one](https://raw.githubusercontent.com/EDUCE-UBC/workshops_access/master/intro_R_2hr/data.csv), which is a `.csv` file hosted on our [GitHub](https://github.com/EDUCE-UBC/workshops_access). Click on the link and examine the format of the data. Notice that the first row consists of column names, that each column corresponds to a data variable, and that each row corresponds to one observation.
+``` {r child = system.file("resources/markdown", "data_description.Rmd", package = "educer")}
+```
 
-These data contain information on oxygen concentrations sampled at [Saanich Inlet, British Columbia](https://en.wikipedia.org/wiki/Saanich_Inlet) at several depths and during various seasons. It contains:
+The [data file](https://raw.githubusercontent.com/EDUCE-UBC/workshops_access/master/intro_R_2hr/data.csv) is a `.csv` file hosted on our [GitHub](https://github.com/EDUCE-UBC/workshops_access). Click on the link and examine the format of the data. Notice that the first row consists of column names, that each column corresponds to a data variable, and that each row corresponds to one observation.
+
+The data file contains the following columns:
 
 - `Season` - season in which measurement was obtained; Fall or Summer
 - `Depth_m` - depth in meters (m) at which measurement as obtained
 - `O2_uM` - oxygen (O~2~) concentration in micromolar (µM)
 - `Add_data` - whether additional microbiological data was collected; `TRUE` or `FALSE`
-
-For a brief introduction to the data used in our workshops, see [Hallam SJ *et al*. 2017. Sci Data 4: 170158](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5663219/) "Monitoring microbial responses to ocean deoxygenation in a model oxygen minimum zone". More detailed information on the environmental context and time series data can be found in [Torres-Beltrán M *et al*. 2017. Sci Data 4: 170159.](https://www.nature.com/articles/sdata2017159) "A compendium of geochemical information from the Saanich Inlet water column".
 
 You can import `.csv` data files into R using `read.csv()`. Since our file is hosted online, the function's argument should be a character string containing the link to the data set. (What if the file is saved in your computer? Wait until section *Using R in your own computer* to learn more.) 
 

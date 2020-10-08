@@ -1,7 +1,0 @@
-# How to follow the tutorial
-
-Throughout the tutorial, you will encounter a number of coding exercises. Follow the instructions to complete the code in the code exercise window ![](images/one.png){width=0.3in} and then click on the “Run Code” button to see the results ![](images/two.png){width=0.3in}. You can reset the exercise if you get stuck ![](images/three.png){width=0.3in}, or can get hints or the solution ![](images/four.png){width=0.3in}.
-
-![](images/code_exercise_small.png){width=5in}
-
-You can leave this tutorial at any time: it will remember your progress when you return.

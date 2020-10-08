@@ -40,13 +40,15 @@ You will learn how to:
 
 This comprehensive introduction to the tidyverse is ideal for beginners but assumes some prior experience with R (e.g. as provided in our "Introduction to R and RStudio" tutorial).
 
+### How to follow this tutorial
+
+```{r child = system.file("resources/markdown", "how_to_follow_tutorials.Rmd", package = "educer")}
+```
+
 ### Data description
 
-We will work with real-world data collected as part of an ongoing oceanographic time series program in Saanich Inlet, a seasonally anoxic fjord on the East coast of Vancouver Island, British Columbia:
-
-![](images/saanich_inlet_map.png){width=4in}
-
-The figure shows a map of Saanich Inlet indicating conventional sample collection stations (S1-S9). The data used in this tutorial (sourced from S3) include various geochemical measurements at many depths in Saanich Inlet. Samples were taken approximately monthly from 2006 to 2014, though there is much missing data to contend with.
+``` {r child = system.file("resources/markdown", "data_description.Rmd", package = "educer")}
+```
 
 During this tutorial, the data are accessible as a data frame called `geochemicals`. In the interactive code box below, use the function `head` to peak at the first few rows of this data frame:
 
@@ -58,7 +60,6 @@ head(<name_of_the_data_frame>)
 head(geochemicals)
 ```
 
-For more details about these data, run `?geochemicals` or see [Hallam SJ *et al*. 2017. Sci Data 4: 170158](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5663219/) "Monitoring microbial responses to ocean deoxygenation in a model oxygen minimum zone". More detailed information on the environmental context and time series data can be found in [Torres-Beltrán M *et al*. 2017. Sci Data 4: 170159.](https://www.nature.com/articles/sdata2017159) "A compendium of geochemical information from the Saanich Inlet water column".
 
 ### Loading packages
 
