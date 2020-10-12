@@ -52,34 +52,6 @@ summary_solution_2 <-
 
 
 
-## R packages
-
-R packages are units of shareable code, containing functions that facilitate and enhance analyses. In simpler terms, think of R packages as iPhone Applications. Each App has specific functions and capabilities that can be accessed when we install then open the application. The same can be said about R packages. In order to use the functions for a specific R package, we first need to install the package, then each time we want to use the package we need to "open" the package. 
-
-In this tutorial we will be using the "tidyverse" package. This package contains a versatile set of functions designed for easy manipulation of data.
-
-### Installing Packages
-
-The tidyverse package can be installed like this (to install a different package just replace "tidyverse" with the name of the desired package):
-
-**For R v3.4 or newer**
-```{r eval = FALSE}
-install.packages("tidyverse")
-```
-
-**For R v3.3 or older**  
-Unfortunately, tidyverse does not work on older versions of R. Instead, you will need to individually install each package within the tidyverse.
-```{r eval=FALSE}
-install.packages("tibble")
-install.packages("readr")
-install.packages("dplyr")
-install.packages("tidyr")
-install.packages("ggplot2")
-install.packages("stringr")
-install.packages("purrr")
-install.packages("forcats")
-```
-
 
 
 ## Loading packages
