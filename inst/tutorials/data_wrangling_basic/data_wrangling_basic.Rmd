@@ -142,8 +142,6 @@ output$downloadData <- downloadHandler(
 )
 ```
 
-
-
 ## Loading tabular data
 
 Every R function follows the following basic syntax, where `function()` is the name of the function and `arguments` are the different parameters you can specify.
@@ -186,8 +184,6 @@ quiz(
 )
 ```
 
-
-
 ## Data exploration
 
 Let's explore the data that we've imported into R. The simplest way to view your imported data is to view it as a "tibble" like this. This view displays a subset of large data table.
@@ -196,7 +192,7 @@ Let's explore the data that we've imported into R. The simplest way to view your
 OTU_metadata_table
 ```
 
-`glimpse()` is a function that as its name suggests, allows us to get a "glimpse" of the contents of a data table. Running `glimpse()` on a data table outputs the number of rows (observations), columns (variables), and lists each column name along with its type and a portion of its contents. Let's run `glimpse()` with our OTU_metadata_table like this:
+`glimpse()` is a function that, as its name suggests, allows us to get a "glimpse" of the contents of a data table. Running `glimpse()` on a data table outputs the number of rows (observations), columns (variables), and lists each column name along with its type and a portion of its contents. Let's run `glimpse()` with our OTU_metadata_table like this:
 
 ```{r glimpse, exercise = TRUE, exercise.lines = 5}
 glimpse(OTU_metadata_table)
@@ -237,7 +233,6 @@ colnames(OTU_metadata_table)
 ```
 
 
-
 ## `select()`
 
 You can use the `select()` function to keep only a subset of variables (columns). Let's select the variables `OTU0001`, `OTU0002`, `OTU0004`, `Depth`.
@@ -253,22 +248,29 @@ restricted_columns
 ```
 
 ### Exercise
-As an exercise, select for only the depth and geochemical columns in `OTU_metadata_table` and name the new table `metadata`:
+As an exercise, select for only the depth and geochemical columns (Depth, NO3, Mean_NO2, Mean_N2O, and Mean_NH4) in `OTU_metadata_table` and name the new table `metadata`:
 
 ```{r select-exercise, exercise = TRUE, exercise.lines = 5}
 
 ```
 
-### Exercise: `select()`
-
-Select the Cruise, Date, Depth, PO4, and WS_NO3 variables of the `geochemicals` data set
-
-```{r select-exercise-1, exercise=TRUE, exercise.lines = 3}
-
-dat <- select()
-
-dat
+```{r select-exercise-hint-1}
+select(OTU_metadata_table, <variable1>, <variable2>, <...>)
 ```
+
+```{r select-exercise-hint-2}
+select(OTU_metadata_table, Depth, NO3, Mean_NO2, Mean_N2O, Mean_NH4)
+```
+<!-- ### Exercise: `select()` -->
+
+<!-- Select the Cruise, Date, Depth, PO4, and WS_NO3 variables of the `geochemicals` data set -->
+
+<!-- ```{r select-exercise-1, exercise=TRUE, exercise.lines = 3} -->
+
+<!-- dat <- select() -->
+
+<!-- dat -->
+<!-- ``` -->
 
 
 
@@ -287,11 +289,27 @@ y == "dog"
 
 The equation `x < 3` is `FALSE` because x is set to 6 in the line above. As a simple exercise, manipulate the above code to make both equations `TRUE`. 
 
-note that in R, `==` is used in Boolean equations and using a single `=` will result in error. As you may have noticed above a single `=` is used to set a variable to a value. 
+```{r boolean-exercise-hint-1}
+#x <- A number less than 3
+#y <- A string
+
+x < 3
+y == "dog"
+```
+
+```{r boolean-exercise-hint-2}
+x <- 1
+y <- "dog"
+
+x < 3
+y == "dog"
+```
+
+Note that in R, `==` is used in Boolean equations and using a single `=` will result in error. As you may have noticed above a single `=` is used to set a variable to a value. 
 
 For quick reference, here are the most commonly used statements and operators.
 
-R code     | meaning
+R Operator | Meaning
 ---------- | ---------------
 `==`       | equals
 `< or >`   | less/greater than
@@ -310,6 +328,20 @@ Write a boolean equation for "x is greater than 6 or less than 12", it should re
 ```{r boolean-exercise-2, exercise = TRUE, exercise.lines = 5}
 
 ```
+
+```{r boolean-exercise-2-hint-1}
+# Consider how we represent the "greater/less than" 
+# operator and the "OR" operator in R.
+
+# "x is greater than n" can be represented in the following way.
+x > n
+```
+
+```{r boolean-exercise-2-hint-2}
+# "x is greater than n or less than m" can be represented in the following way.
+x > n | x < m
+```
+
 
 ### `filter()`
 
@@ -363,7 +395,7 @@ We can look for a range of values by finding the rows where the value of the var
 filter(subset_dat, CTD_O2 <= 120 & CTD_O2 >= 20)
 ```
 
-Logical OR `|`. Find the rows where the value is <= 50 **OR** >= 150.
+Lastly, we can use the logical OR (`|`) to find the rows where the value is <= 50 **OR** >= 150.
 
 ```{r or, exercise = TRUE, exercise.lines = 5}
 filter(subset_dat, CTD_O2 <= 50 | CTD_O2 >= 150)
@@ -376,7 +408,14 @@ As an exercise, restrict for rows where the value for "depth" is less than or eq
 
 ```
 
+```{r filter-exercise-hint-1}
+# Recall the general syntax for filtering.
+filter(dataset, (column, operator, quantity))
+```
 
+```{r filter-exercise-hint-2}
+filter(subset_dat, depth <= 135)
+```
 
 ## `slice()`
 
@@ -418,11 +457,23 @@ A) what depth value occurs in the 20th row?
 B) what methane value occurs in the 170th row?
     
 ```{r slice_exercise, exercise=TRUE, exercise.lines=5}
-dat <- OTU_metadata_table
+dat <- geochemicals
 ```
 
+```{r slice_exercise-hint-1}
+# Recall that slice() allows you to find a row
+# and select() allows you to find a column
+```
 
+```{r slice_exercise-hint-2}
+slice(dat, 20)
+select(dat, depth)
+```
 
+```{r slice_exercise-hint-2}
+slice(select(dat, Depth), 20)
+select(slice(dat, 170), methane)
+```
 ## Summary Exercise
 
 The `geochemicals` dataset is included in the "educer" package. This dataframe contains time series observations on the water column chemistry. Learn more about the `geochemicals` dataset by running the following line in your R console. 
@@ -453,8 +504,6 @@ Your resulting pdat object should be a [`r dim(summary_solution_2)`] data frame.
 ```{r summary-exercise-2, exercise = TRUE, exercise.lines = 5}
 dat <- geochemicals
 ```
-
-
 
 ## Additional resources
 
