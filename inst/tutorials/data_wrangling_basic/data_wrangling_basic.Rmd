@@ -66,7 +66,6 @@ library(educer)
 ```
 
 
-
 ## Tidyverse vs. base R
 
 The [tidyverse](https://www.tidyverse.org/) is a collection of R packages for data wrangling, analysis, and visualization.
@@ -109,7 +108,10 @@ Before working with our data, we first want to make a copy of the raw data so th
 
 We will then continually overwrite this object with `<-` as we clean it in R.
 
+<!-- ### Data description test -->
 
+<!-- ``` {r child = system.file("resources/markdown", "data_description.Rmd", package = "educer")} -->
+<!-- ``` -->
 
 ### Data description
 The data used throughout this module were collected as part of an on-going oceanographic time series program in Saanich Inlet, a seasonally anoxic fjord on the East coast of Vancouver Island, British Columbia.
@@ -168,7 +170,7 @@ Now our data is formatted nicely into table form.
 
 ### Save data in the environment
 
-Since we want to do more with our data after reading it in, we need to save it as a variable in R like we did previously with the `<-` operator. You can choose to name the object whatever you like, though this module assumes the names used below.
+Since we want to further manipulate our dataset after reading it in, we need to save it as a variable in R like we did previously with the `<-` operator. You can name the object whatever you like, though this module will assume the names used below.
 
 ```{r eval = FALSE}
 OTU_metadata_table <- read_csv(file = "combined.csv", col_names = TRUE)
@@ -188,7 +190,7 @@ quiz(
 
 ## Data exploration
 
-Let's explore the data that we've imported into R. The simplest way to view your imported data is to view it as a "tibble" like this. This view displays a subset of large data tables (notice that the last column name gets cut off) in a table view
+Let's explore the data that we've imported into R. The simplest way to view your imported data is to view it as a "tibble" like this. This view displays a subset of large data table.
 
 ```{r tibble, exercise = TRUE, exercise.lines = 5}
 OTU_metadata_table
