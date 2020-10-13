@@ -1,0 +1,251 @@
+---
+title: "E. coli Growth Rate Analysis"
+author: "Avery J. C. Noonan<br>
+        Enabled by notes from Stephan Koenig and Linnea, as well as the contribution of several Educe TAs. <br>
+        A tutorial by [ECOSCOPE](http://ecoscope.ubc.ca/) at UBC."
+date: "version `r format(Sys.time(), '%B %d, %Y')`"
+description: In-depth description will follow.
+output:
+  learnr::tutorial:
+      progressive: true
+      allow_skip: true
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+# General learnr setup
+library(learnr)
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
+library(educer)
+# Helper function to set path to images to "/images" etc.
+setup_resources()
+
+# Tutorial specific setup
+library(tidyverse)
+library("growthrates")
+library(rstatix)
+```
+
+## Introduction
+*E. coli* cultures were innoculated in a 96-well plate in both rich media (LB) and minimal media (MM).  Optical density (OD~600~) measurements were taken over approximately 24 hours, as a metric of cell number, using a microplate reader.
+
+In this tutorial, we will import optical density (OD~600~) data and plot growth curves of the *E. coli* cultures. We will then use the `growthrates` package to calculate maximum growth rates, before determining whether there s a statistical difference between the growth rates of culture in LB and MM.
+
+## Environment Setup and Data Import
+Necessary packages are first loaded into R, using the `library(<package>)` function. In this tutorial, we use the following packages:
+
+* `tidyverse`
+* `"growthrates"`
+* `rstatix`
+
+Files `growth_data.csv` and `well_information.csv` are imported using the `tidyverse` function `read_csv()`. 
+
+```{r import, exercise=TRUE, message=TRUE}
+library(tidyverse)
+library("growthrates")
+library(rstatix)
+
+raw_growth_data <- read_csv(system.file("resources/data",  "growth_data.csv", package = "educer"), col_names = TRUE, skip = 12)
+well_data <- read_csv(system.file("resources/data", "well_information.csv", package = "educer"), col_names = TRUE)
+```
+
+## Data Processing
+When analyzing data, it is often important to reformat and combine data sets for analysis or visualizations using specific packages or functions.  We will use function from the `tidyverse` package to reformat, combine and filter OD~600~ and well information data accordingly.
+
+```{r data_reformating_setup}
+library(tidyverse)
+library("growthrates")
+library(rstatix)
+
+raw_growth_data <- read_csv(system.file("resources/data",  "growth_data.csv", package = "educer"), col_names = TRUE, skip = 12)
+well_data <- read_csv(system.file("resources/data", "well_information.csv", package = "educer"), col_names = TRUE)
+```
+
+```{r data_reformating, exercise=TRUE, exercise.setup = "data_reformating_setup"}
+growth_data <- raw_growth_data %>%
+  pivot_longer(-c(Time, Temp), names_to = 'well', values_to = 'OD600')
+
+growth_data_info <- right_join(growth_data, well_data, by = 'well') %>%
+  filter(!is.na(student), !is.na(Time))
+
+blank_OD <- growth_data_info %>%
+  filter(!is.na(Time)) %>%
+  filter(blank == TRUE, Time == min(.$Time)) %>%
+  group_by(media) %>%
+  summarise(blank_OD = mean(OD600))
+
+growth_data_LB <- growth_data_info %>%
+  filter(media == 'LB') %>%
+  mutate(net_OD = OD600 - blank_OD %>%
+           filter(media == 'LB') %>%
+           .$blank_OD)
+
+growth_data_MM <- growth_data_info %>%
+  filter(media == 'MM') %>%
+  mutate(net_OD = OD600 - blank_OD %>%
+           filter(media == 'MM') %>%
+           .$blank_OD)
+
+growth_data_full <- bind_rows(growth_data_LB, growth_data_MM)
+```
+
+## Plotting Growth Curves
+
+```{r plotting_growth_curves_setup}
+raw_growth_data <- read_csv(system.file("resources/data",  "growth_data.csv", package = "educer"), col_names = TRUE, skip = 12)
+well_data <- read_csv(system.file("resources/data", "well_information.csv", package = "educer"), col_names = TRUE)
+
+growth_data <- raw_growth_data %>%
+  pivot_longer(-c(Time, Temp), names_to = 'well', values_to = 'OD600')
+
+growth_data_info <- right_join(growth_data, well_data, by = 'well') %>%
+  filter(!is.na(student), !is.na(Time))
+
+blank_OD <- growth_data_info %>%
+  filter(!is.na(Time)) %>%
+  filter(blank == TRUE, Time == min(.$Time)) %>%
+  group_by(media) %>%
+  summarise(blank_OD = mean(OD600))
+
+growth_data_LB <- growth_data_info %>%
+  filter(media == 'LB') %>%
+  mutate(net_OD = OD600 - blank_OD %>%
+           filter(media == 'LB') %>%
+           .$blank_OD)
+
+growth_data_MM <- growth_data_info %>%
+  filter(media == 'MM') %>%
+  mutate(net_OD = OD600 - blank_OD %>%
+           filter(media == 'MM') %>%
+           .$blank_OD)
+
+growth_data_full <- bind_rows(growth_data_LB, growth_data_MM)
+```
+
+```{r plotting_growth_curves, exercise=TRUE, exercise.setup = "plotting_growth_curves_setup"}
+growth_data_full %>%
+  filter(!is.na(student), blank == FALSE) %>%
+  ggplot(aes(x=Time, y=net_OD, color = media, group = media)) +
+  geom_point(shape=19, size=1)
+
+growth_data_full %>%
+  filter(!is.na(student), blank == TRUE) %>%
+  ggplot(aes(x=Time, y=net_OD, color = media, group = media)) +
+  geom_point(shape=19, size=1)
+```
+
+## Calculating Growth Rates
+
+```{r test_growth_rates, exercise=TRUE, exercise.setup = "plotting_growth_curves_setup"}
+test_data <- growth_data_full %>%
+  filter(well == 'H10')
+
+fit_test <- fit_easylinear(test_data$Time, test_data$net_OD)
+
+fit_test@obs %>%
+  ggplot(aes(x= time, y = y)) +
+  geom_point()
+
+coef(fit_test)
+plot(fit_test)
+```
+
+```{r calculating_growth_rates, exercise=TRUE, exercise.setup = "plotting_growth_curves_setup"}
+growth_rates <- growth_data_full %>%
+  distinct(well, .keep_all = TRUE) %>%
+  select(c(well, student, blank, media)) %>%
+  filter(blank == FALSE)
+
+growth_rates$growth_rate <- NA
+for (w in 1:length(growth_rates$well)){
+  growth_rate_data <- growth_data_full %>%
+    filter(well == growth_rates$well[w])
+  
+  growth_fit <- fit_easylinear(growth_rate_data$Time, growth_rate_data$net_OD)
+
+  growth_rates$growth_rate[w] = growth_fit@par[[3]]
+}
+```
+## Data Distribution
+
+```{r calculating_growth_rates_setup, exercise=TRUE, exercise.setup = "plotting_growth_curves_setup"}
+growth_rates <- growth_data_full %>%
+  distinct(well, .keep_all = TRUE) %>%
+  select(c(well, student, blank, media)) %>%
+  filter(blank == FALSE)
+
+growth_rates$growth_rate <- NA
+for (w in 1:length(growth_rates$well)){
+  growth_rate_data <- growth_data_full %>%
+    filter(well == growth_rates$well[w])
+  
+  growth_fit <- fit_easylinear(growth_rate_data$Time, growth_rate_data$net_OD)
+
+  growth_rates$growth_rate[w] = growth_fit@par[[3]]
+}
+```
+
+```{r plotting_growth_rates_setup}
+raw_growth_data <- read_csv(system.file("resources/data",  "growth_data.csv", package = "educer"), col_names = TRUE, skip = 12)
+well_data <- read_csv(system.file("resources/data", "well_information.csv", package = "educer"), col_names = TRUE)
+
+growth_data <- raw_growth_data %>%
+  pivot_longer(-c(Time, Temp), names_to = 'well', values_to = 'OD600')
+
+growth_data_info <- right_join(growth_data, well_data, by = 'well') %>%
+  filter(!is.na(student), !is.na(Time))
+
+blank_OD <- growth_data_info %>%
+  filter(!is.na(Time)) %>%
+  filter(blank == TRUE, Time == min(.$Time)) %>%
+  group_by(media) %>%
+  summarise(blank_OD = mean(OD600))
+
+growth_data_LB <- growth_data_info %>%
+  filter(media == 'LB') %>%
+  mutate(net_OD = OD600 - blank_OD %>%
+           filter(media == 'LB') %>%
+           .$blank_OD)
+
+growth_data_MM <- growth_data_info %>%
+  filter(media == 'MM') %>%
+  mutate(net_OD = OD600 - blank_OD %>%
+           filter(media == 'MM') %>%
+           .$blank_OD)
+
+growth_data_full <- bind_rows(growth_data_LB, growth_data_MM)
+
+growth_rates <- growth_data_full %>%
+  distinct(well, .keep_all = TRUE) %>%
+  select(c(well, student, blank, media)) %>%
+  filter(blank == FALSE)
+
+growth_rates$growth_rate <- NA
+for (w in 1:length(growth_rates$well)){
+  growth_rate_data <- growth_data_full %>%
+    filter(well == growth_rates$well[w])
+  
+  growth_fit <- fit_easylinear(growth_rate_data$Time, growth_rate_data$net_OD)
+
+  growth_rates$growth_rate[w] = growth_fit@par[[3]]
+}
+```
+
+```{r data_distribution, exercise=TRUE, exercise.setup = "plotting_growth_rates_setup"}
+growth_rates %>%
+  ggplot(aes(x=growth_rate, color = media)) +
+  geom_density()
+```
+
+## Statistical Analysis
+
+```{r staistical_analysis, exercise=TRUE, exercise.setup = "plotting_growth_rates_setup"}
+growth_rates %>%
+  ggplot(aes(x=media, y = growth_rate, fill  = media)) +
+  geom_boxplot()
+
+growth_rate_wilcox <- growth_rates %>%
+  wilcox_test(growth_rate ~ media, paired = FALSE) %>%
+  add_significance
+growth_rate_wilcox
+```

@@ -1,0 +1,97 @@
+well,student,blank,media
+A1,NA,NA,NA
+A2,Student A,TRUE,LB
+A3,Student A,TRUE,LB
+A4,Student A,FALSE,LB
+A5,Student A,FALSE,LB
+A6,NA,NA,NA
+A7,Student B,TRUE,MM
+A8,Student B,TRUE,MM
+A9,Student B,FALSE,MM
+A10,Student B,FALSE,MM
+A11,NA,NA,NA
+A12,NA,NA,NA
+B1,NA,NA,NA
+B2,Student C,TRUE,LB
+B3,Student C,TRUE,LB
+B4,Student C,FALSE,LB
+B5,Student C,FALSE,LB
+B6,NA,NA,NA
+B7,Student D,TRUE,MM
+B8,Student D,TRUE,MM
+B9,Student D,FALSE,MM
+B10,Student D,FALSE,MM
+B11,NA,NA,NA
+B12,NA,NA,NA
+C1,NA,NA,NA
+C2,Student E,TRUE,LB
+C3,Student E,TRUE,LB
+C4,Student E,FALSE,LB
+C5,Student E,FALSE,LB
+C6,NA,NA,NA
+C7,Student F,TRUE,MM
+C8,Student F,TRUE,MM
+C9,Student F,FALSE,MM
+C10,Student F,FALSE,MM
+C11,NA,NA,NA
+C12,NA,NA,NA
+D1,NA,NA,NA
+D2,Student G,TRUE,LB
+D3,Student G,TRUE,LB
+D4,Student G,FALSE,LB
+D5,Student G,FALSE,LB
+D6,NA,NA,NA
+D7,Student H,TRUE,MM
+D8,Student H,TRUE,MM
+D9,Student H,FALSE,MM
+D10,Student H,FALSE,MM
+D11,NA,NA,NA
+D12,NA,NA,NA
+E1,NA,NA,NA
+E2,Student I,TRUE,LB
+E3,Student I,TRUE,LB
+E4,Student I,FALSE,LB
+E5,Student I,FALSE,LB
+E6,NA,NA,NA
+E7,Student J,TRUE,MM
+E8,Student J,TRUE,MM
+E9,Student J,FALSE,MM
+E10,Student J,FALSE,MM
+E11,NA,NA,NA
+E12,NA,NA,NA
+F1,NA,NA,NA
+F2,Student K,TRUE,LB
+F3,Student K,TRUE,LB
+F4,Student K,FALSE,LB
+F5,Student K,FALSE,LB
+F6,NA,NA,NA
+F7,Student L,TRUE,MM
+F8,Student L,TRUE,MM
+F9,Student L,FALSE,MM
+F10,Student L,FALSE,MM
+F11,NA,NA,NA
+F12,NA,NA,NA
+G1,NA,NA,NA
+G2,Student M,TRUE,LB
+G3,Student M,TRUE,LB
+G4,Student M,FALSE,LB
+G5,Student M,FALSE,LB
+G6,NA,NA,NA
+G7,Student N,TRUE,MM
+G8,Student N,TRUE,MM
+G9,Student N,FALSE,MM
+G10,Student N,FALSE,MM
+G11,NA,NA,NA
+G12,NA,NA,NA
+H1,NA,NA,NA
+H2,Student O,TRUE,LB
+H3,Student O,TRUE,LB
+H4,Student O,FALSE,LB
+H5,Student O,FALSE,LB
+H6,NA,NA,NA
+H7,Student P,TRUE,MM
+H8,Student P,TRUE,MM
+H9,Student P,FALSE,MM
+H10,Student P,FALSE,MM
+H11,NA,NA,NA
+H12,NA,NA,NA
