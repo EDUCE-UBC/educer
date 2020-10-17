@@ -42,31 +42,46 @@ summary_solution_2 <-
 
 
 
-## Objectives
+## Motivation
 
-### By the end of this tutorial you should be able to:
+### Why use R for data processing?
 
-- Install and load R packages.
+Imagine you are looking at an environmental library of 10,000 plasmids, and you are asked to make arrow plots of only the plasmids that are less than `7500 bp`, originating only from bacteria or archea, and that have shown activity in your screen. It is more likely than not that you are used to using programs like Excel for general data processing. But how would you do this particular task in excel? You would have to apply conditional filters to multiple rows, then find a program online that accepts annotated plasmid maps as input and manually make each plot.
+
+It would be a time-consuming process, and one you would have to repeat every time you had to complete this particular workflow. Thankfully, R provides packages for data management that make the filtering process a breeze, and the results of your filtering can be fed into a package that can sequentially generate the plots you want. If you had reason, you could even write an R script that will generate these plots for you in one click!
+
+While the learning curve is somewhat steeper than programs like Excel, R is a highly modular language that allows for implementation of many different workflows (almost anything you can imagine)! And more importantly, you can write *general* scripts that can take predictable raw input from another source and process it automatically into whatever shape or form you would like.
+
+### Structure of Data Wrangling Tutorials
+
+We have developed three "data wrangling" modules for R. "Data wrangling," the process of taking raw data and transforming it into another, possibly more useful form, is a linchpin of R competency. By learning these basic techniques, you will open the door to creating beautiful figures using `ggplot2`, training machine learning models with `caret`, and so on.
+
+We have split the contents into beginner, intermediate, and advanced modules.
+
+#### Beginner
+
+In this tutorial, we will demonstrate how to load data from your disk in from another data format (usually `.csv`) into R, how to manipulate that data table in R by subsetting it and doing some light data processing, and how to write your processed data to your disk.
+
+
+#### Intermediate
+
+In this tutorial, we will discuss how to join different datasets together using the numerous `*_join()` functions found in R. We will also discuss how to turn "wide-format" data into "long-format" data, and vice-versa.
+
+#### Advanced
+
+Here, we will introduce the `purrr` package, which allows you to perform more advanced processing on subsets of your dataset in parallel, and how to apply your own custom functions to columns in your data table.
+
+
+## Learning Goals
+
 - Load tabular data using `read_csv()` and save the data to your R environment.
+- Introduce the use of logical operators and conditional statements in R for subsetting your data.
 - Use the `filter()`, `slice()` and `select()` methods to conditionally subset your data.
+- Use the `mutate()` function to create new variables in your dataset, using your existing variables.
+- Writing your processed data to your disk.
 
 
-
-
-
-## Loading packages
-
-After installing a package, and *everytime* you open a new RStudio session, the packages you want to use need to be loaded (opened) into the R work-space with the `library()` function. This tells R to access the package's functions and prevents RStudio from lags that would occur if it automatically loaded every downloaded package every time you opened it.
-
-Packages can be loaded like this:
-
-```{r tidyverse_load, exercise = TRUE, exercise.lines = 5}
-library(tidyverse)
-library(educer)
-```
-
-
-## Tidyverse vs. base R
+## What is the Tidyverse?
 
 The [tidyverse](https://www.tidyverse.org/) is a collection of R packages for data wrangling, analysis, and visualization.
 
@@ -102,8 +117,8 @@ Each verb works similarly:
 
 Before working with our data, we first want to make a copy of the raw data so that we may revert to it quickly if we make any mistakes. This is best practices for data science in general.
 
-```{r}
-# dat <- raw_dat
+```{r eval = F}
+dat <- raw_dat
 ```
 
 We will then continually overwrite this object with `<-` as we clean it in R.
@@ -463,9 +478,6 @@ dat <- geochemicals
 ```{r slice_exercise-hint-1}
 # Recall that slice() allows you to find a row
 # and select() allows you to find a column
-```
-
-```{r slice_exercise-hint-2}
 slice(dat, 20)
 select(dat, depth)
 ```
