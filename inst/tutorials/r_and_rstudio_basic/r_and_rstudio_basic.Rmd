@@ -236,7 +236,7 @@ To load a Bioconductor package, you must first install and load the BiocManager 
 You can then use the function `BiocManager::install()` to install a Bioconductor package. To install the Annotate package, we would execute the following code.
 
 `BiocManager::install("annotate")`
-
+Sometimes two packages include functions with the same name. A common example is that a `select()` function is included both in the `dplyr` and `MASS` packages. Therefore, to specify the use of a function from a particular package, you can precede the function with a the following notation: `package::function()`. 
 ```{r quiz: R Packages, echo=FALSE}
 question("True or False: Packages are installed once, but loaded every time",
     answer("True", correct=TRUE),
