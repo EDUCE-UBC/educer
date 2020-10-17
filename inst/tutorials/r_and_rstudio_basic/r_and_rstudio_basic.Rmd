@@ -7,7 +7,7 @@ output:
     progressive: true
     allow_skip: true
 runtime: shiny_prerendered
-description: This tutorial covers the basics of R and RStudio. You will learn about the different panes and features of RStudio that make coding in R easier, as well as basic skills of the R language itself, such as creating functions and loading packages.
+description: Welcome to R! If you want to analyze and visualize data reproducibly, you've come to the right place. This tutorial covers the basics of R and RStudio. RStudio is a free program used for coding in R. After learning about its features and functionality, we will dive into R language basics, where you will create functions and load packages.
 ---
 
 ```{r setup, include = FALSE}
@@ -33,31 +33,42 @@ By the end of this tutorial you should be able to:
 - Recognize and use functions.
 - Install and load R packages.
 - Load and subset tabular data using tidyverse.
-- Use the `help` function in R console to troubleshoot given a new function.
-The last bullet point can be more descriptive saying, "Use the `help` function in R console to troubleshoot and *identify mandatory parameters* given a new function."
+- Use the `help` function in R console to troubleshoot and identify required arguments for a given function
 
 
 ## A Tour of RStudio
-
+By the end of this section, you will be able to:
+- Name the three panes in RStudio and what they do
+- Change the sizes of the panes
+- Navigate through the console using common keyboard shortcuts
+- Change the appearance of RStudio
 When you start RStudio, you will see something like the following window appear:
 
 ![](/images/rstudio.png){width=100%}
 
 Notice that the window has three "panes":
 
-- Console (lower left side): this is your view of the R engine. You can type in R commands here and see the output printed by R. (To tell them apart, your input is in blue, and the output is black.) There are several editing conveniences available: use up and down arrow keys to go back to previously entered commands, which you then can edit and re-run; TAB for completing the name before the cursor; see more in [online docs](http://www.rstudio.com/ide/docs/using/keyboard_shortcuts).
+- Console (lower left side): this is your view of the R engine. You can type in R commands here and see the output printed by R. (To tell them apart, your input is in blue, and the output is black.) There are several editing conveniences available: up and down arrow keys to go back to previously entered commands which you then can edit and re-run, TAB for completing the name before the cursor, and so on. See more in [online docs](http://www.rstudio.com/ide/docs/using/keyboard_shortcuts).
 
 - Environment/History (tabbed in the upper right): view current user-defined objects and previously-entered commands, respectively.
 
 - Files/Help/Plots/Packages (tabbed in the lower right): as their names suggest, you can view the contents of the current directory, the built-in help pages, and the graphics you created, as well as manage R packages.
 
-To change the look of RStudio, you can go to Tools &rarr; Global Options &rarr; Appearance and select colours, font size, etc. If you plan to be working for longer periods, we suggest choosing a dark background colour scheme to save your computer battery and your eyes.
+To change the look of RStudio, you can go to Tools &rarr; Global Options &rarr; Appearance and select colours, font size, etc. If you plan on working for longer periods of time, we suggest choosing a dark background colour which is less hard on your computer battery and your eyes.
 You can also change the sizes of the panes by dragging the dividers or clicking on the expand and compress icons at the top right corner of each pane. 
-
+```{r quiz: R Tour, echo=FALSE}
+question("Which pane enables you to manage R packages?",
+    answer("The console"),
+    answer("Lower right pane", correct=TRUE),
+    answer("Upper right pane")
+)
 
 ## RStudio Projects
-
-Projects are a great feature of RStudio. When you create a project, RStudio creates an `.Rproj` file that links all of your files and outputs to the project directory. When you import data from a file, R automatically looks for it in the project directory instead of you having to specify a full file path on your computer (like `/Users/<username>/Desktop/`). R also automatically saves any output to the project directory. Finally, projects allow you to save your R environment in `.RData` so that when you close RStudio and then re-open it, you can start right where you left off without re-importing any data or re-calculating any intermediate steps.
+By the end of this section, you will be able to:
+- List the benefits of using RStudio Projects
+- Create a new RStudio Project
+- Open or switch to an existing RStudio Project
+When you create a project, RStudio creates an `.Rproj` file that links all of your files and outputs to the project directory. When you import data from a file, R automatically looks for it in the project directory instead of you having to specify a full file path on your computer (like `/Users/<username>/Desktop/`). R also automatically saves any output to the project directory. Finally, projects allow you to save your R environment in `.RData` so that when you close RStudio and then re-open it, you can start right where you left off without re-importing any data or re-calculating any intermediate steps.
 
 RStudio has a simple interface to create and switch between projects, accessed from the button in the top-right corner of the RStudio window. (Labeled "Project: (None)", initially.)
 
@@ -77,10 +88,17 @@ You can open this project in the future in one of three ways:
 - Switch among projects by clicking on the R project symbol in the upper left
 corner of RStudio
 
-
+```{r quiz: R Projects, echo=FALSE}
+question("What is not a benefit of using RStudio projects?",
+    answer("All of your files and outputs are linked to the project directory"),
+    answer("R automatically looks for files in the project directory so you don't have to specify a full file path"),
+    answer("When you reopen a project, your code is saved so all you need to do is rerun it", correct=TRUE)
+)
 
 ## Variables in R
-
+By the end of this section, you will be able to:
+- Declare variables
+- Perform operations to change the value of variables
 We use variables to store data that we want to access or manipulate later. Variables must have unique names.  
 
 Without declaring a variable the sum of these two numbers will be printed to console but cannot be accessed for future use:
@@ -115,11 +133,33 @@ total <- total - 1
 
 total
 ```
+Now it's your turn! Declare a variable "product" and set its value to 3 * 5. Next, operating on "product", declare a variable called "difference", whose final value is 8.
 
+```{r product, exercise=TRUE}
+# First declare "product"
+product
+
+# Operate on "product" to get 8 as the value for "difference"
+difference
+
+```{r product-hint-1}
+# First declare "product"
+product <- #your code here
+
+# Operate on "product" to get 8 as the value for "difference"
+difference <- product #your code here
+
+```{r product-solution}
+# First declare "product"
+product <- 3 * 5
+
+# Operate on "product" to get 8 as the value for "difference"
+difference <- product - 7
 
 
 ## Functions
-
+By the end of this section, you will be able to:
+- Explain what functions and arguments are
 Functions are one of the basic units in programming. Generally speaking, a function takes some input and generates some output, in a reproducible way. Every R function follows the same basic syntax, where `function()` is the name of the function and `arguments` are the different parameters you can specify (i.e. your input):
 
 `function(argument1 = ..., argument2 = ..., ...)`
@@ -154,18 +194,15 @@ example_transposed <- t(example_matrix)
 #Display Original and Transposed Matrices
 example_matrix
 example_transposed
-```
-### The most helpful function of all: the 'help' function
-You can get information about a specific function by running the command `?<function>` or `help(<function>)` (replace `<function>` by the name of the function you are interested in). This command opens the help page, where you can find all information about a function's purpose and its arguments. For beginners, it is useful to concentrate on the "Examples" and "Arguments" section to understand the typical usage of the function better.
-
-Run the code below to read the documentation for the `t()` function.
-
-```{r transpose_help, exercise=TRUE}
-?t
-```
-
+```{r quiz: R Functions, echo=FALSE}
+question("True or False: Functions accept inputs of all types",
+    answer("True"),
+    answer("False", correct=TRUE)
+)
 ## R packages
-
+By the end of this section, you will be able to:
+- Understand what R packages are and how they are used
+- Install and load packages
 The first functions we will look at are used to install and load R packages. R packages are units of shareable code, containing functions that facilitate and enhance analyses. In simpler terms, think of R packages as iPhone Applications. Each App has specific capabilities that can be accessed when we install and then open the application. The same holds true for R packages. To use the functions contained in a specific R package, we first need to install the package, then each time we want to use the package we need to "open" the package by loading it.
 
 ### Installing Packages
@@ -200,9 +237,15 @@ You can then use the function `BiocManager::install()` to install a Bioconductor
 
 `BiocManager::install("annotate")`
 
-
+```{r quiz: R Packages, echo=FALSE}
+question("True or False: Packages are installed once, but loaded every time",
+    answer("True", correct=TRUE),
+    answer("False")
+)
 ## Working with data
-
+By the end of this section, you will be able to:
+- Load data into R
+- Save loaded data in the environment
 ### Data description
 
 The data used throughout this module were collected as part of an on-going oceanographic time-series program in Saanich Inlet, a seasonally anoxic fjord on the East coast of Vancouver Island, British Columbia.
@@ -215,7 +258,7 @@ For a brief introduction to these data, see Hallam SJ et al. 2017. Monitoring mi
 
 ### Loading tabular data
 
-Data tables can be loaded into R using the tidyverse `read_*` function.
+Tabular data can be loaded into R using the tidyverse `read_*` functions, which generate data frames. Each row in a data frame represents one observation, and each column represents one variable. 
 
 in your file browser, create a `data` directory in your project directory. Download the [`Saanich_OTU_metadata.csv`](https://github.com/EDUCE-UBC/educer/blob/master/data-raw/Saanich_OTU_metadata.csv) file and save it in your `data` directory.
 
@@ -240,48 +283,13 @@ Since we want to do more with our data after reading it in, we need to save it a
 OTU_metadata_table <- read_csv(file="data/Saanich_OTU_metadata.csv", col_names = TRUE)
 ```
 
-### Data exploration
-
-Let's explore the data that we've imported into R.
-
-Using different functions, we can look at the dimensions of our data, number of rows, and number of columns:
-```{r}
-#number of rows followed by number of columns
-dim(OTU_metadata_table)
-
-#number of rows
-nrow(OTU_metadata_table)
-
-#number of columns
-ncol(OTU_metadata_table)
-```
-
-We can list the column names using `colnames()`:
-```{r}
-colnames(OTU_metadata_table)
-```
-
-We can select to work with only specific columns/variables from our table using the `select()` function:
-```{r}
-restricted_columns <- select(OTU_metadata_table, Depth, OTU0001, OTU0002,
-                             OTU0004)
-```
-
-We can filter for specific rows based on a column value using the `filter()` function. Here we restrict for rows where the value for `Depth` is smaller than 135. 
-
-```{r}
-above_135_depth <- filter(OTU_metadata_table, Depth < 135)
-```
-
-We can also only choose to work with specific rows based on their position in our data table using the `slice()` function. 
-
-```{r}
-first_five_rows <- slice(OTU_metadata_table, 1:5)
-```
-
 
 
 ## Getting Help
+By the end of this section, you will be able to:
+- Use R to understand how any given function works
+- Identify required and optional arguments for functions
+
 You can get help with any function in R by inputting `?function_name` into the Console. This will open a window in the bottom right under the Help tab with information on that function, including input options and example code.
 
 ```{r eval = FALSE}
@@ -353,7 +361,10 @@ question("What does an = sign indicate in the help section",
 )
 ```
 ## R Scripts
-
+By the end of this section, you will be able to:
+- Create an R script file
+- List the benefits of using R scripts
+- Annotate R scripts with comments
 R script files are the primary way in which R facilitates reproducible research. They contain the code that loads your raw data, cleans it, performs the analyses, and creates and saves visualizations. R scripts maintain a record of everything that is done to the raw data to reach the final result. That way, it is very easy to write up and communicate your methods because you have a document listing the precise steps you used to conduct your analyses. This is one of R's primary advantages compared to traditional tools like Excel, where it may be unclear how to reproduce the results. 
 
 Generally, if you are testing an operation (*e.g.* what would my data look like if I applied a log-transformation to it?), you should do it in the console (left pane of RStudio). If you are committing a step to your analysis (*e.g.* I want to apply a log-transformation to my data and then conduct the rest of my analyses on the log-transformed data), you should add it to your R script so that it is saved for future use. 
