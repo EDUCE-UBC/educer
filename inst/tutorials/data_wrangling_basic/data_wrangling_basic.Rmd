@@ -118,10 +118,15 @@ Each verb works similarly:
 Before working with our data, we first want to make a copy of the raw data so that we may revert to it quickly if we make any mistakes. This is best practices for data science in general.
 
 ```{r eval = F}
-dat <- raw_dat
+working_data <- raw_data
 ```
 
-We will then continually overwrite this object with `<-` as we clean it in R.
+We will then repeatedly overwrite this object with the assignment operator (`<-`) as we further process it in R, as follows.
+
+```{r eval = F}
+working_data <- working_data + 7
+working_data <- working_data / 3
+```
 
 <!-- ### Data description test -->
 
@@ -157,47 +162,66 @@ output$downloadData <- downloadHandler(
 )
 ```
 
-## Loading tabular data
+## Reading and Writing Data to Disk
 
-Every R function follows the following basic syntax, where `function()` is the name of the function and `arguments` are the different parameters you can specify.
+### Reading in a Dataset
 
-`function(argument1=..., argument2=..., ...)`
+First, ensure that you have downloaded the `combined.csv` file from the previous section, and you have saved it to your working directory. If you saved the file to another location, the data import function below will fail. To check your working directory, you can run the following.
 
-Data tables can be loaded into R using the tidyverse `read_*()` function. 
-
-The `read_table()` function allows us to open raw datafiles. Run the following code to see what `combined.csv` looks like. 
-
-```{r eval = FALSE}
-read_table("combined.csv")
+```{r eval = F}
+getwd()
 ```
 
-Notice how values in `combined.csv` are separated by commas. We can load our Saanich data into R with `read_csv()` for comma separated files and specify the arguments that describe our data as follows.
+We can load our Saanich data into R with `read_csv()` for comma separated files and specify the arguments that describe our data as follows.
 
 - `col_names`: tells R that the first row is column names, not data
 
-```{r eval = FALSE}
-read_csv(file = "combined.csv", col_names = TRUE)
+```{r eval = F}
+raw_data <- read_csv(file = "combined.csv", col_names = TRUE)
 ```
 
-Now our data is formatted nicely into table form.
+<!-- Load in the dataset from educer -->
 
-### Save data in the environment
-
-Since we want to further manipulate our dataset after reading it in, we need to save it as a variable in R like we did previously with the `<-` operator. You can name the object whatever you like, though this module will assume the names used below.
-
-```{r eval = FALSE}
-OTU_metadata_table <- read_csv(file = "combined.csv", col_names = TRUE)
+```{r include=FALSE}
+raw_data <- combined
 ```
 
-```{r saving-quiz, echo = FALSE}
-quiz(
-  question("How do we make sure the datatable is saved to 'OTU_metadata_table' in our environment?",
-           answer("Entering `\"OTU_metadata_table\"` (with quotes) in the console displays the table."),
-           answer("Entering `OTU_metadata_table` (no quotes) in the console displays the table.", correct = TRUE),
-           answer("`OTU_metadata_table` shows up in the \"Global Environment\" box on the top right hand corner.", correct = TRUE)
-           )
-)
+Now our data is formatted nicely into table form, and we can have a look at it with the `head()` function.
+
+```{r}
+head(raw_data)
 ```
+
+The `head()` function prints the first six rows of your dataset, alongside your column names. The `<dbl>` printed below column names like `Cruise` is the data type of the column. In this case, it's a `<dbl>`, which is short for [https://en.wikipedia.org/wiki/Double-precision_floating-point_format](double-precision floating-point format), a particular way of holding numbers in memory. The details are beyond the scope of this tutorial, but just keep in mind it's a different data type than, say, a character string (`<chr>`). Anyway, we see that our import was successful.
+
+<!-- ### Writing Data to Disk -->
+
+<!-- Since we want to further manipulate our dataset after reading it in, we need to save it as a variable in R like we did previously with the `<-` operator. You can name the object whatever you like, though this module will assume the names used below. -->
+
+<!-- ```{r eval = FALSE} -->
+<!-- OTU_metadata_table <- read_csv(file = "combined.csv", col_names = TRUE) -->
+<!-- ``` -->
+
+<!-- ```{r saving-quiz, echo = FALSE} -->
+<!-- quiz( -->
+<!--   question("How do we make sure the datatable is saved to 'OTU_metadata_table' in our environment?", -->
+<!--            answer("Entering `\"OTU_metadata_table\"` (with quotes) in the console displays the table."), -->
+<!--            answer("Entering `OTU_metadata_table` (no quotes) in the console displays the table.", correct = TRUE), -->
+<!--            answer("`OTU_metadata_table` shows up in the \"Global Environment\" box on the top right hand corner.", correct = TRUE) -->
+<!--            ) -->
+<!-- ) -->
+<!-- ``` -->
+
+### Writing Data to Disk
+
+Although we have done no processing to our dataset, let's assume that we have, and that we want to save a processed dataset to disk. First, let's make a dummy processed dataset.
+
+```{r}
+processed_data <- raw_data
+```
+
+Then, to save it to disk, we have to use the `write_csv()` command.
+
 
 ## Data exploration
 
