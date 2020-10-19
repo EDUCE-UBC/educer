@@ -52,6 +52,16 @@ well_data <- read_csv(system.file("resources/data", "well_information.csv", pack
 ## Data Processing
 When analyzing data, it is often important to reformat and combine data sets for analysis or visualizations using specific packages or functions.  We will use function from the `tidyverse` package to reformat, combine and filter OD~600~ and well information data accordingly.
 
+The key steps in this process are:
+
+1. `raw_growth_data` reformatting
+    + Functions: `pivot_longer()`
+
+2. Joining `growth_data` and `well_data`
+    + Functions: `right_join()` and `filter()`
+
+3. Calculating OD~600~ in "blank" wells at T~0~ to generate `blank_OD`
+
 ```{r data_reformating_setup}
 library(tidyverse)
 library("growthrates")
