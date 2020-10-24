@@ -90,7 +90,7 @@ The main advantages of using the tidyverse to read in data over base R are:
 - Faster data processing
 - Seamless integration with other tidyverse functions
 - Automatic designation of data types
-- Data storage in tibble as opposed to data frames
+- Data storage in tibbles as opposed to data frames
     - Tibbles are data frames with an additional layer of formatting that causes them to print nicely in the console and always return a tibble in functions
     
     
@@ -98,7 +98,7 @@ A popular package for data wrangling is *dplyr* in the tidyverse. This package i
 
 dplyr code is very readable because all operations are based on using dplyr functions or *verbs* (select, filter, mutate...). 
 
-Typical data wrangling tasks in dplyr:
+Typical *verbs* in dplyr:
 
 - `select()` a subset of variables (columns)
 - `slice()` out rows by their ordinal position in the tbl
@@ -134,6 +134,9 @@ working_data <- working_data / 3
 <!-- ``` -->
 
 ### Data description
+
+<!-- This will eventually be a child document, drawing on a markdown file in the 'educer' package. -->
+
 The data used throughout this module were collected as part of an on-going oceanographic time series program in Saanich Inlet, a seasonally anoxic fjord on the East coast of Vancouver Island, British Columbia.
 
 The data that you will use in R are 16S amplicon profiles of microbial communities at several depths in Saanich Inlet from one time point in this series (August 2012). These ~300 bp sequences were processed using [mothur](https://www.mothur.org/wiki/Main_Page) to yield 97% (approximately species-level) operational taxonomic units (OTUs). 
