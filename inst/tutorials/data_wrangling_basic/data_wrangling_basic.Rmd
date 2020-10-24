@@ -165,7 +165,7 @@ output$downloadData <- downloadHandler(
 )
 ```
 
-## Reading and Writing Data to Disk
+## Reading and Writing Data
 
 ### Reading in a Dataset
 
@@ -195,57 +195,58 @@ Now our data is formatted nicely into table form, and we can have a look at it w
 head(raw_data)
 ```
 
-The `head()` function prints the first six rows of your dataset, alongside your column names. The `<dbl>` printed below column names like `Cruise` is the data type of the column. In this case, it's a `<dbl>`, which is short for [https://en.wikipedia.org/wiki/Double-precision_floating-point_format](double-precision floating-point format), a particular way of holding numbers in memory. The details are beyond the scope of this tutorial, but just keep in mind it's a different data type than, say, a character string (`<chr>`). Anyway, we see that our import was successful.
+The `head()` function prints the first six rows of your dataset, alongside your column names. The `<dbl>` printed below column names like `Cruise` is the data type of the column. In this case, it's a `<dbl>`, which is short for [double-precision floating-point format](https://en.wikipedia.org/wiki/Double-precision_floating-point_format), a particular way of holding numbers in memory. The details are beyond the scope of this tutorial, but just keep in mind it's a different data type than, say, a character string (`<chr>`). Anyway, we see that our import was successful.
 
-<!-- ### Writing Data to Disk -->
+As an exercise, go ahead and place a copy of `combined.csv` in a folder called `import_exercise` in your working directory. Then, try to read in `combined.csv` directly from the folder, and use `head()` to ensure the data import was successful and nothing looks funny.
 
-<!-- Since we want to further manipulate our dataset after reading it in, we need to save it as a variable in R like we did previously with the `<-` operator. You can name the object whatever you like, though this module will assume the names used below. -->
+```{r folder-import, exercise = TRUE, exercise.lines = 2}
 
-<!-- ```{r eval = FALSE} -->
-<!-- OTU_metadata_table <- read_csv(file = "combined.csv", col_names = TRUE) -->
-<!-- ``` -->
 
-<!-- ```{r saving-quiz, echo = FALSE} -->
-<!-- quiz( -->
-<!--   question("How do we make sure the datatable is saved to 'OTU_metadata_table' in our environment?", -->
-<!--            answer("Entering `\"OTU_metadata_table\"` (with quotes) in the console displays the table."), -->
-<!--            answer("Entering `OTU_metadata_table` (no quotes) in the console displays the table.", correct = TRUE), -->
-<!--            answer("`OTU_metadata_table` shows up in the \"Global Environment\" box on the top right hand corner.", correct = TRUE) -->
-<!--            ) -->
-<!-- ) -->
-<!-- ``` -->
+```
+
+```{r folder-import-hint-1}
+# How do you specify that a file is inside a folder in a filepath?
+# If a folder is called "foo", then you would include "foo/" in your filepath.
+```
+
+```{r folder-import-hint-2}
+raw_data <- read_csv(file = "import_exercise/combined.csv", col_names = TRUE)
+head(raw_data)
+```
 
 ### Writing Data to Disk
 
-Although we have done no processing to our dataset, let's assume that we have, and that we want to save a processed dataset to disk. First, let's make a dummy processed dataset.
+Although we have done no processing to our dataset, let's assume that we have. Now we want to save a processed dataset to disk. First, let's make a dummy processed dataset that we can practice saving to disk.
 
 ```{r}
 processed_data <- raw_data
 ```
 
-Then, to save it to disk, we have to use the `write_csv()` command.
+Then, to save it to disk, we have to use the `write_csv()` function. The `write_csv()` function takes two critical arguments, `x` and `path`. `x` is simply the tibble you wish to save to memory, and `path` is a character string indicating the filepath of the new object. The following command will save `processed_data` as `processed.csv` in your current working directory. There are other optional arguments that can tweak how your data is saved, which you can read about by running `?write_csv`. 
 
+```{r eval = F}
+write_csv(processed_data, path = "processed.csv", col_names = TRUE)
+```
 
-## Data exploration
+### Data exploration
 
-Let's explore the data that we've imported into R. The simplest way to view your imported data is to view it as a "tibble" like this. This view displays a subset of large data table.
+Let's explore the data that we've imported into R. Although we've discussed the use of `head()`, the simplest way to view your imported data is to call the variable name directly. This view displays a subset of large data table.
 
 ```{r tibble, exercise = TRUE, exercise.lines = 5}
-OTU_metadata_table
+raw_data
 ```
 
-`glimpse()` is a function that, as its name suggests, allows us to get a "glimpse" of the contents of a data table. Running `glimpse()` on a data table outputs the number of rows (observations), columns (variables), and lists each column name along with its type and a portion of its contents. Let's run `glimpse()` with our OTU_metadata_table like this:
+`glimpse()` is a function that allows us to get a "glimpse" of the contents of a data table. Running `glimpse()` on a data table outputs its number of rows (observations); its number of columns (variables); a list of each column name, along with its type and a portion of its contents. We can run `glimpse()` on `raw_data` like so:
 
-```{r glimpse, exercise = TRUE, exercise.lines = 5}
-glimpse(OTU_metadata_table)
+```{r}
+glimpse(raw_data)
 ```
-from this we see that our table has 7 rows and 10 columns. Each $ is followed by a column name, with information on the contents following each column name. `glimpse()` lists all columns of a table
 
-### Exercise
+From the output above, we see that our table has 7 rows and 10 columns. As discussed above, each $ is followed by a column name, a portion of the data it contains, and its data type.
 
 ```{r glimpse-quiz, echo = FALSE}
 quiz(
-  question("Which columns are in the OTU_metadata_table?",
+  question("Which columns are in raw_data?",
            answer("OTU001", correct = TRUE),
            answer("Otu002"),
            answer("72"),
@@ -257,22 +258,126 @@ quiz(
 )
 ```
 
-If we only want the dimensions of a dataframe or table, we can use the `dim()` function which prints the number of rows followed by the number of columns. Simple functions to query just the number of rows or columns in a data table are `nrow()` and `ncol()`.
+If we want to know the dimensions of our tibble, we can use the `dim()` function, which prints the number of rows followed by the number of columns. 
 
-```{r dim, exercise = TRUE, exercise.lines = 5}
-#number of rows followed by number of columns
-dim(OTU_metadata_table)
-#number of rows
-nrow(OTU_metadata_table)
-#number of columns
-ncol(OTU_metadata_table)
+```{r}
+dim(raw_data)
 ```
 
-We can list the column names using `colnames()`. 
+Simple functions to obtain only the number of rows or only the number of columns in a data table are `nrow()` and `ncol()`.
 
-```{R colnames,exercise = TRUE, exercise.lines = 5}
-colnames(OTU_metadata_table)
+```{r}
+nrow(raw_data)
+ncol(raw_data)
 ```
+
+Lastly, we can list the column names using `colnames()`. 
+
+```{r}
+colnames(raw_data)
+```
+
+## Logical Operators in R
+
+Logical operators are special symbols in R that one can use to ask `TRUE/FALSE` questions about your data. For instance, say you had a column in a data frame containing the following data: `c("apple", "pear", "banana")`. You could then ask R, "which entries in my column are equivalent to the character string `"pear"`? R would then return the following vector: `c(FALSE, TRUE, FALSE)`. As you might imagine, the next step could be to tell R to only keep the entries for which the answer to this question is `TRUE` or only keep those that are `FALSE`.
+
+The `==` operator asks R whether the left-hand side is equivalent to the right-hand side. So here is how you would ask the above question in R.
+
+```{r}
+# create our fruit vector
+fruits = c("apple", "pear", "banana")
+
+# ask our question
+fruits == "pear"
+```
+
+We see that our predicted vector is returned.
+
+This process also works with variables containing single pieces of data too. For instance, let's initialize the following variables.
+
+```{r}
+number <- 6
+animal <- "cat"
+```
+
+And ask some questions. Is `number` less than 3?
+
+```{r}
+number < 3
+```
+
+Is the `animal` a dog?
+
+```{r}
+animal == "dog"
+```
+
+As a simple exercise, manipulate the below code to make both equations `TRUE`. 
+
+```{r boolean-exercise, exercise = TRUE, exercise.lines = 5}
+number <- 6
+animal <- "cat"
+
+number < 3
+animal == "dog"
+```
+
+```{r boolean-exercise-hint-1}
+number <- #A number less than 3
+animal <- #A string
+
+number < 3
+animal == "dog"
+```
+
+```{r boolean-exercise-hint-2}
+number <- 1
+animal <- "dog"
+
+number < 3
+animal == "dog"
+```
+
+Note that in R, only the double `==` is a logical operator. Using a single `=` will result in error. As you may have noticed, a single `=` can only be used to assign a variable to a value.
+
+We can chain together multiple logical operators in a single question. Say we wanted to ask, "is `number` less than 10 but also greater than 4?" We would do so with the following operator: `number < 10 & number > 4`.
+
+For quick reference, here are the most commonly used statements and operators.
+
+R Operator | Meaning
+---------- | ---------------
+`==`       | equivalent to
+`!=`       | not equivalent to
+`< or >`   | less/greater than
+`<= or >= `| less/greater than or equal to
+`%in%`     | in
+`is.na`    | is missing (`NA`)
+`&`        | and
+`|`        | or
+
+
+### Exercise
+
+Write a boolean equation for "x is greater than 6 or less than 12", it should return `TRUE` after running.
+
+```{r boolean-exercise-2, exercise = TRUE, exercise.lines = 5}
+
+```
+
+```{r boolean-exercise-2-hint-1}
+# Consider how we represent the "greater/less than" 
+# operator and the "OR" operator in R.
+
+# "x is greater than n" can be represented in the following way.
+x > n
+```
+
+```{r boolean-exercise-2-hint-2}
+# "x is greater than n or less than m" can be represented in the following way.
+x > n | x < m
+```
+
+
 
 
 ## `select()`
@@ -316,73 +421,6 @@ select(OTU_metadata_table, Depth, NO3, Mean_NO2, Mean_N2O, Mean_NH4)
 
 
 
-
-## Booleans
-
-Booleans are logical statements that are either `TRUE` or `FALSE` but can not be anything in between. As an example, run the code below:
-
-```{r boolean-exercise, exercise = TRUE, exercise.lines = 5}
-x <- 6
-y <- "cat"
-
-x < 3
-y == "dog"
-```
-
-The equation `x < 3` is `FALSE` because x is set to 6 in the line above. As a simple exercise, manipulate the above code to make both equations `TRUE`. 
-
-```{r boolean-exercise-hint-1}
-#x <- A number less than 3
-#y <- A string
-
-x < 3
-y == "dog"
-```
-
-```{r boolean-exercise-hint-2}
-x <- 1
-y <- "dog"
-
-x < 3
-y == "dog"
-```
-
-Note that in R, `==` is used in Boolean equations and using a single `=` will result in error. As you may have noticed above a single `=` is used to set a variable to a value. 
-
-For quick reference, here are the most commonly used statements and operators.
-
-R Operator | Meaning
----------- | ---------------
-`==`       | equals
-`< or >`   | less/greater than
-`<= or >= `| less/greater than or equal to
-`%in%`     | in
-`is.na`    | is missing (`NA`)
-`!`        | not (as in not equal to `!=`)
-`&`        | and
-`|`        | or
-
-
-### Exercise
-
-Write a boolean equation for "x is greater than 6 or less than 12", it should return `TRUE` after running.
-
-```{r boolean-exercise-2, exercise = TRUE, exercise.lines = 5}
-
-```
-
-```{r boolean-exercise-2-hint-1}
-# Consider how we represent the "greater/less than" 
-# operator and the "OR" operator in R.
-
-# "x is greater than n" can be represented in the following way.
-x > n
-```
-
-```{r boolean-exercise-2-hint-2}
-# "x is greater than n or less than m" can be represented in the following way.
-x > n | x < m
-```
 
 
 ### `filter()`
