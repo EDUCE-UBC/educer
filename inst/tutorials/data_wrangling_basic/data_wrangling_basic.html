@@ -148,10 +148,11 @@ $(document).ready(function () {
 <h2>Learning Goals</h2>
 <ul>
 <li>Load tabular data using <code>read_csv()</code> and save the data to your R environment.</li>
-<li>Introduce the use of logical operators and conditional statements in R for subsetting your data.</li>
-<li>Use the <code>filter()</code>, <code>slice()</code> and <code>select()</code> methods to conditionally subset your data.</li>
-<li>Use the <code>mutate()</code> function to create new variables in your dataset, using your existing variables.</li>
 <li>Writing your processed data to your disk.</li>
+<li>Introduce the use of logical operators and conditional statements in R for subsetting your data.</li>
+<li>Use the <code>select()</code>, <code>slice()</code>, and <code>filter()</code> functions to conditionally subset your data.</li>
+<li>Use the <code>mutate()</code> function to create new variables in your dataset, using your existing variables.</li>
+<li>Use the pipe operator to more efficiently daisy-chain functions together.</li>
 </ul>
 </div>
 <div id="section-what-is-the-tidyverse" class="section level2">
@@ -307,38 +308,40 @@ fruits = c(&quot;apple&quot;, &quot;pear&quot;, &quot;banana&quot;)
 fruits == &quot;pear&quot;</code></pre>
 <pre><code>## [1] FALSE  TRUE FALSE</code></pre>
 <p>We see that our predicted vector is returned.</p>
-<p>This process also works with variables containing single pieces of data too. For instance,</p>
-<pre class="r"><code>x &lt;- 6
-y &lt;- &quot;cat&quot;
-
-x &lt; 3</code></pre>
+<p>This process also works with variables containing single pieces of data too. For instance, let’s initialize the following variables.</p>
+<pre class="r"><code>number &lt;- 6
+animal &lt;- &quot;cat&quot;</code></pre>
+<p>And ask some questions. Is <code>number</code> less than 3?</p>
+<pre class="r"><code>number &lt; 3</code></pre>
 <pre><code>## [1] FALSE</code></pre>
-<pre class="r"><code>y == &quot;dog&quot;</code></pre>
+<p>Is the <code>animal</code> a dog?</p>
+<pre class="r"><code>animal == &quot;dog&quot;</code></pre>
 <pre><code>## [1] FALSE</code></pre>
-<p>The equation <code>x &lt; 3</code> is <code>FALSE</code> because x is set to 6 in the line above. As a simple exercise, manipulate the below code to make both equations <code>TRUE</code>.</p>
+<p>As a simple exercise, manipulate the below code to make both equations <code>TRUE</code>.</p>
 <div class="tutorial-exercise" data-label="boolean-exercise" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="5">
-<pre class="text"><code>x &lt;- 6
-y &lt;- &quot;cat&quot;
+<pre class="text"><code>number &lt;- 6
+animal &lt;- &quot;cat&quot;
 
-x &lt; 3
-y == &quot;dog&quot;</code></pre>
+number &lt; 3
+animal == &quot;dog&quot;</code></pre>
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
 </div>
 <div class="tutorial-exercise-support" data-label="boolean-exercise-hint-1" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
-<pre class="text"><code>x &lt;- #A number less than 3
-y &lt;- #A string
+<pre class="text"><code>number &lt;- #A number less than 3
+animal &lt;- #A string
 
-x &lt; 3
-y == &quot;dog&quot;</code></pre>
+number &lt; 3
+animal == &quot;dog&quot;</code></pre>
 </div>
 <div class="tutorial-exercise-support" data-label="boolean-exercise-hint-2" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
-<pre class="text"><code>x &lt;- 1
-y &lt;- &quot;dog&quot;
+<pre class="text"><code>number &lt;- 1
+animal &lt;- &quot;dog&quot;
 
-x &lt; 3
-y == &quot;dog&quot;</code></pre>
+number &lt; 3
+animal == &quot;dog&quot;</code></pre>
 </div>
-<p>Note that in R, a double <code>==</code> is a logical operator and using a single <code>=</code> will result in error. As you may have noticed, a single <code>=</code> can be used to assign a variable to a value.</p>
+<p>Note that in R, only the double <code>==</code> is a logical operator. Using a single <code>=</code> will result in error. As you may have noticed, a single <code>=</code> can only be used to assign a variable to a value.</p>
+<p>We can chain together multiple logical operators in a single question. Say we wanted to ask, “is <code>number</code> less than 10 but also greater than 4?” We would do so with the following operator: <code>number &lt; 10 &amp; number &gt; 4</code>.</p>
 <p>For quick reference, here are the most commonly used statements and operators.</p>
 <table>
 <thead>
@@ -350,27 +353,27 @@ y == &quot;dog&quot;</code></pre>
 <tbody>
 <tr class="odd">
 <td><code>==</code></td>
-<td>equals</td>
+<td>equivalent to</td>
 </tr>
 <tr class="even">
+<td><code>!=</code></td>
+<td>not equivalent to</td>
+</tr>
+<tr class="odd">
 <td><code>&lt; or &gt;</code></td>
 <td>less/greater than</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>&lt;= or &gt;=</code></td>
 <td>less/greater than or equal to</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>%in%</code></td>
 <td>in</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>is.na</code></td>
 <td>is missing (<code>NA</code>)</td>
-</tr>
-<tr class="even">
-<td><code>!</code></td>
-<td>not (as in not equal to <code>!=</code>)</td>
 </tr>
 <tr class="odd">
 <td><code>&amp;</code></td>
@@ -401,8 +404,11 @@ x &gt; n | x &lt; m</code></pre>
 </div>
 </div>
 </div>
-<div id="section-select" class="section level2">
-<h2><code>select()</code></h2>
+<div id="section-select-slice-and-filter" class="section level2">
+<h2><code>select()</code>, <code>slice()</code>, and <code>filter()</code></h2>
+<p>Now that we know how to ask logical questions in R, we can take advantage of this to subset our data in any way we’d like. In a nutshell, the <code>select()</code> function allows you to select certain <em>columns</em> of your data frame to work with, while the <code>slice()</code> function allows you to select certain rows. You can isolate specific entries with a combination of <code>slice()</code> and <code>select()</code>. <code>filter()</code> allows you to apply a conditional statement to the rows of your table, using the logical operators we talked about in the previous section.</p>
+<div id="section-select" class="section level3">
+<h3><code>select()</code></h3>
 <p>You can use the <code>select()</code> function to keep only a subset of variables (columns). Let’s select the variables <code>OTU0001</code>, <code>OTU0002</code>, <code>OTU0004</code>, <code>Depth</code>.</p>
 <div class="tutorial-exercise" data-label="select-1" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="5">
 <pre class="text"><code>restricted_columns &lt;- select(OTU_metadata_table, OTU0001, OTU0002, OTU0004, Depth)</code></pre>
@@ -412,6 +418,7 @@ x &gt; n | x &lt; m</code></pre>
 <div class="tutorial-exercise" data-label="select-2" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="5">
 <pre class="text"><code>restricted_columns</code></pre>
 <script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
 </div>
 <div id="section-exercise-1" class="section level3">
 <h3>Exercise</h3>
@@ -425,12 +432,55 @@ x &gt; n | x &lt; m</code></pre>
 <div class="tutorial-exercise-support" data-label="select-exercise-hint-2" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
 <pre class="text"><code>select(OTU_metadata_table, Depth, NO3, Mean_NO2, Mean_N2O, Mean_NH4)</code></pre>
 </div>
-<!-- ### Exercise: `select()` -->
-<!-- Select the Cruise, Date, Depth, PO4, and WS_NO3 variables of the `geochemicals` data set -->
-<!-- ```{r select-exercise-1, exercise=TRUE, exercise.lines = 3} -->
-<!-- dat <- select() -->
-<!-- dat -->
-<!-- ``` -->
+</div>
+<div id="section-slice" class="section level3">
+<h3><code>slice()</code></h3>
+<p>We can also only choose to work with specific rows in our data table using the <code>slice()</code> function.</p>
+<p>To select a subset of observations (rows) by their ordinal position, we use the <code>slice()</code> function.</p>
+<div class="tutorial-exercise" data-label="slice-1" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="5">
+<pre class="text"><code>slice(OTU_metadata_table, 1)</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>You can list multiple ordinal postions to select multiple observations at once.</p>
+<div class="tutorial-exercise" data-label="slice-2" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="5">
+<pre class="text"><code>slice(OTU_metadata_table, 1, 2, 3, 4, 5)</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p>If you would like to to select a range of observations, give the starting and end position separated by a colon like so: <code>&lt;start&gt;:&lt;end&gt;</code>.</p>
+<div class="tutorial-exercise" data-label="slice-3" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="5">
+<pre class="text"><code>slice(OTU_metadata_table, 1:5)</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<p><div class="panel-heading tutorial-quiz-title">Quiz</div><div class="panel panel-default">
+<div data-label="slice-quiz-1" class="tutorial-question panel-body">
+<div id="slice-quiz-1-answer_container" class="shiny-html-output"></div>
+<div id="slice-quiz-1-message_container" class="shiny-html-output"></div>
+<div id="slice-quiz-1-action_button_container" class="shiny-html-output"></div>
+<script>if (Tutorial.triggerMathJax) Tutorial.triggerMathJax()</script>
+</div>
+</div></p>
+</div>
+<div id="section-exercise-slice-and-select" class="section level3">
+<h3>Exercise: <code>slice()</code> and <code>select()</code></h3>
+<p>Using <code>slice()</code> and <code>select()</code>, determine:</p>
+<ol style="list-style-type: upper-alpha">
+<li>what depth value occurs in the 20th row?</li>
+<li>what methane value occurs in the 170th row?</li>
+</ol>
+<div class="tutorial-exercise" data-label="slice_exercise" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="5">
+<pre class="text"><code>dat &lt;- geochemicals</code></pre>
+<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+</div>
+<div class="tutorial-exercise-support" data-label="slice_exercise-hint-1" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code># Recall that slice() allows you to find a row
+# and select() allows you to find a column
+slice(dat, 20)
+select(dat, depth)</code></pre>
+</div>
+<div class="tutorial-exercise-support" data-label="slice_exercise-hint-2" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
+<pre class="text"><code>slice(select(dat, Depth), 20)
+select(slice(dat, 170), methane)</code></pre>
+</div>
 </div>
 <div id="section-filter" class="section level3">
 <h3><code>filter()</code></h3>
@@ -492,54 +542,11 @@ filter(dataset, (column, operator, quantity))</code></pre>
 </div>
 </div>
 </div>
-<div id="section-slice" class="section level2">
-<h2><code>slice()</code></h2>
-<p>We can also only choose to work with specific rows in our data table using the <code>slice()</code> function.</p>
-<p>To select a subset of observations (rows) by their ordinal position, we use the <code>slice()</code> function.</p>
-<div class="tutorial-exercise" data-label="slice-1" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="5">
-<pre class="text"><code>slice(OTU_metadata_table, 1)</code></pre>
-<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
+<div id="section-mutate" class="section level2">
+<h2><code>mutate()</code></h2>
 </div>
-<p>You can list multiple ordinal postions to select multiple observations at once.</p>
-<div class="tutorial-exercise" data-label="slice-2" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="5">
-<pre class="text"><code>slice(OTU_metadata_table, 1, 2, 3, 4, 5)</code></pre>
-<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
-</div>
-<p>If you would like to to select a range of observations, give the starting and end position separated by a colon like so: <code>&lt;start&gt;:&lt;end&gt;</code>.</p>
-<div class="tutorial-exercise" data-label="slice-3" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="5">
-<pre class="text"><code>slice(OTU_metadata_table, 1:5)</code></pre>
-<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
-</div>
-<p><div class="panel-heading tutorial-quiz-title">Quiz</div><div class="panel panel-default">
-<div data-label="slice-quiz-1" class="tutorial-question panel-body">
-<div id="slice-quiz-1-answer_container" class="shiny-html-output"></div>
-<div id="slice-quiz-1-message_container" class="shiny-html-output"></div>
-<div id="slice-quiz-1-action_button_container" class="shiny-html-output"></div>
-<script>if (Tutorial.triggerMathJax) Tutorial.triggerMathJax()</script>
-</div>
-</div></p>
-<div id="section-exercise-slice-and-select" class="section level3">
-<h3>Exercise: <code>slice()</code> and <code>select()</code></h3>
-<p>Using <code>slice()</code> and <code>select()</code>, determine:</p>
-<ol style="list-style-type: upper-alpha">
-<li>what depth value occurs in the 20th row?</li>
-<li>what methane value occurs in the 170th row?</li>
-</ol>
-<div class="tutorial-exercise" data-label="slice_exercise" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="5">
-<pre class="text"><code>dat &lt;- geochemicals</code></pre>
-<script type="application/json" data-opts-chunk="1">{"fig.width":6.5,"fig.height":4,"fig.retina":2,"fig.align":"default","fig.keep":"high","fig.show":"asis","out.width":624,"warning":true,"error":false,"message":true,"exercise.df_print":"paged","exercise.checker":"NULL"}</script>
-</div>
-<div class="tutorial-exercise-support" data-label="slice_exercise-hint-1" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
-<pre class="text"><code># Recall that slice() allows you to find a row
-# and select() allows you to find a column
-slice(dat, 20)
-select(dat, depth)</code></pre>
-</div>
-<div class="tutorial-exercise-support" data-label="slice_exercise-hint-2" data-caption="Code" data-completion="1" data-diagnostics="1" data-startover="1" data-lines="0">
-<pre class="text"><code>slice(select(dat, Depth), 20)
-select(slice(dat, 170), methane)</code></pre>
-</div>
-</div>
+<div id="section-the-pipe-operator" class="section level2">
+<h2>The Pipe (<code>%&gt;%</code>) Operator</h2>
 </div>
 <div id="section-summary-exercise" class="section level2">
 <h2>Summary Exercise</h2>
@@ -643,7 +650,7 @@ output$`tutorial-exercise-tibble-output` <- renderUI({
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
-learnr:::question_prerendered_chunk(structure(list(type = "learnr_checkbox", label = "glimpse-quiz-1",     question = structure("Which columns are in raw_data?", html = TRUE, class = c("html",     "character")), answers = list(structure(list(id = "lnr_ans_c20e10b",         option = "OTU001", value = "OTU001", label = structure("OTU001", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_80b3d2e",         option = "Otu002", value = "Otu002", label = structure("Otu002", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_8b11ebf",         option = "72", value = "72", label = structure("72", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_5ccdfe9",         option = "NO3", value = "NO3", label = structure("NO3", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_3b23e9c",         option = "NO3_Mean", value = "NO3_Mean", label = structure("NO3_Mean", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_b188ea4",         option = "Mean_N2O", value = "Mean_N2O", label = structure("Mean_N2O", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_6c89438",         option = "Depth", value = "Depth", label = structure("Depth", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html",     "character")), try_again = structure("Try Again", html = TRUE, class = c("html",     "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html",     "character")), try_again = structure("Incorrect", html = TRUE, class = c("html",     "character")), incorrect = structure("Incorrect", html = TRUE, class = c("html",     "character")), message = NULL, post_message = NULL), ids = list(        answer = "glimpse-quiz-1-answer", question = "glimpse-quiz-1"),     loading = structure("<strong>Loading:<\u002fstrong> \nWhich columns are in raw_data?\n<br/><br/><br/>", html = TRUE, class = c("html",     "character")), random_answer_order = FALSE, allow_retry = FALSE,     seed = 333130894.844874, options = list()), class = c("learnr_checkbox", "tutorial_question")))
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_checkbox", label = "glimpse-quiz-1",     question = structure("Which columns are in raw_data?", html = TRUE, class = c("html",     "character")), answers = list(structure(list(id = "lnr_ans_8778bf",         option = "OTU001", value = "OTU001", label = structure("OTU001", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_1717244",         option = "Otu002", value = "Otu002", label = structure("Otu002", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_ee52e4f",         option = "72", value = "72", label = structure("72", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_4a041cb",         option = "NO3", value = "NO3", label = structure("NO3", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_3a7ad62",         option = "NO3_Mean", value = "NO3_Mean", label = structure("NO3_Mean", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_5753f9",         option = "Mean_N2O", value = "Mean_N2O", label = structure("Mean_N2O", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_bf280a3",         option = "Depth", value = "Depth", label = structure("Depth", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html",     "character")), try_again = structure("Try Again", html = TRUE, class = c("html",     "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html",     "character")), try_again = structure("Incorrect", html = TRUE, class = c("html",     "character")), incorrect = structure("Incorrect", html = TRUE, class = c("html",     "character")), message = NULL, post_message = NULL), ids = list(        answer = "glimpse-quiz-1-answer", question = "glimpse-quiz-1"),     loading = structure("<strong>Loading:<\u002fstrong> \nWhich columns are in raw_data?\n<br/><br/><br/>", html = TRUE, class = c("html",     "character")), random_answer_order = FALSE, allow_retry = FALSE,     seed = 446305522.292173, options = list()), class = c("learnr_checkbox", "tutorial_question")))
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
@@ -678,6 +685,38 @@ output$`tutorial-exercise-select-2-output` <- renderUI({
 `tutorial-exercise-select-exercise-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-select-exercise-code-editor`)), session)
 output$`tutorial-exercise-select-exercise-output` <- renderUI({
   `tutorial-exercise-select-exercise-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-slice-1-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-slice-1-code-editor`)), session)
+output$`tutorial-exercise-slice-1-output` <- renderUI({
+  `tutorial-exercise-slice-1-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-slice-2-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-slice-2-code-editor`)), session)
+output$`tutorial-exercise-slice-2-output` <- renderUI({
+  `tutorial-exercise-slice-2-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-slice-3-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-slice-3-code-editor`)), session)
+output$`tutorial-exercise-slice-3-output` <- renderUI({
+  `tutorial-exercise-slice-3-result`()
+})
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "slice-quiz-1",     question = structure("What is the value of OTU0003 in the 6th row of OTU_metadata_table?", html = TRUE, class = c("html",     "character")), answers = list(structure(list(id = "lnr_ans_d2a98f9",         option = "0", value = "0", label = structure("0", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_3198dbe",         option = "156", value = "156", label = structure("156", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_1de9069",         option = "178", value = "178", label = structure("178", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_b13f92b",         option = "72", value = "72", label = structure("72", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html",     "character")), try_again = structure("Try Again", html = TRUE, class = c("html",     "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html",     "character")), try_again = structure("Incorrect", html = TRUE, class = c("html",     "character")), incorrect = structure("Incorrect", html = TRUE, class = c("html",     "character")), message = NULL, post_message = NULL), ids = list(        answer = "slice-quiz-1-answer", question = "slice-quiz-1"),     loading = structure("<strong>Loading:<\u002fstrong> \nWhat is the value of OTU0003 in the 6th row of OTU_metadata_table?\n<br/><br/><br/>", html = TRUE, class = c("html",     "character")), random_answer_order = FALSE, allow_retry = FALSE,     seed = 1727646376.1955, options = list()), class = c("learnr_radio", "tutorial_question")))
+</script>
+ 
+<script type="application/shiny-prerendered" data-context="server">
+`tutorial-exercise-slice_exercise-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-slice_exercise-code-editor`)), session)
+output$`tutorial-exercise-slice_exercise-output` <- renderUI({
+  `tutorial-exercise-slice_exercise-result`()
 })
 </script>
  
@@ -741,38 +780,6 @@ output$`tutorial-exercise-or-output` <- renderUI({
 `tutorial-exercise-filter-exercise-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-filter-exercise-code-editor`)), session)
 output$`tutorial-exercise-filter-exercise-output` <- renderUI({
   `tutorial-exercise-filter-exercise-result`()
-})
-</script>
- 
-<script type="application/shiny-prerendered" data-context="server">
-`tutorial-exercise-slice-1-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-slice-1-code-editor`)), session)
-output$`tutorial-exercise-slice-1-output` <- renderUI({
-  `tutorial-exercise-slice-1-result`()
-})
-</script>
- 
-<script type="application/shiny-prerendered" data-context="server">
-`tutorial-exercise-slice-2-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-slice-2-code-editor`)), session)
-output$`tutorial-exercise-slice-2-output` <- renderUI({
-  `tutorial-exercise-slice-2-result`()
-})
-</script>
- 
-<script type="application/shiny-prerendered" data-context="server">
-`tutorial-exercise-slice-3-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-slice-3-code-editor`)), session)
-output$`tutorial-exercise-slice-3-output` <- renderUI({
-  `tutorial-exercise-slice-3-result`()
-})
-</script>
- 
-<script type="application/shiny-prerendered" data-context="server">
-learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "slice-quiz-1",     question = structure("What is the value of OTU0003 in the 6th row of OTU_metadata_table?", html = TRUE, class = c("html",     "character")), answers = list(structure(list(id = "lnr_ans_bfe96bd",         option = "0", value = "0", label = structure("0", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_5997c63",         option = "156", value = "156", label = structure("156", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_ba91fe4",         option = "178", value = "178", label = structure("178", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_815ce66",         option = "72", value = "72", label = structure("72", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html",     "character")), try_again = structure("Try Again", html = TRUE, class = c("html",     "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html",     "character")), try_again = structure("Incorrect", html = TRUE, class = c("html",     "character")), incorrect = structure("Incorrect", html = TRUE, class = c("html",     "character")), message = NULL, post_message = NULL), ids = list(        answer = "slice-quiz-1-answer", question = "slice-quiz-1"),     loading = structure("<strong>Loading:<\u002fstrong> \nWhat is the value of OTU0003 in the 6th row of OTU_metadata_table?\n<br/><br/><br/>", html = TRUE, class = c("html",     "character")), random_answer_order = FALSE, allow_retry = FALSE,     seed = 1170367098.95501, options = list()), class = c("learnr_radio", "tutorial_question")))
-</script>
- 
-<script type="application/shiny-prerendered" data-context="server">
-`tutorial-exercise-slice_exercise-result` <- learnr:::setup_exercise_handler(reactive(req(input$`tutorial-exercise-slice_exercise-code-editor`)), session)
-output$`tutorial-exercise-slice_exercise-output` <- renderUI({
-  `tutorial-exercise-slice_exercise-result`()
 })
 </script>
  

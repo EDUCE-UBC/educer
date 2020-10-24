@@ -75,10 +75,11 @@ Here, we will introduce the `purrr` package, which allows you to perform more ad
 ## Learning Goals
 
 - Load tabular data using `read_csv()` and save the data to your R environment.
-- Introduce the use of logical operators and conditional statements in R for subsetting your data.
-- Use the `filter()`, `slice()` and `select()` methods to conditionally subset your data.
-- Use the `mutate()` function to create new variables in your dataset, using your existing variables.
 - Writing your processed data to your disk.
+- Introduce the use of logical operators and conditional statements in R for subsetting your data.
+- Use the `select()`, `slice()`, and `filter()` functions to conditionally subset your data.
+- Use the `mutate()` function to create new variables in your dataset, using your existing variables.
+- Use the pipe operator to more efficiently daisy-chain functions together.
 
 
 ## What is the Tidyverse?
@@ -378,9 +379,11 @@ x > n | x < m
 ```
 
 
+## `select()`, `slice()`, and `filter()`
 
+Now that we know how to ask logical questions in R, we can take advantage of this to subset our data in any way we'd like. In a nutshell, the `select()` function allows you to select certain *columns* of your data frame to work with, while the `slice()` function allows you to select certain rows. You can isolate specific entries with a combination of `slice()` and `select()`. `filter()` allows you to apply a conditional statement to the rows of your table, using the logical operators we talked about in the previous section.
 
-## `select()`
+### `select()`
 
 You can use the `select()` function to keep only a subset of variables (columns). Let's select the variables `OTU0001`, `OTU0002`, `OTU0004`, `Depth`.
 
@@ -408,19 +411,61 @@ select(OTU_metadata_table, <variable1>, <variable2>, <...>)
 ```{r select-exercise-hint-2}
 select(OTU_metadata_table, Depth, NO3, Mean_NO2, Mean_N2O, Mean_NH4)
 ```
-<!-- ### Exercise: `select()` -->
 
-<!-- Select the Cruise, Date, Depth, PO4, and WS_NO3 variables of the `geochemicals` data set -->
+### `slice()`
 
-<!-- ```{r select-exercise-1, exercise=TRUE, exercise.lines = 3} -->
+We can also only choose to work with specific rows in our data table using the `slice()` function. 
 
-<!-- dat <- select() -->
+To select a subset of observations (rows) by their ordinal position, we use the `slice()` function.
 
-<!-- dat -->
-<!-- ``` -->
+```{r slice-1, exercise = TRUE, exercise.lines = 5}
+slice(OTU_metadata_table, 1)
+```
 
+You can list multiple ordinal postions to select multiple observations at once.
 
+```{r slice-2, exercise = TRUE, exercise.lines = 5}
+slice(OTU_metadata_table, 1, 2, 3, 4, 5)
+```
 
+If you would like to to select a range of observations, give the starting and end position separated by a colon like so: `<start>:<end>`.
+
+```{r slice-3, exercise = TRUE, exercise.lines = 5}
+slice(OTU_metadata_table, 1:5)
+```
+
+```{r slice-quiz, echo = FALSE}
+quiz(
+  question("What is the value of OTU0003 in the 6th row of OTU_metadata_table?",
+           answer("0"),
+           answer("156"),
+           answer("178", correct=TRUE),
+           answer("72")
+           )
+)
+```
+
+### Exercise: `slice()` and `select()`
+Using `slice()` and `select()`, determine:
+
+A) what depth value occurs in the 20th row?
+B) what methane value occurs in the 170th row?
+    
+```{r slice_exercise, exercise=TRUE, exercise.lines=5}
+dat <- geochemicals
+```
+
+```{r slice_exercise-hint-1}
+# Recall that slice() allows you to find a row
+# and select() allows you to find a column
+slice(dat, 20)
+select(dat, depth)
+```
+
+```{r slice_exercise-hint-2}
+slice(select(dat, Depth), 20)
+select(slice(dat, 170), methane)
+```
 
 
 ### `filter()`
@@ -497,60 +542,11 @@ filter(dataset, (column, operator, quantity))
 filter(subset_dat, depth <= 135)
 ```
 
-## `slice()`
+## `mutate()`
 
-We can also only choose to work with specific rows in our data table using the `slice()` function. 
+## The Pipe Operator (`%>%`)
 
-To select a subset of observations (rows) by their ordinal position, we use the `slice()` function.
 
-```{r slice-1, exercise = TRUE, exercise.lines = 5}
-slice(OTU_metadata_table, 1)
-```
-
-You can list multiple ordinal postions to select multiple observations at once.
-
-```{r slice-2, exercise = TRUE, exercise.lines = 5}
-slice(OTU_metadata_table, 1, 2, 3, 4, 5)
-```
-
-If you would like to to select a range of observations, give the starting and end position separated by a colon like so: `<start>:<end>`.
-
-```{r slice-3, exercise = TRUE, exercise.lines = 5}
-slice(OTU_metadata_table, 1:5)
-```
-
-```{r slice-quiz, echo = FALSE}
-quiz(
-  question("What is the value of OTU0003 in the 6th row of OTU_metadata_table?",
-           answer("0"),
-           answer("156"),
-           answer("178", correct=TRUE),
-           answer("72")
-           )
-)
-```
-
-### Exercise: `slice()` and `select()`
-Using `slice()` and `select()`, determine:
-
-A) what depth value occurs in the 20th row?
-B) what methane value occurs in the 170th row?
-    
-```{r slice_exercise, exercise=TRUE, exercise.lines=5}
-dat <- geochemicals
-```
-
-```{r slice_exercise-hint-1}
-# Recall that slice() allows you to find a row
-# and select() allows you to find a column
-slice(dat, 20)
-select(dat, depth)
-```
-
-```{r slice_exercise-hint-2}
-slice(select(dat, Depth), 20)
-select(slice(dat, 170), methane)
-```
 ## Summary Exercise
 
 The `geochemicals` dataset is included in the "educer" package. This dataframe contains time series observations on the water column chemistry. Learn more about the `geochemicals` dataset by running the following line in your R console. 
