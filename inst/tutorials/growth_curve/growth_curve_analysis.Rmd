@@ -130,6 +130,37 @@ growth_data_MM <- growth_data_info %>%
            .$blank_OD)
 
 growth_data_full <- bind_rows(growth_data_LB, growth_data_MM)
+
+growthrate_model <- function(filtered_dataframe) {
+  growth_fit <-fit_easylinear(filtered_dataframe$Time, filtered_dataframe$net_OD)
+  
+  output <- growth_fit@par
+  return(output)
+}
+
+growthrate_plot <- function(filtered_dataframe) {
+  growth_fit <-fit_easylinear(filtered_dataframe$Time, filtered_dataframe$net_OD)
+  output <- plot(growth_fit)
+  return(output)
+}
+
+calc_growthrates <- function(dataframe) {
+  growth_rates <- dataframe %>%
+    distinct(well, .keep_all = TRUE) %>%
+    select(c(well, student, blank, media)) %>%
+    filter(blank == FALSE)
+  
+  growth_rates$growth_rate <- NA
+  for (w in 1:length(growth_rates$well)){
+    growth_rate_data <- dataframe %>%
+      filter(well == growth_rates$well[w])
+    
+    growth_fit <- fit_easylinear(growth_rate_data$Time, growth_rate_data$net_OD)
+    growth_rates$growth_rate[w] = growth_fit@par[[3]]
+  }
+  output <- growth_rates
+  return(output)
+}
 ```
 
 ```{r plotting_growth_curves, exercise=TRUE, exercise.setup = "plotting_growth_curves_setup"}
@@ -146,54 +177,25 @@ growth_data_full %>%
 
 ## Calculating Growth Rates
 
+Here, we use the `growthrate_model(<fitlered_dataframe>)` and `growthrate_plot(<fitlered_dataframe>)` function to model and plot the maximum growth rate of a single sample.  To do this, first filter your dataframe down to a single `well`.
+
 ```{r test_growth_rates, exercise=TRUE, exercise.setup = "plotting_growth_curves_setup"}
 test_data <- growth_data_full %>%
-  filter(well == 'H10')
+  filter(well == 'A10')
 
-fit_test <- fit_easylinear(test_data$Time, test_data$net_OD)
+growthrate_model(test_data)
 
-fit_test@obs %>%
-  ggplot(aes(x= time, y = y)) +
-  geom_point()
-
-coef(fit_test)
-plot(fit_test)
+growthrate_plot(test_data)
 ```
+
+Use the `calc_growthrate(<dataframe>)` function to calculate growth rates for all the wells in a your dataframe, outputting a new dataframe.  
 
 ```{r calculating_growth_rates, exercise=TRUE, exercise.setup = "plotting_growth_curves_setup"}
-growth_rates <- growth_data_full %>%
-  distinct(well, .keep_all = TRUE) %>%
-  select(c(well, student, blank, media)) %>%
-  filter(blank == FALSE)
+growth_rates <- calc_growthrates(growth_data_full)
 
-growth_rates$growth_rate <- NA
-for (w in 1:length(growth_rates$well)){
-  growth_rate_data <- growth_data_full %>%
-    filter(well == growth_rates$well[w])
-  
-  growth_fit <- fit_easylinear(growth_rate_data$Time, growth_rate_data$net_OD)
-
-  growth_rates$growth_rate[w] = growth_fit@par[[3]]
-}
+growth_rates
 ```
 ## Data Distribution
-
-```{r calculating_growth_rates_setup, exercise=TRUE, exercise.setup = "plotting_growth_curves_setup"}
-growth_rates <- growth_data_full %>%
-  distinct(well, .keep_all = TRUE) %>%
-  select(c(well, student, blank, media)) %>%
-  filter(blank == FALSE)
-
-growth_rates$growth_rate <- NA
-for (w in 1:length(growth_rates$well)){
-  growth_rate_data <- growth_data_full %>%
-    filter(well == growth_rates$well[w])
-  
-  growth_fit <- fit_easylinear(growth_rate_data$Time, growth_rate_data$net_OD)
-
-  growth_rates$growth_rate[w] = growth_fit@par[[3]]
-}
-```
 
 ```{r plotting_growth_rates_setup}
 raw_growth_data <- read_csv(system.file("resources/data",  "growth_data.csv", package = "educer"), col_names = TRUE, skip = 12)
@@ -225,20 +227,25 @@ growth_data_MM <- growth_data_info %>%
 
 growth_data_full <- bind_rows(growth_data_LB, growth_data_MM)
 
-growth_rates <- growth_data_full %>%
-  distinct(well, .keep_all = TRUE) %>%
-  select(c(well, student, blank, media)) %>%
-  filter(blank == FALSE)
-
-growth_rates$growth_rate <- NA
-for (w in 1:length(growth_rates$well)){
-  growth_rate_data <- growth_data_full %>%
-    filter(well == growth_rates$well[w])
+calc_growthrates <- function(dataframe) {
+  growth_rates <- dataframe %>%
+    distinct(well, .keep_all = TRUE) %>%
+    select(c(well, student, blank, media)) %>%
+    filter(blank == FALSE)
   
-  growth_fit <- fit_easylinear(growth_rate_data$Time, growth_rate_data$net_OD)
-
-  growth_rates$growth_rate[w] = growth_fit@par[[3]]
+  growth_rates$growth_rate <- NA
+  for (w in 1:length(growth_rates$well)){
+    growth_rate_data <- dataframe %>%
+      filter(well == growth_rates$well[w])
+    
+    growth_fit <- fit_easylinear(growth_rate_data$Time, growth_rate_data$net_OD)
+    growth_rates$growth_rate[w] = growth_fit@par[[3]]
+  }
+  output <- growth_rates
+  return(output)
 }
+
+growth_rates <- calc_growthrates(growth_data_full)
 ```
 
 ```{r data_distribution, exercise=TRUE, exercise.setup = "plotting_growth_rates_setup"}
