@@ -78,6 +78,15 @@ dat <- mutate(raw_dat, Depth = as.factor(Depth),
               Cruise = as.factor(Cruise))
 ```
 
+```{r factors, echo=FALSE}
+question("Which of these variables could potentially be represented as categorical vectors? (select ALL that apply)",
+  answer("Colour of flower petals of 9 different plants", correct = TRUE),
+  answer("Oxygen concentration in uM"),
+  answer("Ammonium concentration in nM"),
+  answer("Number of days it takes a plant to sprout", correct = TRUE),
+  incorrect = "Incorrect. Hint: Categorical variables usually take on a fixed set of values")
+```
+
 Using the `%in%` binary operator we can filter for groups of values. Subset data to 3 depths in 7 cruises (i.e. specimens) in February:
 ```{r}
 dat <- filter(dat, Depth %in% c(10, 100, 200),
