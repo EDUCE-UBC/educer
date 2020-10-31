@@ -38,7 +38,9 @@ Necessary packages are first loaded into R, using the `library(<package>)` funct
 * `"growthrates"`
 * `rstatix`
 
-Files `growth_data.csv` and `well_information.csv` are imported using the `tidyverse` function `read_csv()`. 
+Custom function with the suffix `EDU` (`<function>_EDU()`) were designed for this tutorial and are combine functions from the package above. For educational purposes details can be found in the "Helper Function" section of this tutorial.
+
+Files `growth_data.csv` and `well_information.csv` are imported using the `tidyverse` function `read_csv()`.
 
 ```{r import, message=TRUE}
 library(tidyverse)
@@ -61,7 +63,13 @@ The key steps in this process are:
     + Functions: `right_join()` and `filter()`
 
 3. Calculating OD~600~ in "blank" wells at T~0~ to generate `blank_**` values for different media types
-    + Functions: `calc_blank(<dataframe>, <Media-Type>)`
+    + Functions: `calc_blank_EDU(<dataframe>, <Media-Type>)`
+
+4. Calculating `net_OD` values (blank OD~600~ values subtracted from measured OD~600~) for each media type separately
+    + Functions: `filter()` and `mutate() `
+    
+5. Binding separated dataframes to make a single dataframe with `net_OD` values for all wells and timepoints
+    + Functions: `bind_rows()`
 
 ```{r data_reformating_setup}
 library(tidyverse)
@@ -71,7 +79,7 @@ library(rstatix)
 raw_growth_data <- read_csv(system.file("resources/data",  "growth_data.csv", package = "educer"), col_names = TRUE, skip = 12)
 well_data <- read_csv(system.file("resources/data", "well_information.csv", package = "educer"), col_names = TRUE)
 
-calc_blank <- function(dataframe, Media) {
+calc_blank_EDU <- function(dataframe, Media) {
   blank_OD <- dataframe %>%
   filter(!is.na(Time)) %>%
   filter(blank == TRUE, Time == min(.$Time), media == Media ) %>%
@@ -91,9 +99,9 @@ growth_data <- raw_growth_data %>%
 growth_data_info <- right_join(growth_data, well_data, by = 'well') %>%
   filter(!is.na(student), !is.na(Time))
 
-blank_LB <- calc_blank(growth_data_info, 'LB')
+blank_LB <- calc_blank_EDU(growth_data_info, 'LB')
 
-blank_MM <- calc_blank(growth_data_info, 'MM')
+blank_MM <- calc_blank_EDU(growth_data_info, 'MM')
 
 growth_data_LB <- growth_data_info %>%
   filter(media == 'LB') %>%
@@ -108,11 +116,12 @@ growth_data_full <- bind_rows(growth_data_LB, growth_data_MM)
 
 ## Plotting Growth Curves
 
+
 ```{r plotting_growth_curves_setup}
 raw_growth_data <- read_csv(system.file("resources/data",  "growth_data.csv", package = "educer"), col_names = TRUE, skip = 12)
 well_data <- read_csv(system.file("resources/data", "well_information.csv", package = "educer"), col_names = TRUE)
 
-calc_blank <- function(dataframe, Media) {
+calc_blank_EDU <- function(dataframe, Media) {
   blank_OD <- dataframe %>%
   filter(!is.na(Time)) %>%
   filter(blank == TRUE, Time == min(.$Time), media == Media ) %>%
@@ -129,11 +138,9 @@ growth_data <- raw_growth_data %>%
 growth_data_info <- right_join(growth_data, well_data, by = 'well') %>%
   filter(!is.na(student), !is.na(Time))
 
-blank_OD <- growth_data_info %>%
-  filter(!is.na(Time)) %>%
-  filter(blank == TRUE, Time == min(.$Time)) %>%
-  group_by(media) %>%
-  summarise(blank_OD = mean(OD600))
+blank_LB <- calc_blank_EDU(growth_data_info, 'LB')
+
+blank_MM <- calc_blank_EDU(growth_data_info, 'MM')
 
 growth_data_LB <- growth_data_info %>%
   filter(media == 'LB') %>%
@@ -145,21 +152,21 @@ growth_data_MM <- growth_data_info %>%
 
 growth_data_full <- bind_rows(growth_data_LB, growth_data_MM)
 
-growthrate_model <- function(filtered_dataframe) {
+growthrate_model_EDU <- function(filtered_dataframe) {
   growth_fit <-fit_easylinear(filtered_dataframe$Time, filtered_dataframe$net_OD)
   
   output <- growth_fit@par
   return(output)
 }
 
-growthrate_plot <- function(filtered_dataframe) {
+growthrate_plot_EDU <- function(filtered_dataframe) {
   growth_fit <-fit_easylinear(filtered_dataframe$Time, filtered_dataframe$net_OD)
   plot <- plot(growth_fit)
   output <- plot
   return(output)
 }
 
-calc_growthrates <- function(dataframe) {
+calc_growthrates_EDU <- function(dataframe) {
   growth_rates <- dataframe %>%
     distinct(well, .keep_all = TRUE) %>%
     select(c(well, student, blank, media)) %>%
@@ -200,15 +207,15 @@ test_data <- growth_data_full %>%
 
 # plot(fit_easylinear(test_data$Time, test_data$net_OD))
 
-growthrate_model(test_data)
+growthrate_model_EDU(test_data)
 
-growthrate_plot(test_data)
+growthrate_plot_EDU(test_data)
 ```
 
 Use the `calc_growthrate(<dataframe>)` function to calculate growth rates for all the wells in a your dataframe, outputting a new dataframe.  
 
 ```{r calculating_growth_rates, exercise=TRUE, exercise.setup = "plotting_growth_curves_setup"}
-growth_rates <- calc_growthrates(growth_data_full)
+growth_rates <- calc_growthrates_EDU(growth_data_full)
 
 growth_rates
 ```
@@ -218,7 +225,7 @@ growth_rates
 raw_growth_data <- read_csv(system.file("resources/data",  "growth_data.csv", package = "educer"), col_names = TRUE, skip = 12)
 well_data <- read_csv(system.file("resources/data", "well_information.csv", package = "educer"), col_names = TRUE)
 
-calc_blank <- function(dataframe, Media) {
+calc_blank_EDU <- function(dataframe, Media) {
   blank_OD <- dataframe %>%
   filter(!is.na(Time)) %>%
   filter(blank == TRUE, Time == min(.$Time), media == Media ) %>%
@@ -235,11 +242,9 @@ growth_data <- raw_growth_data %>%
 growth_data_info <- right_join(growth_data, well_data, by = 'well') %>%
   filter(!is.na(student), !is.na(Time))
 
-blank_OD <- growth_data_info %>%
-  filter(!is.na(Time)) %>%
-  filter(blank == TRUE, Time == min(.$Time)) %>%
-  group_by(media) %>%
-  summarise(blank_OD = mean(OD600))
+blank_LB <- calc_blank_EDU(growth_data_info, 'LB')
+
+blank_MM <- calc_blank_EDU(growth_data_info, 'MM')
 
 growth_data_LB <- growth_data_info %>%
   filter(media == 'LB') %>%
@@ -251,7 +256,7 @@ growth_data_MM <- growth_data_info %>%
 
 growth_data_full <- bind_rows(growth_data_LB, growth_data_MM)
 
-calc_growthrates <- function(dataframe) {
+calc_growthrates_EDU <- function(dataframe) {
   growth_rates <- dataframe %>%
     distinct(well, .keep_all = TRUE) %>%
     select(c(well, student, blank, media)) %>%
@@ -269,7 +274,7 @@ calc_growthrates <- function(dataframe) {
   return(output)
 }
 
-growth_rates <- calc_growthrates(growth_data_full)
+growth_rates <- calc_growthrates_EDU(growth_data_full)
 ```
 
 ```{r data_distribution, exercise=TRUE, exercise.setup = "plotting_growth_rates_setup"}
