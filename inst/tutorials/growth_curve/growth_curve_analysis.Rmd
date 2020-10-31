@@ -115,7 +115,9 @@ growth_data_full <- bind_rows(growth_data_LB, growth_data_MM)
 ```
 
 ## Plotting Growth Curves
+_E. coli_ growth curves represent the optical density of cultures over time. The shape of these curves has been extensively characterized by the scientific community and plotting these curves can help identify irregularities or contamination.
 
+We are generating these plots using the `ggplot2` package, wihich is part of the `tidyverse` library.
 
 ```{r plotting_growth_curves_setup}
 raw_growth_data <- read_csv(system.file("resources/data",  "growth_data.csv", package = "educer"), col_names = TRUE, skip = 12)
