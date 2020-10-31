@@ -157,15 +157,13 @@ growth_data_full <- bind_rows(growth_data_LB, growth_data_MM)
 growthrate_model_EDU <- function(filtered_dataframe) {
   growth_fit <-fit_easylinear(filtered_dataframe$Time, filtered_dataframe$net_OD)
   
-  output <- growth_fit@par
+  output <- growth_fit@par[[3]]
   return(output)
 }
 
 growthrate_plot_EDU <- function(filtered_dataframe) {
-  growth_fit <-fit_easylinear(filtered_dataframe$Time, filtered_dataframe$net_OD)
-  plot <- plot(growth_fit)
-  output <- plot
-  return(output)
+  growth_fit <- fit_easylinear(filtered_dataframe$Time, filtered_dataframe$net_OD)
+  return(plot(growth_fit))
 }
 
 calc_growthrates_EDU <- function(dataframe) {
@@ -206,8 +204,6 @@ Here, we use the `growthrate_model_EDU(<fitlered_dataframe>)` and `growthrate_pl
 ```{r test_growth_rates, exercise=TRUE, exercise.setup = "plotting_growth_curves_setup"}
 test_data <- growth_data_full %>%
   filter(well == 'A10')
-
-# plot(fit_easylinear(test_data$Time, test_data$net_OD))
 
 growthrate_model_EDU(test_data)
 
