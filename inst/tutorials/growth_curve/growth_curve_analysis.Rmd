@@ -112,6 +112,17 @@ growth_data_full <- bind_rows(growth_data_LB, growth_data_MM)
 raw_growth_data <- read_csv(system.file("resources/data",  "growth_data.csv", package = "educer"), col_names = TRUE, skip = 12)
 well_data <- read_csv(system.file("resources/data", "well_information.csv", package = "educer"), col_names = TRUE)
 
+calc_blank <- function(dataframe, Media) {
+  blank_OD <- dataframe %>%
+  filter(!is.na(Time)) %>%
+  filter(blank == TRUE, Time == min(.$Time), media == Media ) %>%
+  summarise(blank_OD = mean(OD600))
+
+  output <- blank_OD[[1]]
+  
+  return(output)
+}
+
 growth_data <- raw_growth_data %>%
   pivot_longer(-c(Time, Temp), names_to = 'well', values_to = 'OD600')
 
@@ -126,15 +137,11 @@ blank_OD <- growth_data_info %>%
 
 growth_data_LB <- growth_data_info %>%
   filter(media == 'LB') %>%
-  mutate(net_OD = OD600 - blank_OD %>%
-           filter(media == 'LB') %>%
-           .$blank_OD)
+  mutate(net_OD = OD600 - blank_LB)
 
 growth_data_MM <- growth_data_info %>%
   filter(media == 'MM') %>%
-  mutate(net_OD = OD600 - blank_OD %>%
-           filter(media == 'MM') %>%
-           .$blank_OD)
+  mutate(net_OD = OD600 - blank_MM)
 
 growth_data_full <- bind_rows(growth_data_LB, growth_data_MM)
 
@@ -211,6 +218,17 @@ growth_rates
 raw_growth_data <- read_csv(system.file("resources/data",  "growth_data.csv", package = "educer"), col_names = TRUE, skip = 12)
 well_data <- read_csv(system.file("resources/data", "well_information.csv", package = "educer"), col_names = TRUE)
 
+calc_blank <- function(dataframe, Media) {
+  blank_OD <- dataframe %>%
+  filter(!is.na(Time)) %>%
+  filter(blank == TRUE, Time == min(.$Time), media == Media ) %>%
+  summarise(blank_OD = mean(OD600))
+
+  output <- blank_OD[[1]]
+  
+  return(output)
+}
+
 growth_data <- raw_growth_data %>%
   pivot_longer(-c(Time, Temp), names_to = 'well', values_to = 'OD600')
 
@@ -225,15 +243,11 @@ blank_OD <- growth_data_info %>%
 
 growth_data_LB <- growth_data_info %>%
   filter(media == 'LB') %>%
-  mutate(net_OD = OD600 - blank_OD %>%
-           filter(media == 'LB') %>%
-           .$blank_OD)
+  mutate(net_OD = OD600 - blank_LB)
 
 growth_data_MM <- growth_data_info %>%
   filter(media == 'MM') %>%
-  mutate(net_OD = OD600 - blank_OD %>%
-           filter(media == 'MM') %>%
-           .$blank_OD)
+  mutate(net_OD = OD600 - blank_MM)
 
 growth_data_full <- bind_rows(growth_data_LB, growth_data_MM)
 
