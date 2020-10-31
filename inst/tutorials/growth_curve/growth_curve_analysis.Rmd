@@ -201,7 +201,7 @@ growth_data_full %>%
 
 ## Calculating Growth Rates
 
-Here, we use the `growthrate_model(<fitlered_dataframe>)` and `growthrate_plot(<fitlered_dataframe>)` function to model and plot the maximum growth rate of a single sample.  To do this, first filter your dataframe down to a single `well`.
+Here, we use the `growthrate_model_EDU(<fitlered_dataframe>)` and `growthrate_plot_EDU(<fitlered_dataframe>)` function to model and plot the maximum growth rate of a single sample.  To do this, first filter your dataframe down to a single `well`.
 
 ```{r test_growth_rates, exercise=TRUE, exercise.setup = "plotting_growth_curves_setup"}
 test_data <- growth_data_full %>%
@@ -221,7 +221,11 @@ growth_rates <- calc_growthrates_EDU(growth_data_full)
 
 growth_rates
 ```
+
 ## Data Distribution
+Understanding the distribution of data and the relationship between data sets is important in determining what kind of statistical analyses should be performed.
+
+In the following section, we plot the distribution of the calculated growth rates using the `geom_density` function from `ggplot2`
 
 ```{r plotting_growth_rates_setup}
 raw_growth_data <- read_csv(system.file("resources/data",  "growth_data.csv", package = "educer"), col_names = TRUE, skip = 12)
@@ -286,6 +290,7 @@ growth_rates %>%
 ```
 
 ## Statistical Analysis
+In order to determine whether there is a significant difference between growth rates in LB and MM media, we will employ the `wilcox_test()` function, from the `rstatix` package. Growth rate distributions are also plotted using the `geom_boxplot()` function, from the `ggplot2` package.
 
 ```{r staistical_analysis, exercise=TRUE, exercise.setup = "plotting_growth_rates_setup"}
 growth_rates %>%
