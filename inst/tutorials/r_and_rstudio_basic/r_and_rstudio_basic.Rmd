@@ -204,7 +204,7 @@ product <- 3 * 5
 difference <- product - 7
 ```
 
-### Check your Understanding
+### Check Your Understanding
 
 Without running the code below, what is the final value of x?
 
