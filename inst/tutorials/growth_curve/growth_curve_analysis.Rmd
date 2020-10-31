@@ -40,7 +40,7 @@ Necessary packages are first loaded into R, using the `library(<package>)` funct
 
 Files `growth_data.csv` and `well_information.csv` are imported using the `tidyverse` function `read_csv()`. 
 
-```{r import, exercise=TRUE, message=TRUE}
+```{r import, message=TRUE}
 library(tidyverse)
 library("growthrates")
 library(rstatix)
@@ -60,7 +60,8 @@ The key steps in this process are:
 2. Joining `growth_data` and `well_data`
     + Functions: `right_join()` and `filter()`
 
-3. Calculating OD~600~ in "blank" wells at T~0~ to generate `blank_OD`
+3. Calculating OD~600~ in "blank" wells at T~0~ to generate `blank_**` values for different media types
+    + Functions: `calc_blank(<dataframe>, <Media-Type>)`
 
 ```{r data_reformating_setup}
 library(tidyverse)
@@ -69,6 +70,18 @@ library(rstatix)
 
 raw_growth_data <- read_csv(system.file("resources/data",  "growth_data.csv", package = "educer"), col_names = TRUE, skip = 12)
 well_data <- read_csv(system.file("resources/data", "well_information.csv", package = "educer"), col_names = TRUE)
+
+calc_blank <- function(dataframe, Media) {
+  blank_OD <- dataframe %>%
+  filter(!is.na(Time)) %>%
+  filter(blank == TRUE, Time == min(.$Time), media == Media ) %>%
+  summarise(blank_OD = mean(OD600))
+
+  output <- blank_OD[[1]]
+  
+  return(output)
+}
+
 ```
 
 ```{r data_reformating, exercise=TRUE, exercise.setup = "data_reformating_setup"}
@@ -78,23 +91,17 @@ growth_data <- raw_growth_data %>%
 growth_data_info <- right_join(growth_data, well_data, by = 'well') %>%
   filter(!is.na(student), !is.na(Time))
 
-blank_OD <- growth_data_info %>%
-  filter(!is.na(Time)) %>%
-  filter(blank == TRUE, Time == min(.$Time)) %>%
-  group_by(media) %>%
-  summarise(blank_OD = mean(OD600))
+blank_LB <- calc_blank(growth_data_info, 'LB')
+
+blank_MM <- calc_blank(growth_data_info, 'MM')
 
 growth_data_LB <- growth_data_info %>%
   filter(media == 'LB') %>%
-  mutate(net_OD = OD600 - blank_OD %>%
-           filter(media == 'LB') %>%
-           .$blank_OD)
+  mutate(net_OD = OD600 - blank_LB)
 
 growth_data_MM <- growth_data_info %>%
   filter(media == 'MM') %>%
-  mutate(net_OD = OD600 - blank_OD %>%
-           filter(media == 'MM') %>%
-           .$blank_OD)
+  mutate(net_OD = OD600 - blank_MM)
 
 growth_data_full <- bind_rows(growth_data_LB, growth_data_MM)
 ```
@@ -140,7 +147,8 @@ growthrate_model <- function(filtered_dataframe) {
 
 growthrate_plot <- function(filtered_dataframe) {
   growth_fit <-fit_easylinear(filtered_dataframe$Time, filtered_dataframe$net_OD)
-  output <- plot(growth_fit)
+  plot <- plot(growth_fit)
+  output <- plot
   return(output)
 }
 
@@ -182,6 +190,8 @@ Here, we use the `growthrate_model(<fitlered_dataframe>)` and `growthrate_plot(<
 ```{r test_growth_rates, exercise=TRUE, exercise.setup = "plotting_growth_curves_setup"}
 test_data <- growth_data_full %>%
   filter(well == 'A10')
+
+# plot(fit_easylinear(test_data$Time, test_data$net_OD))
 
 growthrate_model(test_data)
 
