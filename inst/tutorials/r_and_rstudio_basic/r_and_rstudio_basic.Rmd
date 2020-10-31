@@ -85,12 +85,23 @@ Notice that the window has three "panes":
 To change the look of RStudio, you can go to Tools &rarr; Global Options &rarr; Appearance and select colours, font size, etc. If you plan on working for longer periods of time, we suggest choosing a dark background colour which is less hard on your computer battery and your eyes.
 You can also change the sizes of the panes by dragging the dividers or clicking on the expand and compress icons at the top right corner of each pane.
 
+### Check Your Understanding
+
+When trying to run a command, you see this error:
+
+![](/images/objecterror.png){width=100%}
+
 ```{r Tour, echo=FALSE}
 quiz(
-  question("Which pane enables you to manage R packages?",
+  question("Where is the command typed?",
+    answer("The console", correct=TRUE),
+    answer("Lower right pane"),
+    answer("Upper right pane")),
+  
+  question("Where can you go to try to locate 'object'?",
     answer("The console"),
-    answer("Lower right pane", correct=TRUE),
-    answer("Upper right pane"))
+    answer("Lower right pane"),
+    answer("Upper right pane", correct=TRUE))
 )
 ```
 
@@ -116,14 +127,6 @@ You can open this project in the future in one of three ways:
 - Switch among projects by clicking on the R project symbol in the upper left
 corner of RStudio
 
-```{r Projects, echo=FALSE}
-quiz(
-  question("What is not a benefit of using RStudio projects?",
-    answer("All of your files and outputs are linked to the project directory"),
-    answer("R automatically looks for files in the project directory so you don't have to specify a full file path"),
-    answer("When you reopen a project, your code is saved so all you need to do is rerun it", correct=TRUE))
-)
-```
 
 ## R Scripts
 
@@ -137,20 +140,6 @@ Let's create an R script (File > New File > R Script) and save it as `tidyverse.
 
 We can copy and paste the previous commands in this tutorial and aggregate it in our R script.
 
-```{r Scripts, echo=FALSE}
-quiz(
-  question("How do R scripts make your work reproducible?",
-    answer("Trick question: they work just like Excel and don't make work reproducible"),
-    answer("They keep a record of all actions done to get from raw data to final results", correct=TRUE),
-    answer("You can use them to test different operations on your data")
-),
-
-  question("How do you annotate R scripts with comments?",
-    answer("You start the line with 'comment:'"),
-    answer("You start the line with the # symbol", correct=TRUE),
-    answer("You can just start typing and R will know it's a comment automatically"))
-)
-```
 
 ## Variables in R
 
@@ -215,6 +204,26 @@ product <- 3 * 5
 difference <- product - 7
 ```
 
+### Check your Understanding
+
+Without running the code below, what is the final value of x?
+
+```{r solve-x, exercise=TRUE, exercise.eval=FALSE}
+x <- 5
+y <- 2
+x <- y * x
+y <- x - 4
+```
+
+```{r solve-x-q, echo=FALSE}
+quiz(
+  question("What is the final value of x?",
+    answer("5"),
+    answer("10", correct=TRUE),
+    answer("6"))
+)
+```
+
 ## Functions in R
 
 ### Overview
@@ -245,13 +254,6 @@ On the other hand, the function `paste()`, which links together words, does acce
 paste("Hello", "world", sep = " ")
 ```
 
-```{r Functions, echo=FALSE}
-quiz(
-  question("True or False: Functions accept inputs of all types",
-    answer("True"),
-    answer("False", correct=TRUE))
-)
-```
 
 ### Getting Help
 
@@ -313,19 +315,33 @@ The **Method** section describes the implementation method of the function `sele
 
 The **Examples** Section has examples of the function that can be directly copy and pasted into your terminal and ran. 
 
-```{r Help, echo=FALSE}
-quiz(
-question("How would you launch a help section for a given function",
-  answer("Place an exclamation mark in front of the function"),
-  answer("Place an question mark in front of the function", correct = TRUE),
-  answer("Place an question mark after of the function"),
-  answer("Type out help and function name in the console")
-),
+### Check Your Understanding
 
-question("What does an = sign indicate in the help section",
-  answer("There exists a default and is not mandatory", correct = TRUE),
-  answer("Is a mandatory input in the function")
-))
+Here is the help page for the function mean():
+
+![](/images/mean.png){width=100%}
+
+```{r Functions1, echo=FALSE}
+quiz(
+  question("What types of arguments can be passed to mean()?",
+    answer("Logical (True/False)", correct=TRUE),
+    answer("Numeric", correct=TRUE),
+    answer("Text"),
+    answer("Numeric vectors", correct=TRUE))
+)
+```
+
+When trying to find the mean of x, NA is the output:
+
+![](/images/meanNA.png){width=100%}
+
+```{r Functions2, echo=FALSE}
+quiz(
+  question("Why did this happen?",
+    answer("The last value of x needs to be removed using the 'trim' argument"),
+    answer("Since x is not composed of only numbers and logicals, an error is thrown"),
+    answer("The NA in x need to be removed using the na.rm argument", correct=TRUE))
+)
 ```
 
 ## R packages
@@ -364,12 +380,19 @@ You can then use the function `BiocManager::install()` to install a Bioconductor
 `BiocManager::install("annotate")`
 Sometimes two packages include functions with the same name. A common example is that a `select()` function is included both in the `dplyr` and `MASS` packages. Therefore, to specify the use of a function from a particular package, you can precede the function with a the following notation: `package::function()`. 
 
+### Check Your Understanding
+
+After installing the `dplyr` package, you encounter this error:
+
+![](/images/selecterror.png){width=100%}
+
 ```{r Packages, echo=FALSE}
 quiz(
-  question("True or False: Packages are installed once, but loaded every time",
-    answer("True", correct=TRUE),
-    answer("False")
-))
+  question("Why did this happen?",
+    answer("The function `select()` wasn't installed"),
+    answer("The package `dplyr` wasn't loaded after installation", correct=TRUE),
+    answer("The arguments given to `select()` are invalid"))
+)
 ```
 
 ## Working with data
