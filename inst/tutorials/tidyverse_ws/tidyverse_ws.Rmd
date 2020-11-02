@@ -34,7 +34,7 @@ You will learn how to:
 
 - Create subsets of rows or columns from data frames using dplyr,
 - Change your data frames between wide and long formats,
-- Create various types of graphics,
+- Create various types of data visualizations,
 - Modify the various features of a graphic, and
 - Save your graphic in various formats
 
@@ -50,7 +50,7 @@ This comprehensive introduction to the tidyverse is ideal for beginners but assu
 ``` {r child = system.file("resources/markdown", "data_description.Rmd", package = "educer")}
 ```
 
-During this tutorial, the data are accessible as a data frame called `geochemicals`. In the interactive code box below, use the function `head` to peak at the first few rows of this data frame:
+During this tutorial, the data are accessible as a data frame called `geochemicals`. In the interactive code box below, use the function `head` to peak at the first five rows of this data frame:
 
 ```{r geochemicals, exercise = TRUE}
 head(<name_of_the_data_frame>)
