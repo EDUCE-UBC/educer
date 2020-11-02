@@ -444,7 +444,7 @@ We can turn data from wide to long, and vice versa, by "pivoting". To turn `dat`
 - `names_to`: The name of the column that is created from the data stored in the current column names;
 - `values_to`: The name of the column to create from the data stored in cell values.
 
-Here is `pivot_longer` in action:
+Here is `pivot_longer()` in action:
 
 ```{r, pivot_longer, exercise = TRUE, exercise.setup = "setup_dat"}
 long_dat  <- dat %>% 
@@ -462,7 +462,14 @@ long_dat <- dat %>%
                values_to = "Concentration")
 ```
 
-We can undo this operation with the opposite function, `pivot_wider`:
+We can undo this operation with the opposite function, `pivot_wider()`, which works similarly to its counterpart. The `pivot_wider()` function takes the following arguments:
+
+- The data frame to be pivoted;
+- A vector containing the columns that we want to pivot **or** the columns that we do *not* want to pivot (indicated by a minus sign). If this argument is left blank, it defaults to all columns in the data frame except for those specified in `names_from` and `values_from`;
+- `names_from`: The name of the column whose elements provide the names of the output columns;
+- `values_from`: The name of the column from which we get the values of the output columns.
+
+We can use `pivot_wider()` to go back from the long data frame to the original:
 
 ```{r, pivot_wider, exercise = TRUE, exercise.setup = "setup_long_dat"}
 long_dat %>% 
