@@ -22,10 +22,6 @@ setup_resources()
 library(readr)
 library(tidyverse)
 
-OTU_metadata_table <- combined
-
-subset_dat <- slice(geochemicals, 710, 713, 715, 716, 709, 717, 718, 719)
-
 x = 10 #for boolean exercise
 restricted_columns <- select(OTU_metadata_table, OTU0001,
                              OTU0002, OTU0004, Depth)
@@ -77,8 +73,7 @@ Here, we will introduce the `purrr` package, which allows you to perform more ad
 - Load tabular data using `read_csv()` and save the data to your R environment.
 - Writing your processed data to your disk.
 - Introduce the use of logical operators and conditional statements in R for subsetting your data.
-- Use the `select()`, `slice()`, and `filter()` functions to conditionally subset your data.
-- Use the `mutate()` function to create new variables in your dataset, using your existing variables.
+- Use the `select()`, `slice()`, and `filter()` functions to conditionally subset your data, and use the `mutate()` function to create new variables in your dataset using your existing variables.
 - Use the pipe operator to more efficiently daisy-chain functions together.
 
 
@@ -359,7 +354,7 @@ R Operator | Meaning
 
 ### Exercise
 
-Write a boolean equation for "x is greater than 6 or less than 12", it should return `TRUE` after running.
+Create a variable `x`, and write a boolean equation for "`x` is greater than 6 or less than 12", it should return `TRUE` after running.
 
 ```{r boolean-exercise-2, exercise = TRUE, exercise.lines = 5}
 
@@ -379,7 +374,7 @@ x > n | x < m
 ```
 
 
-## `select()`, `slice()`, and `filter()`
+## `select()`, `slice()`, `filter()`, and `mutate()`
 
 Now that we know how to ask logical questions in R, we can take advantage of this to subset our data in any way we'd like. In a nutshell, the `select()` function allows you to select certain *columns* of your data frame to work with, while the `slice()` function allows you to select certain rows. You can isolate specific entries with a combination of `slice()` and `select()`. `filter()` allows you to apply a conditional statement to the rows of your table, using the logical operators we talked about in the previous section.
 
@@ -387,56 +382,63 @@ Now that we know how to ask logical questions in R, we can take advantage of thi
 
 You can use the `select()` function to keep only a subset of variables (columns). Let's select the variables `OTU0001`, `OTU0002`, `OTU0004`, `Depth`.
 
-```{R select-1, exercise = TRUE, exercise.lines = 5}
-restricted_columns <- select(OTU_metadata_table, OTU0001, OTU0002, OTU0004, Depth)
+```{r select-1}
+selected_data <- select(raw_data, OTU0001, OTU0002, OTU0004, Depth)
 ```
 
-To view our new `restricted_columns` variable, just type in the variable name and run the code like this:
+To view our new `selected_data` variable, just type in the variable name and run the code like this:
 
-```{R  select-2, exercise = TRUE, exercise.lines = 5}
-restricted_columns
+```{r select-2}
+selected_data
 ```
 
 ### Exercise
-As an exercise, select for only the depth and geochemical columns (Depth, NO3, Mean_NO2, Mean_N2O, and Mean_NH4) in `OTU_metadata_table` and name the new table `metadata`:
+As an exercise, select for only the depth and geochemical columns (Depth, NO3, Mean_NO2, Mean_N2O, and Mean_NH4) in `raw_data` and name the new table `select_exercise_data`:
 
 ```{r select-exercise, exercise = TRUE, exercise.lines = 5}
 
 ```
 
 ```{r select-exercise-hint-1}
-select(OTU_metadata_table, <variable1>, <variable2>, <...>)
+# Remember, you can select variables with the following function 
+select(raw_data, <variable1>, <variable2>, <...>)
 ```
 
 ```{r select-exercise-hint-2}
-select(OTU_metadata_table, Depth, NO3, Mean_NO2, Mean_N2O, Mean_NH4)
+# To select certain columns, type in their names as additionl arguments
+# to the select function
+select(raw_data, Depth, NO3, Mean_NO2, Mean_N2O, Mean_NH4)
 ```
 
 ### `slice()`
 
-We can also only choose to work with specific rows in our data table using the `slice()` function. 
+We can also only choose to work with specific rows in our data table using the `slice()` function. We do so by specifying the row number of the row we want to work with. The following code selects the first row of the `raw_data` dataset.
 
-To select a subset of observations (rows) by their ordinal position, we use the `slice()` function.
-
-```{r slice-1, exercise = TRUE, exercise.lines = 5}
-slice(OTU_metadata_table, 1)
+```{r slice-1}
+slice(raw_data, 1)
 ```
 
-You can list multiple ordinal postions to select multiple observations at once.
+You can list multiple row numbers to select multiple observations at once.
 
-```{r slice-2, exercise = TRUE, exercise.lines = 5}
-slice(OTU_metadata_table, 1, 2, 3, 4, 5)
+```{r slice-2}
+slice(raw_data, 1, 2, 3, 4, 5)
 ```
 
 If you would like to to select a range of observations, give the starting and end position separated by a colon like so: `<start>:<end>`.
 
-```{r slice-3, exercise = TRUE, exercise.lines = 5}
-slice(OTU_metadata_table, 1:5)
+```{r slice-3}
+slice(raw_data, 1:5)
+```
+
+Now, go ahead and use the slice function to answer the following question.
+
+```{r slice-exercise, exercise = TRUE, exercise.lines = 5}
+
 ```
 
 ```{r slice-quiz, echo = FALSE}
 quiz(
-  question("What is the value of OTU0003 in the 6th row of OTU_metadata_table?",
+  question("What is the value of OTU0003 in the 6th row of raw_data?",
            answer("0"),
            answer("156"),
            answer("178", correct=TRUE),
@@ -446,13 +448,16 @@ quiz(
 ```
 
 ### Exercise: `slice()` and `select()`
-Using `slice()` and `select()`, determine:
+
+We can use `slice()` and `select()` in conjunction to determine which value is in a specific column of a specific row. Recall the protocol for nesting functions. If you have a data frame `a` to which you want to apply the function `f()` and then `g()`, you would do so as follows: `g(f(a))`, exactly as you might have learned in math class!
+
+Using `slice()` and `select()` on `raw_data`, determine:
 
 A) what depth value occurs in the 20th row?
 B) what methane value occurs in the 170th row?
     
 ```{r slice_exercise, exercise=TRUE, exercise.lines=5}
-dat <- geochemicals
+
 ```
 
 ```{r slice_exercise-hint-1}
@@ -463,6 +468,7 @@ select(dat, depth)
 ```
 
 ```{r slice_exercise-hint-2}
+# Recall the protocol for nesting functions.
 slice(select(dat, Depth), 20)
 select(slice(dat, 170), methane)
 ```
@@ -470,65 +476,47 @@ select(slice(dat, 170), methane)
 
 ### `filter()`
 
-Conditional statements and logical operators are important when working with data in R. We will practice using different conditional statements and logical operators on the oxygen data in a subset of the `geochemicals` data set. You can use `filter()` to select specific rows based on a logical condition of a variable.
+Remember the logical operators we were working with in the previous section? `dplyr` allows you to subset the rows of your data frame with a logical statement on any of the columns. Say, for instance, we wanted to only work with rows below a certain ocean depth in `raw_data`. We could do so by using the filter function in conjunction with a logical operator.
 
 
 ```{r}
-subset_dat <- slice(geochemicals, 710, 713, 715, 716, 709, 717, 718, 719)
+filter(raw_data, Depth >= 140)
 ```
 
-`variable == value` returns rows where the variable matches the value:
+We can look for exact matches using the `==` operator:
 
-```{r equal-to, exercise = TRUE, exercise.lines = 5}
-filter(subset_dat, CTD_O2 == 204.259)
+```{r equal-to}
+filter(raw_data, NO3 == 26.4)
 ```
 
-`variable != value` returns rows where the variable does not match the value:
+The 'not equal to' operator, `!=`, returns rows where the variable does not match the value:
 
-```{r not-equal-to, exercise = TRUE, exercise.lines = 5}
-filter(subset_dat, CTD_O2 != 204.259)
-```
-
-`variable > value` returns rows where the variable is greater than the value:
-
-```{r greater-than, exercise = TRUE, exercise.lines = 5}
-filter(subset_dat, CTD_O2 > 204.259)
+```{r not-equal-to}
+filter(raw_data, NO3 != 26.4)
 ```
 
 `variable %in% values` returns rows where the variable matches one of the given values.
 Values are provided as a vector `c(value1, value2, ...)`:
 
-```{r match-in, exercise = TRUE, exercise.lines = 5}
-filter(subset_dat, CTD_O2 %in% c(40.745, 204.259))
+```{r match-in}
+filter(raw_data, NO3 %in% c(26.4, 5.278))
 ```
 
-`is.na(variable)` returns rows where the variable is `NA` (Not Available).
+We can look for a range of values by finding the rows where the value of the variable is <= 120 **AND** >= 20 by using the logical operator `&`.
 
-```{r is-na, exercise = TRUE, exercise.lines = 5}
-filter(subset_dat, is.na(CTD_O2))
-```
-
-`!condition` returns rows where the condition is not fulfilled.
-
-```{r opposite, exercise = TRUE, exercise.lines = 5}
-filter(subset_dat, !is.na(CTD_O2))
-```
-
-We can look for a range of values by finding the rows where the value of the variable is <= 120 **AND** >= 20 bu using the logical operator `&`.
-
-```{r and, exercise = TRUE, exercise.lines = 5}
+```{r and}
 filter(subset_dat, CTD_O2 <= 120 & CTD_O2 >= 20)
 ```
 
 Lastly, we can use the logical OR (`|`) to find the rows where the value is <= 50 **OR** >= 150.
 
-```{r or, exercise = TRUE, exercise.lines = 5}
+```{r or}
 filter(subset_dat, CTD_O2 <= 50 | CTD_O2 >= 150)
 ```
 
 ### Exercise
 
-As an exercise, restrict for rows where the value for "depth" is less than or equal to 135m. 
+As an exercise, filter for rows where the value of `Depth` is less than or equal to 135m. 
 ```{r filter-exercise, exercise = TRUE, exercise.lines = 5}
 
 ```
@@ -539,13 +527,74 @@ filter(dataset, (column, operator, quantity))
 ```
 
 ```{r filter-exercise-hint-2}
-filter(subset_dat, depth <= 135)
+filter(raw_data, depth <= 135)
 ```
 
-## `mutate()`
+### `mutate()`
+
+There is a handy function in `dplyr` that can streamline your data processing. The `mutate()` function can create new columns by operating on existing columns. For instance, say we wish to compute the sum of all the `OTU` columns in `raw_data`. We can easily do so with the `mutate()` function.
+
+```{r mutate-demo}
+mutate(raw_data, OTU_sum = OTU0001 + OTU0002 + OTU0003 + OTU0004)
+
+# Or, expressed more succinctly:
+# mutate(raw_data, OTU_sum = sum(OTU0001, OTU0002, OTU0003, OTU0004))
+```
+
+Notice that, like many `dplyr` functions, the first argument of `mutate()` is the dataset we wish to modify. The second argument is a variable assignment expressing the value of the new variable we wish to create. Conveniently, this new column is appended as a named column at the end of our tibble `raw_data`.
+
+You can actually use a single column multiple times in the `mutate()` function. Say you wanted to express `Depth` as a percentage of the maximum depth. You could do so with the following code.
+
+```{r}
+mutate(raw_data, relative_Depth = Depth/max(Depth))
+```
+
+As an exercise for you, say you wanted to do some statistical analysis of the values in `NO3` in `raw_data`. The z-score of a single observation, $x_i$, is defined as the following:
+
+$$z({x_i}) = \frac{x_i - \mu_{x_i}}{\sigma_{x_i}}$$
+
+Using the above example in which the relative depth was computed, as well as the `mean()` and `sd()` (standard deviation) functions, try to compute the z-score of the `NO3` column in a column named `z_score`.
+
+
+```{r mutate-exercise, exercise = TRUE, exercise.lines = 5}
+
+```
+
+```{r mutate-exercise-hint-1}
+# Remember, the mutate function understands expressions like mean(x) or sd(x).
+# x/mean(x) will divide all elements of the vector x by the mean of the vector x.
+# The result is another vector, which we can call relative_x.
+
+relative_x = x/mean(x)
+```
+
+```{r mutate-exercise-hint-2}
+# You can use x or functions of x as many times as you'd like in the mutate function.
+# You'd want an expression like z_score = (x - mean of x)/(standard deviation of x).
+```
+
+```{r mutate-exercise-hint-3}
+mutate(raw_data, z_score = (NO3 - mean(NO3)/(sd(NO3)))
+```
 
 ## The Pipe Operator (`%>%`)
 
+This one is a game-changer--the pipe operator, originally introduced in the `magrittr` package and included in the `tidyverse`, allows for elegant composition of functions in R. Say you want to take a vector `x`, and apply the function `f()` to it. Then, you want to take the output of `f()` and apply the function `g()` to it. Logically, what you might be picturing is the following:
+
+$$x \rightarrow f \rightarrow g$$
+
+However, in R, the composition is done with the following syntax:
+
+$$g(f(x))$$
+
+You are left to peel a composition onion to try to figure out what is being done to the data, and similarly to peeling an actual onion, you might be inclined to cry at this un-elegant syntax!
+
+The above statement is a hyperbole, of course, but you can imagine that this default syntax does get cumbersome for composition of many functions:
+
+$$y = j(i(h(g(f(x)))))$$
+Thankfully, we can use the pipe (`%>%`) operator to clean up our notation, and bring it closer to what we might be picturing in our heads when we think of a series of functions acting on a vector.
+
+We use the pipe vector to feed the 
 
 ## Summary Exercise
 
