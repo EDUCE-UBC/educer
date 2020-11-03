@@ -50,7 +50,7 @@ This comprehensive introduction to the tidyverse is ideal for beginners but assu
 ``` {r child = system.file("resources/markdown", "data_description.Rmd", package = "educer")}
 ```
 
-During this tutorial, the data are accessible as a data frame called `geochemicals`. In the interactive code box below, use the function `head` to peak at the first five rows of this data frame:
+During this tutorial, the data are accessible as a data frame called `geochemicals`. In the interactive code box below, use the function `head()` to peak at the first five rows of this data frame:
 
 ```{r geochemicals, exercise = TRUE}
 head(<name_of_the_data_frame>)
@@ -88,7 +88,7 @@ Compared to base R, dplyr code is very readable. Instead of base R’s indexing 
 - `rename()` columns.
 - `arrange()` a column in ascending or descending order.
 - `mutate()` all values of a column, i.e., add a new column that is a function of existing columns.
-- `group_by()` a variable and `summarise` data by the grouped variable.
+- `group_by()` a variable and `summarise()` data by the grouped variable.
 - `*_join()` two data frames into a single data frame.
 
 Each verb works similarly:
@@ -179,7 +179,7 @@ R code     | meaning
 `is.na`    | is missing (`NA`)
 `!`        | not (e.g. not equal to `!=`; not missing `!is.na()`)
 `&`        | and
-`\|`        | or
+`|`        | or
 
 Let's try some concrete examples! The pre-populated code in the box filters `dat` such that we only retain data collected after February 2008 (i.e., such that the `Date` is *greater than* the 2008-02-01). Pay attention to the syntax: `filter(<data_frame>, <logical_statement>)`. Run it and examine the output. Then, modify the code so that it only retains those data points collected after February 2008 that were sampled deeper than 100 m. Use the Hint button if you are not sure how to do this.
 
@@ -355,7 +355,7 @@ In the code above, we start by selecting some columns and *pipe* the output into
 #### Exercise: Piping
 
 In the box below, rewrite your code from the previous exercise using pipes.
-**Tip:** In RStudio, you can use the keyboard shortcut <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>m</kbd> to enter the pipe operator.
+**Tip:** In RStudio, you can use the keyboard shortcut <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd> to enter the pipe operator.
 
 ```{r exercise_pipe, exercise = TRUE, exercise.setup = "setup_dat"}
 
@@ -465,7 +465,7 @@ long_dat <- dat %>%
 We can undo this operation with the opposite function, `pivot_wider()`, which works similarly to its counterpart. The `pivot_wider()` function takes the following arguments:
 
 - The data frame to be pivoted;
-- A vector containing the columns that we want to pivot **or** the columns that we do *not* want to pivot (indicated by a minus sign). If this argument is left blank, it defaults to all columns in the data frame except for those specified in `names_from` and `values_from`;
+- A vector containing the columns that we want to pivot **or** the columns that we do *not* want to pivot (indicated by an exclamation point `!`). If this argument is left blank, it defaults to all columns in the data frame except for those specified in `names_from` and `values_from`;
 - `names_from`: The name of the column whose elements provide the names of the output columns;
 - `values_from`: The name of the column from which we get the values of the output columns.
 
@@ -584,7 +584,7 @@ long_dat <- dat %>%
 long_dat
 ```
 
-In the box below, `filter` this data frame so that it includes only oxygen and carbon dioxide. Then, plot the relationship between `Concentration` (in the x-axis) and `Depth` (in the y-axis), indicating the `Chemical` variable by point color:
+In the box below, `filter()` this data frame so that it includes only oxygen and carbon dioxide. Then, plot the relationship between `Concentration` (in the x-axis) and `Depth` (in the y-axis), indicating the `Chemical` variable by point color:
 
 ```{r, scatterplot-color-discrete, exercise = TRUE,  exercise.setup = "setup_long_dat"}
 <data frame> %>%
@@ -866,7 +866,7 @@ In this section, we will work to create a beautiful multi-panel figure. Each pan
 
 #### Labels
 
-We can change the labels of the previous plot with the `labs` function, specifying exactly what we want as the title, x-, and y-axis labels:
+We can change the labels of the previous plot with the `labs()` function, specifying exactly what we want as the title, x-, and y-axis labels:
 
 ```{r, scatterplot-labels, exercise = TRUE,  exercise.setup = "setup_long_dat"}
 dat %>%
