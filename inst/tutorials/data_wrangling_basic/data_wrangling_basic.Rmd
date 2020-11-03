@@ -463,14 +463,14 @@ B) what methane value occurs in the 170th row?
 ```{r slice_exercise-hint-1}
 # Recall that slice() allows you to find a row
 # and select() allows you to find a column
-slice(dat, 20)
-select(dat, depth)
+slice(raw_data, 20)
+select(raw_data, depth)
 ```
 
 ```{r slice_exercise-hint-2}
 # Recall the protocol for nesting functions.
-slice(select(dat, Depth), 20)
-select(slice(dat, 170), methane)
+slice(select(raw_data, Depth), 20)
+select(slice(raw_data, 170), methane)
 ```
 
 
@@ -505,13 +505,13 @@ filter(raw_data, NO3 %in% c(26.4, 5.278))
 We can look for a range of values by finding the rows where the value of the variable is <= 120 **AND** >= 20 by using the logical operator `&`.
 
 ```{r and}
-filter(subset_dat, CTD_O2 <= 120 & CTD_O2 >= 20)
+filter(raw_data, CTD_O2 <= 120 & CTD_O2 >= 20)
 ```
 
 Lastly, we can use the logical OR (`|`) to find the rows where the value is <= 50 **OR** >= 150.
 
 ```{r or}
-filter(subset_dat, CTD_O2 <= 50 | CTD_O2 >= 150)
+filter(raw_data, CTD_O2 <= 50 | CTD_O2 >= 150)
 ```
 
 ### Exercise
@@ -594,7 +594,40 @@ The above statement is a hyperbole, of course, but you can imagine that this def
 $$y = j(i(h(g(f(x)))))$$
 Thankfully, we can use the pipe (`%>%`) operator to clean up our notation, and bring it closer to what we might be picturing in our heads when we think of a series of functions acting on a vector.
 
-We use the pipe vector to feed the 
+We use the pipe vector to feed the output of the previous function to the next function in the sequence. That is to say the following sequence of functions:
+
+```g(f(x))```
+
+is equivalent to the below series of functions:
+
+```x %>% f() %>% g()```
+
+Formally, the pipe operator takes all of what is behind it and feeds it as the first argument to the function in front of it.
+
+Let's look at some use cases to build our proficiency with the pipe operator.
+
+Do you remember how we previously used the `slice()` and `select()` function in conjunction to find the value in a specific row and column? We did it like so:
+
+```{r slice-select-no-pipe}
+slice(select(raw_data, Depth), 20)
+```
+
+We can express this in a clearer way with the pipe operator! We tell R "start with raw_data, select `Depth`, and then take the 20th slice of the `Depth` column."
+
+```{r slice-select-pipe}
+raw_data %>%
+  select(Depth) %>%
+  slice(20)
+```
+
+We can also, say, take all the rows with `NO3 >= 10` and add a variable `z_score` which is the z-score of the `OTU0001` column.
+
+```{r}
+raw_data %>%
+  filter(NO3 >= 10) %>%
+  mutate(z_score = (NO3 - mean(NO3))/(sd(NO3)))
+```
+
 
 ## Summary Exercise
 
