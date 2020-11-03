@@ -83,7 +83,7 @@ question("Which of these variables could potentially be represented as categoric
   answer("Colour of flower petals of 9 different plants", correct = TRUE),
   answer("Oxygen concentration in uM"),
   answer("Ammonium concentration in nM"),
-  answer("Number of days it takes a plant to sprout", correct = TRUE),
+  answer("Number of days (3-10) it takes a plant to sprout", correct = TRUE),
   incorrect = "Incorrect. Hint: Categorical variables usually take on a fixed set of values")
 ```
 
@@ -214,16 +214,41 @@ ggplot(dat, aes(x = Depth, y = CTD_O2)) +
   labs(x="Depth [m]", y="Oxygen [uM]")
 ```
 
-We can summarize the multiple data points as a boxplot by adding the line "geom_boxplot()":
+## Box plot
+Another way to visualize data points falling into the same range is through using box plots. Box plots summarize five summary statistics (the median, the 1st and 3rd quartile and the minimum and maximum values). To plot the relationship between a geochemical variable and depth, you would need:
+
+* data: `dat`
+* aesthetics: x and y variables
+* geom: `geom_boxplot` to plot these data as boxplots
+
+Let's do so with the relationship between depth (as a categorical variable) and oxygen (O~2~) as a continuous variable (as opposed to categorical oxic vs. anoxic in your previous t-tests)
+
 ```{r example5, exercise=TRUE}
+ggplot(dat, aes(x = Depth, y = CTD_O2)) +
+  geom_boxplot() +
+  labs(x="Depth [m]", y="Oxygen [uM]")
+```
+
+Similarly to dotplots, we can change the colour of the boxes to represent a categorical variable. In this case, we set `fill` (the colour of the boxes) to represent depth. 
+
+```{r example6, exercise=TRUE}
+ggplot(dat, aes(x = Depth, y = CTD_O2, fill= Depth)) +
+  geom_boxplot() +
+  labs(x="Depth [m]", y="Oxygen [uM]")
+```
+
+## Layers
+
+So far, we learned how to visualize data using dot plots and box plots. A powerful feature of ggplot is the ease of layering different plots together. For example, we can visualize depth and oxygen concentration as a scatter plot ontop of a boxplot like this:
+```{r example7, exercise=TRUE}
 ggplot(dat, aes(x = Depth, y = CTD_O2)) +
   geom_boxplot() +
   geom_point(alpha = 0.5) +
   labs(x="Depth [m]", y="Oxygen [uM]")
 ```
 
-We can visualize the overall mean of all O~2~ values with a horizontal line:
-```{r example6, exercise=TRUE}
+In addition, we can include a horizontal line to visualize the overall mean of all O~2~ values. 
+```{r example8, exercise=TRUE}
 ggplot(dat, aes(x = Depth, y = CTD_O2)) +
   geom_boxplot() +
   geom_point(alpha = 0.5) +
@@ -235,7 +260,7 @@ ggplot(dat, aes(x = Depth, y = CTD_O2)) +
 A list of shape codes can be found [here](http://sape.inf.usi.ch/quick-reference/ggplot2/shape).
 
 Change the overall look with a theme:
-```{r example7, exercise=TRUE}
+```{r example9, exercise=TRUE}
 ggplot(dat, aes(x = Depth, y = CTD_O2)) +
   geom_boxplot() +
   geom_point(alpha = 0.5) +
@@ -247,22 +272,22 @@ ggplot(dat, aes(x = Depth, y = CTD_O2)) +
 There is also a handy [ggplot cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/11/ggplot2-cheatsheet-2.1.pdf) to show you many more options!
 
 
-## ggplot Exercises 
+## ggplot Exercise
 Recreate the following plots:
 
-### Exercise 1
+### Exercise 
 ```{r plot1, echo = FALSE, warning=FALSE}
-ggplot(dat, aes(x = Depth, y = Mean_CH4, fill = Cruise)) +
-  geom_bar(stat = "identity")
+ggplot(dat, aes(x = Depth, y = Mean_CH4, colour = Cruise)) +
+  geom_point(stat = "identity")
 ```
 
 ```{r plot1-exercise, exercise=TRUE}
-ggplot(dat, aes(x = , y = , fill = )) +
-  geom_bar(stat = "identity")
+ggplot(dat, aes(x = , y = , colour = )) +
+  geom_point(stat = "identity")
 ```
 
 ### Exercise 2
-```{r plot2, echo = FALSE, warning = FALSE}
+```{r plot2, echo = FALSE, arning = FALSE}
 ggplot(dat, aes(x = Mean_H2S, CTD_O2)) +
   geom_point()
 ```
