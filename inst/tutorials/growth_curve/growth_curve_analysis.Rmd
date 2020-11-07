@@ -520,9 +520,23 @@ growth_rates %>%
   ggplot(aes(x=media, y = growth_rate, fill  = interaction(media, Experiment))) +
   geom_boxplot()
 
-
-growth_rate_wilcox <- growth_rates %>%
-  wilcox_test(growth_rate ~ media, paired = FALSE) %>%
+growth_rates %>%
+  filter(Experiment == 'tuesday') %>%
+  t_test(growth_rate ~ media, paired = FALSE) %>%
   add_significance
-growth_rate_wilcox
+
+growth_rates %>%
+  filter(Experiment == 'thursday') %>%
+  t_test(growth_rate ~ media, paired = FALSE) %>%
+  add_significance
+
+growth_rates %>%
+  filter(Experiment == 'friday') %>%
+  t_test(growth_rate ~ media, paired = FALSE) %>%
+  add_significance
+
+growth_rate_ttest <- growth_rates %>%
+  t_test(growth_rate ~ media, paired = FALSE) %>%
+  add_significance
+growth_rate_ttest
 ```
