@@ -56,6 +56,7 @@ Functions in R:
 
 - Explain what functions and arguments are
 - Use R to understand how any given function works
+- Recognize string, numeric, and logical data types
 - Identify required and optional arguments for functions
 
 R Packages:
@@ -73,7 +74,7 @@ Notice that the window has three "panes":
 
 - Console (lower left side): this is your view of the R engine. You can type in R commands here and see the output printed by R. (To tell them apart, your input is in blue, and the output is black.) There are several editing conveniences available: up and down arrow keys to go back to previously entered commands which you then can edit and re-run, TAB for completing the name before the cursor, and so on. See more in [online docs](http://www.rstudio.com/ide/docs/using/keyboard_shortcuts).
 
-- Environment/History (tabbed in the upper right): view current user-defined objects and previously-entered commands, respectively.
+- Environment/History/Tutorial (tabbed in the upper right): view current user-defined objects and previously-entered commands, and access tutorials.
 
 - Files/Help/Plots/Packages (tabbed in the lower right): as their names suggest, you can view the contents of the current directory, the built-in help pages, and the graphics you created, as well as manage R packages.
 
@@ -82,21 +83,23 @@ You can also change the sizes of the panes by dragging the dividers or clicking 
 
 ### Check Your Understanding
 
-When trying to run a command, you see this error:
+The command below is used to display the object `dog`. However, when running it, you get an error.
 
-![](/images/objecterror.png){width=100%}
+```{r object-error, exercise=TRUE, error = TRUE}
+dog
+```
 
 ```{r Tour, echo=FALSE}
 quiz(
-  question("Where is the command typed?",
+  question("Where would you type the command?",
     answer("The console", correct=TRUE),
-    answer("Lower right pane"),
-    answer("Upper right pane")),
+    answer("The History tab"),
+    answer("The Help tab")),
   
-  question("Where can you go to try to locate 'object'?",
+  question("Where would `dog` show up if it had been defined in R?",
     answer("The console"),
-    answer("Lower right pane"),
-    answer("Upper right pane", correct=TRUE))
+    answer("The Files tab"),
+    answer("The Environment tab", correct=TRUE))
 )
 ```
 
@@ -138,6 +141,8 @@ We can copy and paste the previous commands in this tutorial and aggregate it in
 
 ## Variables in R
 
+### Defining Variables
+
 We use variables to store data that we want to access or manipulate later. Variables must have unique names.  
 
 Without declaring a variable the sum of these two numbers will be printed to console but cannot be accessed for future use:
@@ -173,7 +178,7 @@ total <- total - 1
 total
 ```
 
-Now it's your turn! Declare a variable "product" and set its value to the product of the numbers 3 and 5. Next, using the variable "product", declare a variable called "difference", whose final value is 8.
+Now it's your turn! Declare a variable `product` and set its value to the product of the numbers 3 and 5. Next, using the variable `product`, declare a variable called `difference`, whose final value is 8.
 
 ```{r product, exercise=TRUE}
 # First declare "product"
@@ -201,7 +206,7 @@ difference <- product - 7
 
 ### Check Your Understanding
 
-Without running the code below, what is the final value of x?
+Without running the code below, what is the final value of `x`?
 
 ```{r solve-x, exercise=TRUE, exercise.eval=FALSE}
 x <- 5
@@ -212,7 +217,7 @@ y <- x - 4
 
 ```{r solve-x-q, echo=FALSE}
 quiz(
-  question("What is the final value of x?",
+  question("What is the final value of `x`?",
     answer("5"),
     answer("10", correct=TRUE),
     answer("6"))
@@ -249,6 +254,52 @@ On the other hand, the function `paste()`, which links together words, does acce
 paste("Hello", "world", sep = " ")
 ```
 
+### Data Types in R
+
+You've seen that `paste()` operates on text while `sum()` does not. In other words, different functions accept different data types. In this section, we'll cover three basic data types: numeric, character, and logical. The function `class()` tells you what the variable's type is.
+
+Run the code below:
+
+```{r class, exercise=TRUE}
+y <- 4
+class(y)
+```
+
+As you can see, numbers are of type numeric. Now, run the next code block. Is the output the same? If not, what changed?
+
+```{r class-string, exercise=TRUE}
+z <- "4"
+class(z)
+```
+
+When you put numbers and letters in quotations, the variable they're assigned to is of type character. If you write text without quotes, however, R assumes you're referring to a variable. Can you change the code so that it runs without errors?
+
+```{r quotes, exercise=TRUE, error=TRUE}
+a <- hello
+a
+```
+
+```{r quotes-solution}
+a <- "hello"
+a
+```
+
+The last data type we'll cover is logical, which takes on the values of `TRUE` or `FALSE`. They are the outputs of logical statements:
+
+```{r logical, exercise=TRUE}
+0 < 1 # smaller than
+0 >= 0 # larger-or-equal to
+5 == 7.1 # equal to. Note TWO equal symbols.
+"cat" == "dog" # you can also use this symbol to compare text
+5 != pi # not equal to
+```
+
+Below, write two logical statements using the template, one evaluating to `TRUE` and the other to `FALSE`.
+
+```{r logical-statements, exercise=TRUE}
+# ... <= ...
+# ... == ...
+```
 
 ### Getting Help
 
@@ -312,32 +363,25 @@ The **Examples** Section has examples of the function that can be directly copy 
 
 ### Check Your Understanding
 
-Here is the help page for the function mean():
+Pull up the help page for the function `mean()`
 
-![](/images/mean.png){width=100%}
+```{r mean-help, exercise=TRUE}
+# your code here
+```
+
+```{r mean-help-solution}
+?mean
+```
 
 ```{r Functions1, echo=FALSE}
 quiz(
-  question("What types of arguments can be passed to mean()?",
-    answer("Logical (True/False)", correct=TRUE),
+  question("What types of arguments can be passed to `mean()`?",
+    answer("Logical", correct=TRUE),
     answer("Numeric", correct=TRUE),
-    answer("Text"),
-    answer("Numeric vectors", correct=TRUE))
+    answer("Text"))
 )
 ```
 
-When trying to find the mean of x, NA is the output:
-
-![](/images/meanNA.png){width=100%}
-
-```{r Functions2, echo=FALSE}
-quiz(
-  question("Why did this happen?",
-    answer("The last value of x needs to be removed using the 'trim' argument"),
-    answer("Since x is not composed of only numbers and logicals, an error is thrown"),
-    answer("The NA in x need to be removed using the na.rm argument", correct=TRUE))
-)
-```
 
 ## R packages
 
