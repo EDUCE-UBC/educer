@@ -24,6 +24,7 @@ setup_resources()
 library(tidyverse)
 library("growthrates")
 library(rstatix)
+library(berryFunctions)
 ```
 
 ## Introduction
@@ -46,6 +47,7 @@ Files `growth_data.csv` and `well_information.csv` are imported using the `tidyv
 library(tidyverse)
 library("growthrates")
 library(rstatix)
+library(berryFunctions)
 
 tuesday_raw_data <- read_csv(system.file("resources/data",  "Tuesday_data.csv", package = "educer"), col_names = TRUE, skip = 12)
 thursday_raw_data <- read_csv(system.file("resources/data",  "Thursday_data.csv", package = "educer"), col_names = TRUE, skip = 12)
@@ -99,6 +101,23 @@ calc_blank_EDU <- function(dataframe, Media) {
 ```
 
 ```{r data_reformating, exercise=TRUE, exercise.setup = "data_reformating_setup"}
+tuesday_raw_data <- read_csv(system.file("resources/data",  "Tuesday_data.csv", package = "educer"), col_names = TRUE, skip = 12)
+thursday_raw_data <- read_csv(system.file("resources/data",  "Thursday_data.csv", package = "educer"), col_names = TRUE, skip = 12)
+friday_raw_data <- read_csv(system.file("resources/data",  "Friday_data.csv", package = "educer"), col_names = TRUE, skip = 12)
+
+well_data <- read_csv(system.file("resources/data", "well_information.csv", package = "educer"), col_names = TRUE)
+
+calc_blank_EDU <- function(dataframe, Media) {
+  blank_OD <- dataframe %>%
+  filter(!is.na(Time)) %>%
+  filter(blank == TRUE, Time == min(.$Time), media == Media ) %>%
+  summarise(blank_OD = mean(OD600))
+
+  output <- blank_OD[[1]]
+  
+  return(output)
+}
+
 tuesday_data <- tuesday_raw_data %>%
   pivot_longer(-c(Time, Temp), names_to = 'well', values_to = 'OD600')
 
@@ -115,41 +134,42 @@ thursday_data_info <- right_join(thursday_data, well_data, by = 'well') %>%
   filter(!is.na(student), !is.na(Time))
 
 friday_data_info <- right_join(friday_data, well_data, by = 'well') %>%
-  filter(!is.na(student), !is.na(Time))
+  filter(!is.na(student), !is.na(Time)) %>%
+  filter(Time != min(.$Time))
 
-tuesday_blank_LB <- calc_blank_EDU(growth_data_info, 'LB')
+tuesday_blank_LB <- calc_blank_EDU(tuesday_data_info, 'LB')
 
-tuesday_blank_MM <- calc_blank_EDU(growth_data_info, 'MM')
+tuesday_blank_MM <- calc_blank_EDU(tuesday_data_info, 'MM')
 
-thursday_blank_LB <- calc_blank_EDU(growth_data_info, 'LB')
+thursday_blank_LB <- calc_blank_EDU(thursday_data_info, 'LB')
 
-thursday_blank_MM <- calc_blank_EDU(growth_data_info, 'MM')
+thursday_blank_MM <- calc_blank_EDU(thursday_data_info, 'MM')
 
-friday_blank_LB <- calc_blank_EDU(growth_data_info, 'LB')
+friday_blank_LB <- calc_blank_EDU(friday_data_info, 'LB')
 
-friday_blank_MM <- calc_blank_EDU(growth_data_info, 'MM')
+friday_blank_MM <- calc_blank_EDU(friday_data_info, 'MM')
 
-tuesday_data_LB <- growth_data_info %>%
+tuesday_data_LB <- tuesday_data_info %>%
   filter(media == 'LB') %>%
   mutate(net_OD = OD600 - tuesday_blank_LB, Experiment = 'tuesday')
 
-tuesday_data_MM <- growth_data_info %>%
+tuesday_data_MM <- tuesday_data_info %>%
   filter(media == 'MM') %>%
   mutate(net_OD = OD600 - tuesday_blank_MM, Experiment = 'tuesday')
 
-thursday_data_LB <- growth_data_info %>%
+thursday_data_LB <- thursday_data_info %>%
   filter(media == 'LB') %>%
   mutate(net_OD = OD600 - thursday_blank_LB, Experiment = 'thursday')
 
-thursday_data_MM <- growth_data_info %>%
+thursday_data_MM <- thursday_data_info %>%
   filter(media == 'MM') %>%
   mutate(net_OD = OD600 - thursday_blank_MM, Experiment = 'thursday')
 
-friday_data_LB <- growth_data_info %>%
+friday_data_LB <- friday_data_info %>%
   filter(media == 'LB') %>%
   mutate(net_OD = OD600 - friday_blank_LB, Experiment = 'friday')
 
-friday_data_MM <- growth_data_info %>%
+friday_data_MM <- friday_data_info %>%
   filter(media == 'MM') %>%
   mutate(net_OD = OD600 - friday_blank_MM, Experiment = 'friday')
 
@@ -197,7 +217,7 @@ thursday_data_info <- right_join(thursday_data, well_data, by = 'well') %>%
 
 friday_data_info <- right_join(friday_data, well_data, by = 'well') %>%
   filter(!is.na(student), !is.na(Time)) %>%
-  filter(Time != min(.$time))
+  filter(Time != min(.$Time))
 
 tuesday_blank_LB <- calc_blank_EDU(tuesday_data_info, 'LB')
 
@@ -261,8 +281,11 @@ calc_growthrates_EDU <- function(dataframe) {
     growth_rate_data <- dataframe %>%
     filter(well == growth_rates$well[w], Experiment == growth_rates$Experiment[w])
     
-    growth_fit <- fit_easylinear(growth_rate_data$Time, growth_rate_data$net_OD)
-    growth_rates$growth_rate[w] = growth_fit@par[[3]]
+    error_check <- is.error(fit_easylinear(growth_rate_data$Time, growth_rate_data$net_OD))
+    if (error_check == FALSE) {
+      growth_fit <- fit_easylinear(growth_rate_data$Time, growth_rate_data$net_OD)
+      growth_rates$growth_rate[w] = growth_fit@par[[3]]
+    }
   }
   output <- growth_rates
   return(output)
@@ -276,7 +299,27 @@ growth_data_full %>%
   geom_point(shape=19, size=1)
 
 growth_data_full %>%
-  filter(!is.na(student), blank == FALSE, Experiment == 'friday', well == 'C10') %>%
+  filter(!is.na(student), blank == FALSE, Experiment == 'tuesday') %>%
+  ggplot(aes(x=Time, y=net_OD, color = media, group = media)) +
+  geom_point(shape=19, size=1)
+
+growth_data_full %>%
+  filter(!is.na(student), blank == TRUE, Experiment == 'tuesday') %>%
+  ggplot(aes(x=Time, y=net_OD, color = media, group = media)) +
+  geom_point(shape=19, size=1)
+
+growth_data_full %>%
+  filter(!is.na(student), blank == FALSE, Experiment == 'thursday') %>%
+  ggplot(aes(x=Time, y=net_OD, color = media, group = media)) +
+  geom_point(shape=19, size=1)
+
+growth_data_full %>%
+  filter(!is.na(student), blank == TRUE, Experiment == 'thursday') %>%
+  ggplot(aes(x=Time, y=net_OD, color = media, group = media)) +
+  geom_point(shape=19, size=1)
+
+growth_data_full %>%
+  filter(!is.na(student), blank == FALSE, Experiment == 'friday') %>%
   ggplot(aes(x=Time, y=net_OD, color = media, group = media)) +
   geom_point(shape=19, size=1)
 
@@ -292,7 +335,7 @@ Here, we use the `growthrate_model_EDU(<fitlered_dataframe>)` and `growthrate_pl
 
 ```{r test_growth_rates, exercise=TRUE, exercise.setup = "plotting_growth_curves_setup"}
 test_data <- growth_data_full %>%
-  filter(well == 'B10', Experiment == 'thursday') %>%
+  filter(well == 'E10', Experiment == 'friday') %>%
   filter(Time != min(.$Time))
 
 growthrate_model_EDU(test_data)
@@ -348,7 +391,7 @@ thursday_data_info <- right_join(thursday_data, well_data, by = 'well') %>%
 
 friday_data_info <- right_join(friday_data, well_data, by = 'well') %>%
   filter(!is.na(student), !is.na(Time)) %>%
-  filter(Time != min(.$time))
+  filter(Time != min(.$Time))
 
 tuesday_blank_LB <- calc_blank_EDU(tuesday_data_info, 'LB')
 
@@ -412,8 +455,11 @@ calc_growthrates_EDU <- function(dataframe) {
     growth_rate_data <- dataframe %>%
     filter(well == growth_rates$well[w], Experiment == growth_rates$Experiment[w])
     
-    growth_fit <- fit_easylinear(growth_rate_data$Time, growth_rate_data$net_OD)
-    growth_rates$growth_rate[w] = growth_fit@par[[3]]
+    error_check <- is.error(fit_easylinear(growth_rate_data$Time, growth_rate_data$net_OD))
+    if (error_check == FALSE) {
+      growth_fit <- fit_easylinear(growth_rate_data$Time, growth_rate_data$net_OD)
+      growth_rates$growth_rate[w] = growth_fit@par[[3]]
+    }
   }
   output <- growth_rates
   return(output)
@@ -423,31 +469,6 @@ growth_rates <- calc_growthrates_EDU(growth_data_full)
 ```
 
 ```{r data_distribution, exercise=TRUE, exercise.setup = "plotting_growth_rates_setup"}
-# growth_rates <- growth_data_full %>%
-#   distinct(interaction(well, Experiment), .keep_all = TRUE) %>%
-#   select(c(Experiment, well, student, blank, media)) %>%
-#   filter(blank == FALSE)
-
-growth_rates <- growth_data_full %>%
-  # filter(Experiment != 'friday') %>%
-  distinct(interaction(well, Experiment), .keep_all = TRUE) %>%
-  select(c(Experiment, well, student, blank, media)) %>%
-  filter(blank == FALSE)
-
-
-
-growth_rates$growth_rate <- NA
-for (w in 1:length(growth_rates$well)){
-  growth_rate_data <- growth_data_full %>%
-    filter(well == growth_rates$well[w], Experiment == growth_rates$Experiment[w])
-  
-  error_check <- is.error(fit_easylinear(growth_rate_data$Time, growth_rate_data$net_OD))
-  if (error_check == FALSE) {
-    growth_fit <- fit_easylinear(growth_rate_data$Time, growth_rate_data$net_OD)
-    growth_rates$growth_rate[w] = growth_fit@par[[3]]
-  }
-}
-
 growth_rates %>%
   filter(Experiment == 'tuesday') %>%
   ggplot(aes(x=growth_rate, color = media)) +
@@ -459,12 +480,16 @@ growth_rates %>%
   geom_density()
 
 growth_rates %>%
-  filter(Experiment == 'tuesday') %>%
+  filter(Experiment == 'friday') %>%
   ggplot(aes(x=growth_rate, color = media)) +
   geom_density()
 
 growth_rates %>%
   ggplot(aes(x=growth_rate, color = interaction(media, Experiment))) +
+  geom_density()
+
+growth_rates %>%
+  ggplot(aes(x=growth_rate, color = media)) +
   geom_density()
 ```
 
@@ -473,8 +498,28 @@ In order to determine whether there is a significant difference between growth r
 
 ```{r staistical_analysis, exercise=TRUE, exercise.setup = "plotting_growth_rates_setup"}
 growth_rates %>%
+  filter(Experiment == 'tuesday') %>%
   ggplot(aes(x=media, y = growth_rate, fill  = media)) +
   geom_boxplot()
+
+growth_rates %>%
+  filter(Experiment == 'thursday') %>%
+  ggplot(aes(x=media, y = growth_rate, fill  = media)) +
+  geom_boxplot()
+
+growth_rates %>%
+  filter(Experiment == 'friday') %>%
+  ggplot(aes(x=media, y = growth_rate, fill  = media)) +
+  geom_boxplot()
+
+growth_rates %>%
+  ggplot(aes(x=media, y = growth_rate, fill  = media)) +
+  geom_boxplot()
+
+growth_rates %>%
+  ggplot(aes(x=media, y = growth_rate, fill  = interaction(media, Experiment))) +
+  geom_boxplot()
+
 
 growth_rate_wilcox <- growth_rates %>%
   wilcox_test(growth_rate ~ media, paired = FALSE) %>%
