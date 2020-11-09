@@ -359,7 +359,7 @@ The **Value** section describes an object integral to `select()`. A more descrip
 
 The **Method** section describes the implementation method of the function `select()`
 
-The **Examples** Section has examples of the function that can be directly copy and pasted into your terminal and ran. 
+The **Examples** Section has examples of the function that can be directly copied and pasted into your terminal and run. 
 
 ### Check Your Understanding
 
