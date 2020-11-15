@@ -59,6 +59,12 @@ Functions in R:
 - Recognize string, numeric, and logical data types
 - Identify required and optional arguments for functions
 
+Vectors and Data Frames:
+
+- Explain what vectors and data frames are
+- Create vectors
+- Understand what NAs are
+
 R Packages:
 
 - Understand what R packages are and how they are used
@@ -284,8 +290,18 @@ a <- "hello"
 a
 ```
 
-The last data type we'll cover is logical, which takes on the values of `TRUE` or `FALSE`. They are the outputs of logical statements:
+The last data type we'll cover is logical, which takes on the values of `TRUE` or `FALSE`. In addition to being function arguments, they are also the outputs of logical statements. Logical statements use logical operators to compare two elements. You've likely seen some of the logical operators before, but here is a list of the basic ones:
 
+[Place image here]
+
+Run the code below. Is it what you expected? Based on the table above, what's missing?
+```{r equal, exercise=TRUE, error=TRUE}
+5 = 7
+```
+
+In R, to test if two elements are equal, you have to use two equal signs. When you use only one, R assumes you're trying to assign a value to a variable. We can't assign 7 to 5, so an error gets thrown. 
+
+Here are some more logical statements in action:
 ```{r logical, exercise=TRUE}
 0 < 1 # smaller than
 0 >= 0 # larger-or-equal to
@@ -382,6 +398,106 @@ quiz(
 )
 ```
 
+## Vectors and Data Frames
+
+### Vectors
+
+Two basic data structures we'll cover in this tutorial are vectors and data frames. Vectors are essentially lists containing elements of the same data type. They can be created using the `c()` function.
+
+```{r vector-1, exercise=TRUE}
+x <- c(1, 2, 3, 4) # a vector containing numeric data
+y <- c("hello", "world") # a vector containing character data 
+x
+y
+```
+
+You can use the `typeof()` function to check what type of data the vector contains.
+
+```{r vector-2, exercise=TRUE}
+x <- c(1, 2, 3, 4)
+y <- c("hello", "world") 
+typeof(x)
+typeof(y)
+```
+
+Use the `typeof()` function to check what type of data `z` contains. Is it what you expected?
+
+```{r vector-3, exercise=TRUE}
+z <- c(1, 4, "hello")
+# your code here
+```
+
+Since vectors must only contain data of the same type, R performed a process called coercion to turn the numbers into type character. If you print `z` above, you'll see quotation marks around 1 and 4. 
+
+### Data Frames
+
+Data frames are tables where columns represent variables and rows represent sets of observations. Run the code below to see an example:
+
+```{r df, include=FALSE}
+grades <- data.frame(
+  name = c("John", "Jane", "Charles", "Amy", "Joe"),
+  score = c(30, 80, 65, 92, NA),
+  passing = c(FALSE, TRUE, TRUE, TRUE, NA)
+)
+```
+
+```{r df2, exercise=TRUE}
+grades
+```
+
+In `grades`, we have three columns for the three variables we're interested in: the student's name, their score on an exam, and whether they passed the exam. Each of the five rows represents a set of data collected from a student. Under each column name, the data type of the column is displayed. The three types here are `chr`, or character; `dbl`, a type of numeric data; and `lgl`, or logical. 
+
+What do you notice about the last row? Joe hasn't taken the exam yet, so his score, and consequently his passing status, are missing. `NA` is used to represent missing data in vectors and data frames. It doesn't have an explicit data type, so it can be used in vectors and columns of any type. 
+
+### Check Your Understanding
+
+Pull up the documentation for `mean()` again. 
+
+```{r mean-help2, exercise=TRUE}
+# your code here
+```
+
+```{r mean-help2-solution}
+?mean
+```
+
+```{r mean1, echo=FALSE}
+quiz(
+  question("Which argument for `mean()` is a vector?",
+    answer("x", correct=TRUE),
+    answer("trim"),
+    answer("na.rm"))
+)
+```
+
+Let's take the mean of 12, 56, 7, and 89. Create a vector with these numbers below and assign it to the variable `x`:
+
+```{r mean2, exercise=TRUE}
+x <- # your code here
+mean(x)
+```
+
+```{r mean2-solution}
+x <- c(12, 56, 7, 89)
+mean(x)
+```
+
+Take the mean of `y`. Looking at the documentation for `mean()`, can you modify the code so that the output isn't `NA`?
+
+```{r mean3, exercise=TRUE}
+y <- c(5, 12, 64, 1, NA)
+# take the mean of y
+```
+
+```{r mean3-hint-1, exercise=TRUE}
+y <- c(5, 12, 64, 1, NA)
+mean(y)
+```
+
+```{r mean3-solution}
+y <- c(5, 12, 64, 1, NA)
+mean(y, na.rm=TRUE)
+```
 
 ## R packages
 
@@ -397,6 +513,16 @@ You should have already installed the "tidyverse" package using RStudio's graphi
 install.packages("tidyverse")
 ```
 
+When you install a package, you'll see an output like this in the console:
+
+![](/images/packageinstall.png){width=75%}
+
+The key part to focus on here is the line, "also installing the dependencies...." Dependencies are other packages that the package you're installing needs to run. Although they're typically installed alongside, you may run into an error or warning message like the one below:
+
+![](/images/dependerror.png){width=75%}
+
+This tells you that, for whatever reason, these dependencies were not installed properly and therefore your package either can't be installed or run. The best way to resolve this issue is to install these dependencies using separate `install.packages()` commands.
+
 ### Loading packages
 
 After installing a package, and *everytime* you open a new RStudio session, you need to first load (open) the packages you want to use with the `library()` function. This tells R to access the package's functions and prevents RStudio from lags that would occur if it automatically loaded every downloaded package every time you opened it.
@@ -406,6 +532,14 @@ Packages can be loaded like this:
 ```{r eval = FALSE}
 library(tidyverse)
 ```
+
+The package `janitor` is used for cleaning up your data. Run the code below to load it:
+
+```{r ade4, exercise=TRUE, error=TRUE}
+library(janitor)
+```
+
+We got an error because we haven't actually installed the package. Packages need to be installed before they can be loaded. 
 
 It is a little tricker to load Bioconductor packages, as they are often not stored on the Comprehensive R Archive Network (CRAN) where most packages live. There is a package, however, that lives on CRAN and serves as an interface between CRAN and the Bioconductor packages.
 
@@ -421,15 +555,18 @@ Sometimes two packages include functions with the same name. A common example is
 
 ### Check Your Understanding
 
-After installing the `dplyr` package, you encounter this error:
+After installing the `janitor` package, you want to use the function `get_dupes()` to see if there are any duplicates in your data. 
 
-![](/images/selecterror.png){width=100%}
+```{r get, exercise=TRUE, error=TRUE}
+get_dupes(your_data)
+```
 
 ```{r Packages, echo=FALSE}
 quiz(
-  question("Why did this happen?",
-    answer("The function `select()` wasn't installed"),
-    answer("The package `dplyr` wasn't loaded after installation", correct=TRUE),
-    answer("The arguments given to `select()` are invalid"))
+  question("What caused this error?",
+    answer("The function `get_dupes()` wasn't installed"),
+    answer("The package `janitor` wasn't loaded after installation", correct=TRUE),
+    answer("The arguments given to `get_dupes()` are invalid"))
 )
 ```
+
