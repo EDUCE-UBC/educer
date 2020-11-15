@@ -48,7 +48,6 @@ Files `growth_data.csv` and `well_information.csv` are imported using the `tidyv
 ```{r import, message=TRUE}
 library(tidyverse)
 library("growthrates")
-library(rstatix)
 
 raw_growth_data <- read_csv(system.file("resources/data",  "growth_data.csv", package = "educer"), col_names = TRUE, skip = 12)
 well_data <- read_csv(system.file("resources/data", "well_information.csv", package = "educer"), col_names = TRUE)
@@ -77,7 +76,6 @@ The key steps in this process are:
 ```{r data_reformating_setup}
 library(tidyverse)
 library("growthrates")
-library(rstatix)
 
 raw_growth_data <- read_csv(system.file("resources/data",  "growth_data.csv", package = "educer"), col_names = TRUE, skip = 12)
 well_data <- read_csv(system.file("resources/data", "well_information.csv", package = "educer"), col_names = TRUE)
@@ -242,7 +240,8 @@ calc_blank_EDU <- function(dataframe, Media) {
 }
 
 growth_data <- raw_growth_data %>%
-  pivot_longer(-c(Time, Temp), names_to = 'well', values_to = 'OD600')
+  pivot_longer(-c(Time, Temp), names_to = 'well', values_to = 'OD600') %>%
+  filter(Time != min(Time))
 
 growth_data_info <- right_join(growth_data, well_data, by = 'well') %>%
   filter(!is.na(student), !is.na(Time))
