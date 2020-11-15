@@ -296,6 +296,6 @@ growth_rates %>%
   ggplot(aes(x=media, y = growth_rate, fill  = media)) +
   geom_boxplot()
 
-growth_rate_ttest <- wilcox.test(growth_rate ~ media, data = growth_rates, paired = FALSE)
+growth_rate_ttest <- t.test(growth_rate ~ media, data = growth_rates, paired = FALSE)
 growth_rate_ttest
 ```
