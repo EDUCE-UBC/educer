@@ -12,6 +12,10 @@ output:
 runtime: shiny_prerendered
 ---
 
+- Add R base t.test()
+- Focus on Friday data
+- Make questions
+
 ```{r setup, include=FALSE}
 # General learnr setup
 library(learnr)
@@ -23,7 +27,6 @@ setup_resources()
 # Tutorial specific setup
 library(tidyverse)
 library("growthrates")
-library(rstatix)
 ```
 
 ## Introduction
@@ -293,8 +296,6 @@ growth_rates %>%
   ggplot(aes(x=media, y = growth_rate, fill  = media)) +
   geom_boxplot()
 
-growth_rate_wilcox <- growth_rates %>%
-  wilcox_test(growth_rate ~ media, paired = FALSE) %>%
-  add_significance
-growth_rate_wilcox
+growth_rate_ttest <- wilcox.test(growth_rate ~ media, data = growth_rates, paired = FALSE)
+growth_rate_ttest
 ```
