@@ -12,13 +12,13 @@ output:
 runtime: shiny_prerendered
 ---
 
-- Add R base t.test()
-- Focus on Friday data
 - Make questions
 
 ```{r setup, include=FALSE}
 # General learnr setup
 library(learnr)
+library(gradethis)
+gradethis_setup()
 knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
 library(educer)
 # Helper function to set path to images to "/images" etc.
@@ -39,7 +39,6 @@ Necessary packages are first loaded into R, using the `library(<package>)` funct
 
 * `tidyverse`
 * `"growthrates"`
-* `rstatix`
 
 Custom function with the suffix `EDU` (`<function>_EDU()`) were designed for this tutorial and are combine functions from the package above. For educational purposes details can be found in the "Helper Function" section of this tutorial.
 
@@ -83,17 +82,24 @@ well_data <- read_csv(system.file("resources/data", "well_information.csv", pack
 calc_blank_EDU <- function(dataframe, Media) {
   blank_OD <- dataframe %>%
   filter(!is.na(Time)) %>%
-  filter(blank == TRUE, Time == min(.$Time), media == Media ) %>%
-  summarise(blank_OD = mean(OD600))
+  filter(blank == TRUE, media == Media ) %>%
+  summarise(blank_OD = min(OD600))
 
   output <- blank_OD[[1]]
   
   return(output)
 }
 
+growth_data <- raw_growth_data %>%
+  pivot_longer(-c(Time, Temp), names_to = 'well', values_to = 'OD600')
+
+growth_data_info <- right_join(growth_data, well_data, by = 'well') %>%
+  filter(!is.na(student), !is.na(Time))
 ```
 
-```{r data_reformating, exercise=TRUE, exercise.setup = "data_reformating_setup"}
+The code below shows how the functions described above can be use to reformat `raw_growth_data` into the dataframe that will be used for future analysis.
+
+```{r data_reformating1, exercise=TRUE, exercise.setup = "data_reformating_setup"}
 growth_data <- raw_growth_data %>%
   pivot_longer(-c(Time, Temp), names_to = 'well', values_to = 'OD600')
 
@@ -115,10 +121,53 @@ growth_data_MM <- growth_data_info %>%
 growth_data_full <- bind_rows(growth_data_LB, growth_data_MM)
 ```
 
+Use the interactive box below to calculate (as shown above) and display the values of `blank_LB` and `blank_MM` variables.
+
+```{r data_reformating2, exercise=TRUE, exercise.setup = "data_reformating_setup"}
+blank_LB <-
+print(blank_LB)
+  
+blank_MM <- 
+print(blank_MM)
+```
+
+What is the value of `blank_LB`?
+
+```{r blank_LB_check, exercise=TRUE, exercise.setup = "data_reformating_setup"}
+
+```
+
+```{r blank_LB_check-check}
+grade_result(
+  pass_if(~identical(.result, 0.085))
+)
+```
+
+What is the value of `blank_MM`?
+
+```{r blank_MM_check, exercise=TRUE, exercise.setup = "data_reformating_setup"}
+
+```
+
+```{r blank_MM_check-check}
+grade_result(
+  pass_if(~identical(.result, 0.075))
+)
+```
+
+```{r letter-a, echo=FALSE}
+question("Does the relationship between `blank_LB` and `blank_MM` values make sense?",
+  answer("No, we would expect values to be identical"),
+  answer("Yes, LB medium is darker coloured that Minimal medium, so we expect the OD~600~ of LB to be slightly higher", correct = TRUE),
+  answer("No, Minimal medium is darker coloured that LB medium, so we expect the OD~600~ of MM to be slightly higher"),
+  answer("We have no way of knowing what these values might be")
+)
+```
+
 ## Plotting Growth Curves
 _E. coli_ growth curves represent the optical density of cultures over time. The shape of these curves has been extensively characterized by the scientific community and plotting these curves can help identify irregularities or contamination.
 
-We are generating these plots using the `ggplot2` package, wihich is part of the `tidyverse` library.
+We are generating these plots using the `ggplot2` package, which is part of the `tidyverse` library.
 
 ```{r plotting_growth_curves_setup}
 raw_growth_data <- read_csv(system.file("resources/data",  "growth_data.csv", package = "educer"), col_names = TRUE, skip = 12)
@@ -127,8 +176,8 @@ well_data <- read_csv(system.file("resources/data", "well_information.csv", pack
 calc_blank_EDU <- function(dataframe, Media) {
   blank_OD <- dataframe %>%
   filter(!is.na(Time)) %>%
-  filter(blank == TRUE, Time == min(.$Time), media == Media ) %>%
-  summarise(blank_OD = mean(OD600))
+  filter(blank == TRUE, media == Media ) %>%
+  summarise(blank_OD = min(OD600))
 
   output <- blank_OD[[1]]
   
@@ -186,16 +235,59 @@ calc_growthrates_EDU <- function(dataframe) {
 }
 ```
 
-```{r plotting_growth_curves, exercise=TRUE, exercise.setup = "plotting_growth_curves_setup"}
-growth_data_full %>%
-  filter(!is.na(student), blank == FALSE) %>%
-  ggplot(aes(x=Time, y=net_OD, color = media, group = media)) +
-  geom_point(shape=19, size=1)
+The code below generates a graph showing all measured OD~600~ values over time.  Using the `filter()` function, modify the code below to show only non-blank samples.
 
+```{r plotting_growth_curves1, exercise=TRUE, exercise.setup = "plotting_growth_curves_setup"}
 growth_data_full %>%
-  filter(!is.na(student), blank == TRUE) %>%
-  ggplot(aes(x=Time, y=net_OD, color = media, group = media)) +
-  geom_point(shape=19, size=1)
+  # filter(blank == FALSE) %>%
+  ggplot(aes(x=Time, y=net_OD)) +
+  geom_point() + 
+  labs(x = 'Time (h:m:s)', y = 'OD600')
+```
+
+```{r plotting_growth_curves1-solution}
+growth_data_full %>%
+  filter(blank == FALSE) %>%
+  ggplot(aes(x=Time, y=net_OD)) +
+  geom_point() + 
+  labs(x = 'Time (h:m:s)', y = 'OD600')
+```
+
+Now copy the code above into the box below and define the `colour` aesthetic as `media`, in order to differentiate between LB and MM.
+
+```{r plotting_growth_curves2, exercise=TRUE, exercise.setup = "plotting_growth_curves_setup"}
+
+```
+
+```{r plotting_growth_curves2-solution}
+growth_data_full %>%
+  filter(blank == FALSE) %>%
+  ggplot(aes(x=Time, y=net_OD, colour = media)) +
+  geom_point() + 
+  labs(x = 'Time (h:m:s)', y = 'OD600')
+```
+
+Try modifying the code to show only blank samples and use the `colour` aesthetic as `media`, in order to differentiate between LB and MM.
+
+```{r plotting_growth_curves3, exercise=TRUE, exercise.setup = "plotting_growth_curves_setup"}
+
+```
+
+```{r plotting_growth_curves3-solution}
+growth_data_full %>%
+  filter(blank == TRUE) %>%
+  ggplot(aes(x=Time, y=net_OD, colour = media)) +
+  geom_point() + 
+  labs(x = 'Time (h:m:s)', y = 'OD600')
+```
+
+```{r growth_data_question, echo=FALSE}
+question("Are there any irregularities in the graphs above? (select ALL that apply)",
+  answer("Only two blank LB wells grew, we would expect to see more"),
+  answer("The first measurement seems to have given erroneous values", correct = TRUE),
+  answer("We don't expect to see any growth in the blank wells, but a number seem to have been contaminated", correct = TRUE),
+  answer("LB and MM growth curves should look the same, as both are E. coli"),
+  answer("The data looks as expected"))
 ```
 
 ## Calculating Growth Rates
@@ -231,8 +323,8 @@ well_data <- read_csv(system.file("resources/data", "well_information.csv", pack
 calc_blank_EDU <- function(dataframe, Media) {
   blank_OD <- dataframe %>%
   filter(!is.na(Time)) %>%
-  filter(blank == TRUE, Time == min(.$Time), media == Media ) %>%
-  summarise(blank_OD = mean(OD600))
+  filter(blank == TRUE, media == Media ) %>%
+  summarise(blank_OD = min(OD600))
 
   output <- blank_OD[[1]]
   
