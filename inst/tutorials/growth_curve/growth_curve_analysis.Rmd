@@ -222,17 +222,20 @@ growthrate_plot_EDU <- function(filtered_dataframe) {
 
 calc_growthrates_EDU <- function(dataframe) {
   growth_rates <- dataframe %>%
-    distinct(well, .keep_all = TRUE) %>%
+    distinct(interaction(well), .keep_all = TRUE) %>%
     select(c(well, student, blank, media)) %>%
     filter(blank == FALSE)
   
   growth_rates$growth_rate <- NA
   for (w in 1:length(growth_rates$well)){
     growth_rate_data <- dataframe %>%
-      filter(well == growth_rates$well[w])
+    filter(well == growth_rates$well[w])
     
-    growth_fit <- fit_easylinear(growth_rate_data$Time, growth_rate_data$net_OD)
-    growth_rates$growth_rate[w] = growth_fit@par[[3]]
+    error_check <- is.error(fit_easylinear(growth_rate_data$Time, growth_rate_data$net_OD))
+    if (error_check == FALSE) {
+      growth_fit <- fit_easylinear(growth_rate_data$Time, growth_rate_data$net_OD)
+      growth_rates$growth_rate[w] = growth_fit@par[[3]]
+    }
   }
   output <- growth_rates
   return(output)
@@ -379,17 +382,20 @@ growthrate_plot_EDU <- function(filtered_dataframe) {
 
 calc_growthrates_EDU <- function(dataframe) {
   growth_rates <- dataframe %>%
-    distinct(well, .keep_all = TRUE) %>%
+    distinct(interaction(well), .keep_all = TRUE) %>%
     select(c(well, student, blank, media)) %>%
     filter(blank == FALSE)
   
   growth_rates$growth_rate <- NA
   for (w in 1:length(growth_rates$well)){
     growth_rate_data <- dataframe %>%
-      filter(well == growth_rates$well[w])
+    filter(well == growth_rates$well[w])
     
-    growth_fit <- fit_easylinear(growth_rate_data$Time, growth_rate_data$net_OD)
-    growth_rates$growth_rate[w] = growth_fit@par[[3]]
+    error_check <- is.error(fit_easylinear(growth_rate_data$Time, growth_rate_data$net_OD))
+    if (error_check == FALSE) {
+      growth_fit <- fit_easylinear(growth_rate_data$Time, growth_rate_data$net_OD)
+      growth_rates$growth_rate[w] = growth_fit@par[[3]]
+    }
   }
   output <- growth_rates
   return(output)
