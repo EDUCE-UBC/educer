@@ -18,6 +18,7 @@ runtime: shiny_prerendered
 # General learnr setup
 library(learnr)
 library(gradethis)
+library(knitr)
 gradethis_setup()
 knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
 library(educer)
@@ -160,7 +161,9 @@ question("Does the relationship between `blank_LB` and `blank_MM` values make se
   answer("No, we would expect values to be identical"),
   answer("Yes, LB medium is darker coloured that Minimal medium, so we expect the OD~600~ of LB to be slightly higher", correct = TRUE),
   answer("No, Minimal medium is darker coloured that LB medium, so we expect the OD~600~ of MM to be slightly higher"),
-  answer("We have no way of knowing what these values might be")
+  answer("We have no way of knowing what these values might be"),
+  random_answer_order = TRUE,
+  allow_retry = TRUE
 )
 ```
 
@@ -290,22 +293,208 @@ question("Are there any irregularities in the graphs above? (select ALL that app
   answer("The data looks as expected"))
 ```
 
+Use the `filter()` and `min()` functions to remove the first timepoint from the dataset.  Plot the growth curves of non-blank cultures.
+
+```{r plotting_growth_curves4, exercise=TRUE, exercise.setup = "plotting_growth_curves_setup"}
+
+```
+
+```{r plotting_growth_curves4-hint-1}
+Time !=   # Time is not equal to
+```
+
+```{r plotting_growth_curves4-hint-2}
+Time != min(Time)  # Time is not equal to the minimum (first) timepoint 
+```
+
+```{r plotting_growth_curves4-hint-3}
+filter(blank == FALSE)
+```
+
+```{r plotting_growth_curves4-solution}
+growth_data_full %>%
+  filter(blank == FALSE) %>%
+  # filter(Time != min(Time), blank == TRUE) %>%
+  ggplot(aes(x=Time, y=net_OD, colour = media)) +
+  geom_point() + 
+  labs(x = 'Time (h:m:s)', y = 'OD600')
+```
+
 ## Calculating Growth Rates
 
-Here, we use the `growthrate_model_EDU(<fitlered_dataframe>)` and `growthrate_plot_EDU(<fitlered_dataframe>)` function to model and plot the maximum growth rate of a single sample.  To do this, first filter your dataframe down to a single `well`.
+Here, we use the `growthrate_model_EDU(<fitlered_dataframe>)` and `growthrate_plot_EDU(<fitlered_dataframe>)` functions to model and plot the maximum growth rate of a single sample.  To do this, first filter your dataframe down to a single `well`.
 
 ```{r test_growth_rates, exercise=TRUE, exercise.setup = "plotting_growth_curves_setup"}
-test_data <- growth_data_full %>%
+single_well_data <- growth_data_full %>%
   filter(well == 'A10')
 
-growthrate_model_EDU(test_data)
+growthrate_model_EDU(single_well_data)
 
-growthrate_plot_EDU(test_data)
+growthrate_plot_EDU(single_well_data)
+```
+
+Use the `growthrate_model_EDU()` and `growthrate_plot_EDU()` functions to calculate and plot maximum growth rates for the following cultures:
+```{r table1, echo = FALSE, results = 'asis'}
+raw_growth_data <- read_csv(system.file("resources/data",  "growth_data.csv", package = "educer"), col_names = TRUE, skip = 12)
+well_data <- read_csv(system.file("resources/data", "well_information.csv", package = "educer"), col_names = TRUE)
+
+calc_blank_EDU <- function(dataframe, Media) {
+  blank_OD <- dataframe %>%
+  filter(!is.na(Time)) %>%
+  filter(blank == TRUE, media == Media ) %>%
+  summarise(blank_OD = min(OD600))
+
+  output <- blank_OD[[1]]
+  
+  return(output)
+}
+
+growth_data <- raw_growth_data %>%
+  pivot_longer(-c(Time, Temp), names_to = 'well', values_to = 'OD600')
+
+growth_data_info <- right_join(growth_data, well_data, by = 'well') %>%
+  filter(!is.na(student), !is.na(Time))
+
+blank_LB <- calc_blank_EDU(growth_data_info, 'LB')
+
+blank_MM <- calc_blank_EDU(growth_data_info, 'MM')
+
+growth_data_LB <- growth_data_info %>%
+  filter(media == 'LB') %>%
+  mutate(net_OD = OD600 - blank_LB)
+
+growth_data_MM <- growth_data_info %>%
+  filter(media == 'MM') %>%
+  mutate(net_OD = OD600 - blank_MM)
+
+growth_data_full <- bind_rows(growth_data_LB, growth_data_MM)
+
+growthrate_model_EDU <- function(filtered_dataframe) {
+  growth_fit <-fit_easylinear(filtered_dataframe$Time, filtered_dataframe$net_OD)
+  
+  output <- growth_fit@par[[3]]
+  return(output)
+}
+
+growthrate_plot_EDU <- function(filtered_dataframe) {
+  growth_fit <- fit_easylinear(filtered_dataframe$Time, filtered_dataframe$net_OD)
+  return(plot(growth_fit))
+}
+
+calc_growthrates_EDU <- function(dataframe) {
+  growth_rates <- dataframe %>%
+    distinct(well, .keep_all = TRUE) %>%
+    select(c(well, student, blank, media)) %>%
+    filter(blank == FALSE)
+  
+  growth_rates$growth_rate <- NA
+  for (w in 1:length(growth_rates$well)){
+    growth_rate_data <- dataframe %>%
+      filter(well == growth_rates$well[w])
+    
+    growth_fit <- fit_easylinear(growth_rate_data$Time, growth_rate_data$net_OD)
+    growth_rates$growth_rate[w] = growth_fit@par[[3]]
+  }
+  output <- growth_rates
+  return(output)
+}
+
+table <- growth_data_full %>%
+  filter(well %in% c('C2', 'C4', 'C8', 'C10')) %>%
+  filter(Time == min(Time)) %>%
+  select(c(well, student, blank, media))
+
+kable(table, caption = '_Table 1:_ Wells for `growthrate` calculations')
+```
+
+Using what you've learned, plot the growth curves for all of the wells identified in _Table 1_
+
+```{r test_growth_rates1, exercise=TRUE, exercise.setup = "plotting_growth_curves_setup"}
+
+```
+
+```{r test_growth_rates1-hint-1}
+well == '***' # plot one well at a time filter for all 4 using the OR operator ' | '
+```
+
+```{r test_growth_rates1-hint-2}
+filter(well == 'C2' | well == 'C4'...)
+```
+
+```{r test_growth_rates1-solution}
+growth_data_full %>%
+  filter(Time != min(Time)) %>%
+  filter(well == 'C2' | well == 'C4' | well == 'C8' | well == 'C10') %>%
+  ggplot(aes(x=Time, y=net_OD, colour = media)) +
+  geom_point() + 
+  labs(x = 'Time (h:m:s)', y = 'OD600')
+```
+
+Using the functions described above, calculate and plot growthrates for all non-blank wells identified in _Table 1_ (the `growthrate_model_EDU()` is not dsigned to handle growth rates of near 0)
+
+```{r test_growth_rates2, exercise=TRUE, exercise.setup = "plotting_growth_curves_setup"}
+
+```
+
+```{r test_growth_rates2-hint-1}
+single_well_data <- growth_data_full %>% # dataframe must be filtered to 1 well
+  filter(well == 'C4')
+```
+
+```{r test_growth_rates2-solution}
+single_well_data <- growth_data_full %>%
+  filter(well == 'C8')
+
+growthrate_model_EDU(single_well_data)
+
+growthrate_plot_EDU(single_well_data)
+```
+
+What is the growth rate of well C4?
+
+```{r C4_check, exercise=TRUE, exercise.setup = "data_reformating_setup"}
+
+```
+
+```{r C4_check-check}
+grade_result(
+  pass_if(~identical(.result, 0.0001456611))
+)
+```
+
+What is the growth rate of well C10?
+
+```{r C10_check, exercise=TRUE, exercise.setup = "data_reformating_setup"}
+
+```
+
+```{r C10_check-check}
+grade_result(
+  pass_if(~identical(.result, 9.485003e-05))
+)
+```
+
+```{r growth_rates_question, echo=FALSE}
+question("Is the relationship between _E. coli_ growth rates in LB and MM as expected?",
+  answer("The max growth rate in LB is  more than 1.5 times the max growth rate in MM. We would expect it to be slightly higher.", correct = TRUE),
+  answer("The max growth rate in LB is more than 10 times the max growth rate in MM. We would expect it to be higher."),
+  answer("The max growth rate in LB is about 1.5 times the max growth rate in MM. This seem incorect, as we would expect it to be slightly lower."),
+  answer("We don't have a way of predicting the relationship between growth rates in LB vs. MM"),
+  answer("The max growth rate in MM is about 1.5 times the max growth rate in LB This seem incorect, as we would expect it to be slightly lower."),
+  random_answer_order = TRUE,
+  allow_retry = TRUE
+  )
 ```
 
 Use the `calc_growthrate(<dataframe>)` function to calculate growth rates for all the wells in a your dataframe, outputting a new dataframe.  
 
 ```{r calculating_growth_rates, exercise=TRUE, exercise.setup = "plotting_growth_curves_setup"}
+growth_rates <-
+
+growth_rates
+```
+
+```{r calculating_growth_rates-solution}
 growth_rates <- calc_growthrates_EDU(growth_data_full)
 
 growth_rates
