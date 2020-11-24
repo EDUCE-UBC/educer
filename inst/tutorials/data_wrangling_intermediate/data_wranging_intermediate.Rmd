@@ -1,0 +1,41 @@
+---
+title: "Introduction to data wrangling"
+author: "Michelle Kang"
+date: "05/02/2020"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+description: This file contains the first of three data wrangling tutorials using the tidyverse package in R. Along with an introduction on downloading and loading packages, this tutorial introduces loading and visualising tabular data tables, and the filter, slice and select functions of tidyverse.  
+---
+
+```{r setup, include = FALSE}
+# General learnr setup
+library(learnr)
+knitr::opts_chunk$set(echo = TRUE)
+library(educer)
+# Helper function to set path to images to "/images" etc.
+setup_resources()
+
+# Tutorial specific setup
+library(readr)
+library(tidyverse)
+
+x = 10 #for boolean exercise
+restricted_columns <- select(combined, OTU0001,
+                             OTU0002, OTU0004, Depth)
+summary_solution_1 <-
+  geochemicals %>%
+  select(Cruise, Date, Depth, CTD_O2) %>%
+  filter(Cruise == 72 & Depth >= 0.05)
+
+summary_solution_2 <-
+  geochemicals %>% 
+  filter(CTD_O2 > 0 | NO3 > 0) %>% 
+  select(Cruise, Depth)
+```
+
+## Motivation
+
+
