@@ -4,24 +4,29 @@
 #' tutorials. During package development, each <tutorial> is located in
 #' \code{inst/tutorials/<tutorial>/} and resources in \code{inst/resources/}
 #' (relative to the root of the package). After installation, <tutorial> is in
-#' \code{tutorials/<tutorial>/} and resources in \code{inst/resources/}
-#' (relative to the root of the installed package).
-#' \code{shiny::addResourcePath} creates a prefix to be used as filepath to the
-#' following resources: images (\code{/images}) and css  files \code{/css}. The
-#' default parameters assume the installed package folder structure described
-#' above.
+#' \code{tutorials/<tutorial>/} and resources in \code{resources/} (relative to
+#' the root of the installed package). \code{shiny::addResourcePath} creates a
+#' prefix to be used as filepath to the following resources: images
+#' (\code{/images}), css  files \code{/css}, and example script files
+#' \code{scripts}. The default parameters assume the installed package folder
+#' structure described above.
 #'
 #' @param images A string giving the images location relative to installed
 #'   package.
 #' @param css A string giving the css location relative to installed package.
 #'
+#' @param scripts A string giving the scripts location relative to installed
+#'   package.
+#'
 #' @keywords internal
 #'
 #' @seealso \code{\link[shiny]{addResourcePath}()}
-setup_resources <- function(css    = "resources/css",
-                            images = "resources/images") {
-  shiny::addResourcePath("images", system.file(images, package = "educer"))
-  shiny::addResourcePath("css", system.file(css, package = "educer"))
+setup_resources <- function(css     = "resources/css",
+                            images  = "resources/images",
+                            scripts = "resources/scripts") {
+  shiny::addResourcePath("images",  system.file(images,  package = "educer"))
+  shiny::addResourcePath("css",     system.file(css,     package = "educer"))
+  shiny::addResourcePath("scripts", system.file(scripts, package = "educer"))
 }
 
 #' List tutorials in the educer package
