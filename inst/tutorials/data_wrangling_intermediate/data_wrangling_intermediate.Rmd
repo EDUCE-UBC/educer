@@ -1,0 +1,334 @@
+---
+title: "Intermediate data wrangling"
+author: "Michelle Kang"
+date: "05/02/2020"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+description: This file contains the second of three data wrangling tutorials using the tidyverse package in R. This tutorial introduces loading datasets within the educer package, piping, and the rename, arrange, mutate, summarise and as.factor functions of tidyverse.
+---
+
+```{r setup, include = FALSE}
+# General learnr setup
+library(learnr)
+knitr::opts_chunk$set(echo = TRUE)
+library(educer)
+# Helper function to set path to images to "/images" etc.
+setup_resources()
+
+# Tutorial specific setup
+library(tidyverse)
+```
+
+
+
+## Intermediate tidyverse
+
+In this tutorial, we will be using the `geochemicals` dataset included in the "educer" package. This dataframe contains time series observations on the water column chemistry. Learn more about the geochemicals dataset by running the following line in your R console. 
+
+```{r dataset-exercise, exercise = TRUE, exercise.lines = 5}
+?geochemicals
+```
+
+```{r dataset-quiz, echo = FALSE}
+quiz(
+  question("Which column in the `geochemicals` dataset has data on average concentration of hydrogen sulfide for each depth?",
+           answer("Mean_H2S", correct = TRUE),
+           answer("mean_h2s"),
+           answer("Avg_H2S")
+           )
+)
+```
+
+Let's load the geochemicals dataset into our environment like this:
+
+```{r message=FALSE}
+raw_dat <- geochemicals
+```
+
+
+
+## Refresher: `select()`, `filter()`, `slice()`
+
+The pre-requisites for this tutorial are understanding how to use the `select()`, `filter()` and `slice()` functions introduced in the previous "Data wrangling basic" tutorial.
+
+As a refresher:
+
+`select(dataframe, specified columns separated by commas) `: select to work with only specified columns from our data table.
+
+`filter(dataframe, boolean condition)`: select specific rows in dataframe based on a logical condition of a column value.
+
+`slice(dataframe, specified rows separated by commas OR range of rows separated by ":")`: select a subset of observations (rows) by their position in the dataframe.
+
+### Exercise
+
+1. Copy raw dat into a new variable called "dat".
+2. Select for the Cruise, Date, Depth, Temperature, CTD_O2, NO3, Mean_H2S columns.
+3. Omit all rows where CTD_02 is null .
+4. Use the `glimpse()` function to make sure that `dat` now has 7 columns and 1,249 rows. 
+
+```{r intro-exercise, exercise = TRUE, exercise.lines = 5}
+
+```
+
+
+```{r include = FALSE}
+dat <- raw_dat
+dat <- select(dat, Cruise, Date, Depth, Temperature, CTD_O2, NO3, Mean_H2S)
+dat <- filter(dat, !is.na(CTD_O2))
+glimpse(dat)
+```
+
+```{r intro-quiz, echo = FALSE}
+quiz(
+  question("Which one of these statements will result in ERROR?",
+           answer("`is.na(NO3)`"),
+           answer("`x = 9 & y < 0`", correct = TRUE),
+           answer("`x %in% c(1, 4, 9)`")
+           )
+)
+```
+
+How would you select only the rows where Cruise is 18 or 19 and save the result into a variable called `restricted_cruise`? Your resulting dataframe should have 32 rows.
+
+```{r refresher-exercise, exercise = TRUE, exercise.lines = 5}
+```
+
+```{r include = FALSE}
+restricted_cruise <- filter(dat, Cruise == 18 | Cruise == 19)
+glimpse(restricted_cruise)
+```
+
+How would you create a new dataframe called `subset_dat` with only rows 1, 3 and 7 of `raw_dat`?  
+
+```{r slice-exercise, exercise = TRUE, exercise.lines = 5}
+
+```
+
+
+
+## Learning Objectives
+
+In this tutorial you will learn to use:
+
+- The `rename()` function to assign more intuitive names for columns.
+
+- The `arrange()` function to sort rows by value.
+
+- The `mutate()` function to apply a transformation to values in one column and assign new values to a new column.
+
+- Piping with `%>%` to chain commands together.
+
+- The `summarise()` function to calculate summary statistics such as mean and standard deviation for groups of data.
+
+
+
+## `rename()`
+
+We can use the `rename()` function to assign new names to your variables. This can be very useful when your variable names are very long and tedious to type. Here, we remove the prefixes from some of the variables.
+```{r}
+dat <- rename(dat, O2=CTD_O2, H2S=Mean_H2S)
+```
+
+### Exercise
+
+```{r eval = FALSE}
+rename(dat, depth_M = Depth)
+dat <- filter(dat, 200>(depth_M))
+```
+
+```{r rename-quiz, echo = FALSE}
+quiz(
+  question("What would result from running the chunk of code above?",
+           answer("`Depth` is renamed to `depth_M` and `dat` is filtered to only include rows with depth less than 200 m."),
+           answer("`Depth` is renamed to `depth_M` and `dat` is filtered to only include rows with depth greater than 200 m."),
+           answer("ERROR", correct=TRUE)
+           ),
+  question("How would you rename the column `O2` to `O2_uM`?",
+           answer("`rename(dat, O2 = O2_uM)`"),
+           answer("`rename(dat, O2_uM = O2)`", correct = TRUE),
+           answer("`rename(dat, 'O2_uM' = 'O2')`"),
+           answer("`rename(dat, 'O2' = 'O2_uM')`")
+           )
+)
+```
+
+
+
+## Renaming Conventions 
+
+This is a good point to touch on best practices for units in data. It is best to either name the units in the variable name, such as `O2_uM` for oxygen in micromolar, or to create a separate column for units, such as O2 = 3.4 and O2_units = uM. You should *never* place the units in the same variable as the measurement because then you cannot plot the variable as a number!
+
+Let's rename our geochemical columns to include units.
+
+```{r}
+dat <- rename(dat, O2_uM = O2, H2S_uM = H2S, NO3_uM = NO3)
+```
+
+Having columns that have common starts or ends (eg."_uM") allows us to utilize helper functions with select.  
+There are several helper functions that can be used with `select()` to describe which variables to keep:
+
+- `starts_with(x)`: variable names that start with x
+- `ends_with(x)`: variable names that end with x
+- `contains(x)`: variable names containing x
+
+We can use the `ends_with()` helper function to quickly select all of the geochemicals from our datatable.
+
+```{r}
+geo_chem <- select(dat, ends_with("_uM"))
+```
+
+The full list of helper functions can be found by running `?select_helpers` in the console. 
+
+
+
+## `arrange()`
+
+Use `arrange(x)` to sort all the rows by the value of the variable `x` in 
+ascending order. `arrange(desc(x))` can be used to sort in descending order.
+
+For example, we can arrange the data in the order of ascending NO3 values.
+
+```{r}
+subset_dat <- slice(dat, 1:10)
+arrange(subset_dat, NO3_uM)
+```
+
+
+
+## `mutate()`
+
+Use `mutate(y = x)` to apply a transformation to some variable x and assign it to the variable name y. Here we divide Depth by 1000 to convert its units from meters to kilometers.
+```{r}
+dat <- mutate(dat, Depth_km=Depth/1000)
+```
+
+
+
+## Piping with `%>%`
+
+Up until now we have learned the basic dplyr verb syntax:
+
+- Input data frame in the first argument.
+- Other arguments can refer to variables as if they were local objects.
+- Output is another data frame.
+
+Our geochemical data cleaning code continuously overwrites the `dat` object every time we call a dplyr verb. This is not ideal as we must run these steps in order and can easily get lost or make errors.
+
+Instead, we can chain commands together using the `%>%` (pipe) operator. This operator allows us to chain multiple dplyr (and other) verbs together to result in only the final `dat` object being saved to our R environment.
+
+`f(x) %>% g(y)` is the same as `g(f(x),y)`
+
+`select(dat, Cruise)` is the same as `dat %>% select(Cruise)`
+
+
+
+## Exercise: piping
+
+```{r eval = FALSE}
+dat <- geochemicals
+dat <- select(dat, Cruise, Date, Depth, Temperature, CTD_O2, NO3, Mean_H2S)
+dat <- filter(dat, !is.na(CTD_O2))
+```
+
+Write a pipe to convert the above code into a pipe.
+
+```{r initialize-types-exercise, exercise = TRUE, exercise.lines = 5}
+```
+
+```{r pipe-quiz, echo = FALSE}
+quiz(
+  question("Which one of the following pipes will not result in ERROR?",
+           answer("`dat <- raw_dat %>% slice(dat, 1:10) !is.na(NO3)`"),
+           answer("`dat <- raw_dat %>% slice(1:10) !is.na(NO3)`"),
+           answer("`dat <- raw_dat %>% slice(1:10) %>% !is.na(NO3)`",
+                  correct = TRUE)
+           )
+)
+```
+
+
+
+## Solution: Piping
+Piping works nicely to condense code and to improve readability. dplyr syntax is very easy to read. Starting with `raw_dat`, we select the `Cruise`, `Date`, ..., `WS_H2S` variables, filter out oxygen `NA` data, rename the geochemical variables, and then divide `Depth` by 1000 to convert to meters.
+
+```{r}
+dat <- 
+  raw_dat %>%
+  select(Cruise, Date, Depth, Temperature,
+         CTD_O2, NO3, Mean_H2S) %>%
+  filter(!is.na(CTD_O2)) %>%
+  rename(O2_uM = CTD_O2, NO3_uM = NO3, H2S_uM = Mean_H2S) %>%
+  mutate(Depth_km = Depth / 1000)
+```
+
+**So, this single function now completes everything we've done to the data so far!**
+
+
+
+## `group_by()` and `summarise()`
+`summarise()` (or `summarize()`) is handy when we want to calculate summaries for groups of observations. This is done by first applying the `group_by()` verb and then feeding it into `summarise()` with the pipe. 
+
+For example, we can calculate the mean and standard deviation for oxygen at all depths.
+
+```{r}
+dat %>%
+  group_by(Depth) %>%
+  summarise(Mean_O2 = mean(O2_uM, na.rm = TRUE),
+            SD_O2 = sd(O2_uM, na.rm = TRUE))
+```
+
+## Exercise: `summarise()`
+
+Calculate median, interquartile range, and sample size of Temperature by Cruise. As always, start by copying your data.
+
+```{r group-by-exercise, exercise = TRUE, exercise.lines = 5}
+pdat <- dat
+```
+
+
+
+## Solution
+
+The results for the previous exercise should look like this.
+
+```{r echo = FALSE}
+pdat <- dat
+pdat %>%
+  group_by(Cruise) %>%
+  summarise(Median_Temperature = median(Temperature, na.rm = TRUE), 
+            IQR_Temperature = IQR(Temperature, na.rm = TRUE),
+            n = n())
+```
+
+
+
+## Factors
+
+A data structure we haven't utilized in R yet are factors, which are used to represent categorical variables. In general, categorical variables can take on fixed number of possible values. For example, `Cruise` is a numeric right now, but actually represents a category (i.e. each cruise just indicates a group of measurements). To convert a vector to factors we use the `as.factors()` function.
+
+```{r}
+dat <- mutate(dat, Depth = as.factor(Depth),
+              Cruise = as.factor(Cruise))
+```
+
+Using the `%in%` binary operator we can filter for groups of values. Subset data to 3 depths in 7 cruises (i.e. specimens) in February:
+
+```{r}
+dat <- filter(dat, Depth %in% c(10, 100, 200),
+              # The cruises that took place in Februrary can be determined
+              # using the Date variable and functions that we won't discuss in
+              # these data science modules
+              Cruise %in% c(18, 30, 42, 54, 66, 80, 92))
+```
+
+
+
+## Additional resources
+
+* [R cheatsheets](https://www.rstudio.com/resources/cheatsheets/) also available in RStudio under Help > Cheatsheets
+* [Introduction to dplyr](https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html)
+* [dplyr tutorial](https://rpubs.com/justmarkham/dplyr-tutorial)
+* [dplyr video tutorial](https://www.r-bloggers.com/hands-on-dplyr-tutorial-for-faster-data-manipulation-in-r/)
