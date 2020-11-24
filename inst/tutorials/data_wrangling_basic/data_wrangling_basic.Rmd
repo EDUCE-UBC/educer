@@ -23,7 +23,7 @@ library(readr)
 library(tidyverse)
 
 x = 10 #for boolean exercise
-restricted_columns <- select(OTU_metadata_table, OTU0001,
+restricted_columns <- select(combined, OTU0001,
                              OTU0002, OTU0004, Depth)
 summary_solution_1 <-
   geochemicals %>%
@@ -505,13 +505,13 @@ filter(raw_data, NO3 %in% c(26.4, 5.278))
 We can look for a range of values by finding the rows where the value of the variable is <= 120 **AND** >= 20 by using the logical operator `&`.
 
 ```{r and}
-filter(raw_data, CTD_O2 <= 120 & CTD_O2 >= 20)
+filter(raw_data, NO3 <= 120 & NO3 >= 20)
 ```
 
 Lastly, we can use the logical OR (`|`) to find the rows where the value is <= 50 **OR** >= 150.
 
 ```{r or}
-filter(raw_data, CTD_O2 <= 50 | CTD_O2 >= 150)
+filter(raw_data, NO3 <= 50 | NO3 >= 150)
 ```
 
 ### Exercise
