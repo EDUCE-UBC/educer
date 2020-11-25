@@ -586,7 +586,7 @@ growth_rates
 ## Data Distribution
 Understanding the distribution of data and the relationship between data sets is important in determining what kind of statistical analyses should be performed.
 
-In the following section, we plot the distribution of the calculated growth rates using the `geom_density` function from `ggplot2`
+In the following section, we plot the distribution of the calculated growth rates using the `geom_density()` function from `ggplot2`
 
 ```{r plotting_growth_rates_setup}
 raw_growth_data <- read_csv(system.file("resources/data",  "growth_data.csv", package = "educer"), col_names = TRUE, skip = 12)
@@ -651,14 +651,44 @@ growth_data_trim <- growth_data_full %>%
 growth_rates <- calc_growthrates_EDU(growth_data_trim)
 ```
 
+Use what you learned previously about plotting with `ggplot` the distributions of __growthrate__ in the `growth_rates` dataframe you made earlier _(Note that only the `x = growthrate` and `color = media` aesthetics need to be defined for the `geom_density` function)_ 
+
 ```{r data_distribution, exercise=TRUE, exercise.setup = "plotting_growth_rates_setup"}
+
+```
+
+```{r data_distribution-hint-1}
+growth_rates %>%
+  ggplot(***) +
+```
+
+```{r data_distribution-hint-2}
+growth_rates %>%
+  ggplot(aes(***)) +
+  geom_density()
+```
+
+```{r data_distribution-solution}
 growth_rates %>%
   ggplot(aes(x=growth_rate, color = media)) +
   geom_density()
 ```
 
+
+```{r data_distribution_shapiro, exercise=TRUE, exercise.setup = "plotting_growth_rates_setup"}
+LB_rates <- growth_rates %>%
+  filter(media == 'LB')
+
+MM_rates <- growth_rates %>%
+  filter(media == 'MM')
+
+shapiro.test(LB_rates$growth_rate)
+
+shapiro.test(MM_rates$growth_rate)
+```
+
 ## Statistical Analysis
-In order to determine whether there is a significant difference between growth rates in LB and MM media, we will employ the `wilcox_test()` function, from the `rstatix` package. Growth rate distributions are also plotted using the `geom_boxplot()` function, from the `ggplot2` package.
+In order to determine whether there is a significant difference between growth rates in LB and MM media, we will employ the `t.test()` function. Growth rate distributions are also plotted using the `geom_boxplot()` function, from the `ggplot2` package.
 
 ```{r staistical_analysis, exercise=TRUE, exercise.setup = "plotting_growth_rates_setup"}
 growth_rates %>%
