@@ -319,8 +319,8 @@ filter(blank == FALSE)
 ```
 
 ```{r plotting_growth_curves4-solution}
-growth_data_trim <- growth_data_full %>%
-  filter(Time != min(Time))
+growth_data_trim <- growth_data_full #%>%
+  # filter(Time != min(Time))
 
 growth_data_trim %>%
   filter(blank == FALSE) %>%
@@ -401,8 +401,8 @@ calc_growthrates_EDU <- function(dataframe) {
   return(output)
 }
 
-growth_data_trim <- growth_data_full %>%
-  filter(Time != min(Time))
+growth_data_trim <- growth_data_full #%>%
+  # filter(Time != min(Time))
 ```
 
 ```{r test_growth_rates, exercise=TRUE, exercise.setup = "calculating_rates_setup"}
@@ -604,8 +604,8 @@ calc_blank_EDU <- function(dataframe, Media) {
 }
 
 growth_data <- raw_growth_data %>%
-  pivot_longer(-c(Time, Temp), names_to = 'well', values_to = 'OD600') %>%
-  filter(Time != min(Time))
+  pivot_longer(-c(Time, Temp), names_to = 'well', values_to = 'OD600') #%>%
+  # filter(Time != min(Time))
 
 growth_data_info <- right_join(growth_data, well_data, by = 'well') %>%
   filter(!is.na(student), !is.na(Time))
@@ -645,8 +645,8 @@ calc_growthrates_EDU <- function(dataframe) {
   return(output)
 }
 
-growth_data_trim <- growth_data_full %>%
-  filter(Time != min(Time))
+growth_data_trim <- growth_data_full #%>%
+  # filter(Time != min(Time))
 
 growth_rates <- calc_growthrates_EDU(growth_data_trim)
 ```
