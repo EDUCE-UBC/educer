@@ -581,17 +581,7 @@ RStudio enables debugging via:
 - `traceback()`
 - Flagging problematic lines of code
 
-After an error is thrown, RStudio will print the error message in the console and provide you with the option of running the `traceback()` function to identify the source of the error. To give you an idea of what the output looks like, `traceback()` is used as an error handler in the code below, meaning it will automatically run when an error is encountered.
-
-```{r traceback, exercise = TRUE, error = TRUE}
-options(error = traceback)
-
-x <- c(1, 2, "three", 4)
-y <- c(5, 6, 7, 8)
-z <- mean(x)
-w <- mean(y)
-sum(c(z, w))
-```
+After an error is thrown, RStudio will print the error message in the console and provide you with the option of running the `traceback()` function to identify the source of the error. 
 
 RStudio also flags problematic lines of code. It's a red dot that appears to the left of your code for lines where something isn't "quite right". Hovering over the red dot provides you with some additional information, but it typically appears when you make a syntax error like forgetting a closing bracket.
 
@@ -602,5 +592,30 @@ You, of course, can also take steps to troubleshoot. Two best practices are:
 
 ### Working with New Packages
 
+While `?function_name` is helpful when you know which function you want to use, vignettes are what you need when you don't know where to start. Vignettes are detailed summaries of packages. They go over common workflows and functions, and explain the background and theory behind their implementation. You can search for vignettes with `browseVignettes("package_name")`; an example is provided below:
 
+```{r vignette}
+browseVignettes("tidyverse")
+```
+
+Running this code will take you to a page listing all of the vignettes available for that package.
+
+### Asking for Help
+
+When sending your code to someone else for review, it is important to also include:
+
+- Any files you're loading in your script
+- R session info
+
+Without the files, the person reviewing your code won't be able to run your script. Additionally, the function `sessionInfo()` will generate a report on your operating system, R version, and loaded packages, which helps with troubleshooting.
+
+```{r session}
+sessionInfo()
+```
+
+If you know roughly where your error is occurring, you can generate a "reprex" report. Reprex stands for "reproducible example", and outputs your code and errors in a way that someone else is able to reproduce your results. Using the `reprex` package, simply run `reprex()` in the console to generate your report. For best results:
+
+- Make sure to create all of the relevant variables
+- Load required packages using `library()`
+- Include only the parts of the code related to the error, not the entire script
 
