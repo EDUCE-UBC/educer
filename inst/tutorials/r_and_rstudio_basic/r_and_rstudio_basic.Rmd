@@ -441,7 +441,7 @@ grades <- data.frame(
 )
 ```
 
-```{r df2, exercise=TRUE}
+```{r df2, exercise=TRUE, exercise.setup="df"}
 grades
 ```
 
@@ -535,7 +535,7 @@ library(tidyverse)
 
 The package `janitor` is used for cleaning up your data. Run the code below to load it:
 
-```{r ade4, exercise=TRUE, error=TRUE}
+```{r janitor, exercise=TRUE, error=TRUE}
 library(janitor)
 ```
 
@@ -569,4 +569,38 @@ quiz(
     answer("The arguments given to `get_dupes()` are invalid"))
 )
 ```
+
+## Stuck? A Short Guide to Troubleshooting and Getting Help
+
+If you've been coding for more than an hour, you've definitely had to troubleshoot your code. However, errors can be cryptic, using a new package can be confounding, and, despite your best efforts, you may still end up needing help from someone else. In this section, you'll find a brief, non-exhaustive guide to troubleshooting.
+
+### Tackling Errors
+
+RStudio enables debugging via:
+
+- `traceback()`
+- Flagging problematic lines of code
+
+After an error is thrown, RStudio will print the error message in the console and provide you with the option of running the `traceback()` function to identify the source of the error. To give you an idea of what the output looks like, `traceback()` is used as an error handler in the code below, meaning it will automatically run when an error is encountered.
+
+```{r traceback, exercise = TRUE, error = TRUE}
+options(error = traceback)
+
+x <- c(1, 2, "three", 4)
+y <- c(5, 6, 7, 8)
+z <- mean(x)
+w <- mean(y)
+sum(c(z, w))
+```
+
+RStudio also flags problematic lines of code. It's a red dot that appears to the left of your code for lines where something isn't "quite right". Hovering over the red dot provides you with some additional information, but it typically appears when you make a syntax error like forgetting a closing bracket.
+
+You, of course, can also take steps to troubleshoot. Two best practices are:
+
+- Printing out intermediates: If you're running one big function you wrote or stringing together several steps in a row, try running each piece one at a time and printing the output to see where the error is occurring. 
+- Googling the error: Unless you're doing groundbreaking computer science, someone has encountered your error before. Google the error message verbatim and visit forums like Stack Exchange to get crowdsourced troubleshooting tips.
+
+### Working with New Packages
+
+
 
