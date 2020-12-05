@@ -15,7 +15,8 @@ anoxic fjord on the coast of Vancouver Island British Columbia.
 }
 \section{Tutorials}{
  Get a list of available tutorials with
-  \code{\link{list_tutorials}()} and then run them with
+  \code{\link{list_tutorials}()} and then run them from the Tutorial tab of
+  the right top pane (in default layout) or using the command
   \code{\link{start_tutorial}(name)}.
 }
 
