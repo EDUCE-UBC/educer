@@ -21,6 +21,7 @@ setup_resources()
 # Tutorial specific setup
 library(dplyr)
 library(readr)
+library(tidyverse)
 total <- 4
 ```
 
@@ -581,26 +582,31 @@ RStudio enables debugging via:
 - `traceback()`
 - Flagging problematic lines of code
 
-After an error is thrown, RStudio will print the error message in the console and provide you with the option of running the `traceback()` function to identify the source of the error. 
+After an error is thrown, RStudio will print the error message in the console and provide you with the option of running the `traceback()` function to identify the source of the error. You can run `traceback()` from the console after an error is raised, or you can set it as an error handler, which means it is called automatically. The latter option is demonstrated below. Just a heads up, the output is often quite cryptic so it's up to you to decide if it's helpful. 
+
+```{r traceback-setup}
+f <- function(x) x + 1 #a function that adds 1 to the input
+g <- function(x) f(x) #a function that calls f on its input
+```
+
+```{r traceback, exercise = TRUE, exercise.setup=traceback-setup}
+options(error = traceback)
+g("a")
+```
 
 RStudio also flags problematic lines of code. It's a red dot that appears to the left of your code for lines where something isn't "quite right". Hovering over the red dot provides you with some additional information, but it typically appears when you make a syntax error like forgetting a closing bracket.
 
-You, of course, can also take steps to troubleshoot. Two best practices are:
-
-- Printing out intermediates: If you're running one big function you wrote or stringing together several steps in a row, try running each piece one at a time and printing the output to see where the error is occurring. 
-- Googling the error: Unless you're doing groundbreaking computer science, someone has encountered your error before. Google the error message verbatim and visit forums like Stack Exchange to get crowdsourced troubleshooting tips.
-
 ### Working with New Packages
 
-While `?function_name` is helpful when you know which function you want to use, vignettes are what you need when you don't know where to start. Vignettes are detailed summaries of packages. They go over common workflows and functions, and explain the background and theory behind their implementation. You can search for vignettes with `browseVignettes("package_name")`; an example is provided below:
-
-```{r vignette}
-browseVignettes("tidyverse")
-```
-
-Running this code will take you to a page listing all of the vignettes available for that package.
+While `?function_name` is helpful when you know which function you want to use, vignettes are what you need when you don't know where to start. Vignettes are detailed summaries of packages. They go over common workflows and functions, and explain the background and theory behind their implementation. You can search for vignettes with `browseVignettes("package_name")`. For example, running `browseVignettes("tidyverse")` will open a browser page listing all of the vignettes available for the `tidyverse` package. 
 
 ### Asking for Help
+
+Before proceeding with this section, make sure you have exhausted all avenues for troubleshooting on your own. Some reliable sources are:
+
+- Stack Exchange: A forum of crowdsourced answers to common problems
+- The Comprehensive R Archive Network (CRAN)/Bioconductor: Repositories for the vast majority of R packages. All vignettes can be found here as well. 
+- RStudio Community: Another forum, but it's specific to R and RStudio.
 
 When sending your code to someone else for review, it is important to also include:
 
@@ -609,7 +615,7 @@ When sending your code to someone else for review, it is important to also inclu
 
 Without the files, the person reviewing your code won't be able to run your script. Additionally, the function `sessionInfo()` will generate a report on your operating system, R version, and loaded packages, which helps with troubleshooting.
 
-```{r session}
+```{r session, exercise = TRUE}
 sessionInfo()
 ```
 
