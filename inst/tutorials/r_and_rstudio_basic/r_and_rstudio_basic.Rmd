@@ -71,7 +71,7 @@ R Packages:
 - Understand what R packages are and how they are used
 - Install and load packages
 
-## A Tour of RStudio
+## A Tour of RStudio {#object}
 
 When you start RStudio, you will see something like the following window appear:
 
@@ -88,7 +88,7 @@ Notice that the window has three "panes":
 To change the look of RStudio, you can go to Tools &rarr; Global Options &rarr; Appearance and select colours, font size, etc. If you plan on working for longer periods of time, we suggest choosing a dark background colour which is less hard on your computer battery and your eyes.
 You can also change the sizes of the panes by dragging the dividers or clicking on the expand and compress icons at the top right corner of each pane.
 
-### Check Your Understanding {#object}
+### Check Your Understanding
 
 The command below is used to display the object `dog`. However, when running it, you get an error.
 
@@ -231,9 +231,9 @@ quiz(
 )
 ```
 
-## Functions in R
+## Functions in R {#functions}
 
-### Overview {#invalid-type}
+### Overview 
 
 Functions are one of the basic units in programming. Generally speaking, a function takes some input and generates some output, in a reproducible way. Every R function follows the same basic syntax, where `function()` is the name of the function and `arguments` are the different parameters you can specify (i.e. your input):
 
@@ -261,7 +261,7 @@ On the other hand, the function `paste()`, which links together words, does acce
 paste("Hello", "world", sep = " ")
 ```
 
-### Data Types in R {#types}
+### Data Types in R
 
 You've seen that `paste()` operates on text while `sum()` does not. In other words, different functions accept different data types. In this section, we'll cover three basic data types: numeric, character, and logical. The function `class()` tells you what the variable's type is.
 
@@ -497,11 +497,11 @@ y <- c(5, 12, 64, 1, NA)
 mean(y, na.rm=TRUE)
 ```
 
-## R packages
+## R packages {#package}
 
 The first functions we will look at are used to install and load R packages. R packages are units of shareable code, containing functions that facilitate and enhance analyses. In simpler terms, think of R packages as iPhone Applications. Each App has specific capabilities that can be accessed when we install and then open the application. The same holds true for R packages. To use the functions contained in a specific R package, we first need to install the package, then each time we want to use the package we need to "open" the package by loading it.
 
-### Installing Packages {#dependency}
+### Installing Packages
 
 In this tutorial, we will be using the "tidyverse" package. This package contains a versatile set of functions designed for easy manipulation of data.
 
@@ -521,7 +521,7 @@ The key part to focus on here is the line, "also installing the dependencies....
 
 This tells you that, for whatever reason, these dependencies were not installed properly and therefore your package either can't be installed or run. The best way to resolve this issue is to install these dependencies using separate `install.packages()` commands.
 
-### Loading packages {#no-package}
+### Loading packages
 
 After installing a package, and *everytime* you open a new RStudio session, you need to first load (open) the packages you want to use with the `library()` function. This tells R to access the package's functions and prevents RStudio from lags that would occur if it automatically loaded every downloaded package every time you opened it.
 
@@ -551,7 +551,7 @@ You can then use the function `BiocManager::install()` to install a Bioconductor
 `BiocManager::install("annotate")`
 Sometimes two packages include functions with the same name. A common example is that a `select()` function is included both in the `dplyr` and `MASS` packages. Therefore, to specify the use of a function from a particular package, you can precede the function with a the following notation: `package::function()`. 
 
-### Check Your Understanding {#no-function}
+### Check Your Understanding
 
 After installing the `janitor` package, you want to use the function `get_dupes()` to see if there are any duplicates in your data. 
 
@@ -598,11 +598,11 @@ Before proceeding with this section, make sure you have exhausted all avenues fo
 Additionally, here is a compilation of the common errors we addressed in this tutorial:
 
 - [Object not found](#object)
-- [Invalid 'type' of argument](#invalid-type)
-- [Missing quotations and equal signs](#types)
-- [Missing dependencies](#dependency)
-- [Package not found](#no-package)
-- [Function not found](#no-function)
+- [Invalid 'type' of argument](#functions)
+- [Missing quotations and equal signs](#functions)
+- [Missing dependencies](#package)
+- [Package not found](#package)
+- [Function not found](#package)
 
 When sending your code to someone else for review, it is important to also include:
 
