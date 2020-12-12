@@ -88,7 +88,7 @@ Notice that the window has three "panes":
 To change the look of RStudio, you can go to Tools &rarr; Global Options &rarr; Appearance and select colours, font size, etc. If you plan on working for longer periods of time, we suggest choosing a dark background colour which is less hard on your computer battery and your eyes.
 You can also change the sizes of the panes by dragging the dividers or clicking on the expand and compress icons at the top right corner of each pane.
 
-### Check Your Understanding
+### Check Your Understanding {#object}
 
 The command below is used to display the object `dog`. However, when running it, you get an error.
 
@@ -233,7 +233,7 @@ quiz(
 
 ## Functions in R
 
-### Overview
+### Overview {#invalid-type}
 
 Functions are one of the basic units in programming. Generally speaking, a function takes some input and generates some output, in a reproducible way. Every R function follows the same basic syntax, where `function()` is the name of the function and `arguments` are the different parameters you can specify (i.e. your input):
 
@@ -261,7 +261,7 @@ On the other hand, the function `paste()`, which links together words, does acce
 paste("Hello", "world", sep = " ")
 ```
 
-### Data Types in R
+### Data Types in R {#types}
 
 You've seen that `paste()` operates on text while `sum()` does not. In other words, different functions accept different data types. In this section, we'll cover three basic data types: numeric, character, and logical. The function `class()` tells you what the variable's type is.
 
@@ -293,16 +293,6 @@ a
 
 The last data type we'll cover is logical, which takes on the values of `TRUE` or `FALSE`. In addition to being function arguments, they are also the outputs of logical statements. Logical statements use logical operators to compare two elements. You've likely seen some of the logical operators before, but here is a list of the basic ones:
 
-[Place image here]
-
-Run the code below. Is it what you expected? Based on the table above, what's missing?
-```{r equal, exercise=TRUE, error=TRUE}
-5 = 7
-```
-
-In R, to test if two elements are equal, you have to use two equal signs. When you use only one, R assumes you're trying to assign a value to a variable. We can't assign 7 to 5, so an error gets thrown. 
-
-Here are some more logical statements in action:
 ```{r logical, exercise=TRUE}
 0 < 1 # smaller than
 0 >= 0 # larger-or-equal to
@@ -310,6 +300,13 @@ Here are some more logical statements in action:
 "cat" == "dog" # you can also use this symbol to compare text
 5 != pi # not equal to
 ```
+
+Run the code below. Is it what you expected? Based on the code above, what's missing?
+```{r equal, exercise=TRUE, error=TRUE}
+5 = 7
+```
+
+In R, to test if two elements are equal, you have to use two equal signs. When you use only one, R assumes you're trying to assign a value to a variable. We can't assign 7 to 5, so an error gets thrown. 
 
 Below, write two logical statements using the template, one evaluating to `TRUE` and the other to `FALSE`.
 
@@ -504,7 +501,7 @@ mean(y, na.rm=TRUE)
 
 The first functions we will look at are used to install and load R packages. R packages are units of shareable code, containing functions that facilitate and enhance analyses. In simpler terms, think of R packages as iPhone Applications. Each App has specific capabilities that can be accessed when we install and then open the application. The same holds true for R packages. To use the functions contained in a specific R package, we first need to install the package, then each time we want to use the package we need to "open" the package by loading it.
 
-### Installing Packages
+### Installing Packages {#dependency}
 
 In this tutorial, we will be using the "tidyverse" package. This package contains a versatile set of functions designed for easy manipulation of data.
 
@@ -524,7 +521,7 @@ The key part to focus on here is the line, "also installing the dependencies....
 
 This tells you that, for whatever reason, these dependencies were not installed properly and therefore your package either can't be installed or run. The best way to resolve this issue is to install these dependencies using separate `install.packages()` commands.
 
-### Loading packages
+### Loading packages {#no-package}
 
 After installing a package, and *everytime* you open a new RStudio session, you need to first load (open) the packages you want to use with the `library()` function. This tells R to access the package's functions and prevents RStudio from lags that would occur if it automatically loaded every downloaded package every time you opened it.
 
@@ -554,7 +551,7 @@ You can then use the function `BiocManager::install()` to install a Bioconductor
 `BiocManager::install("annotate")`
 Sometimes two packages include functions with the same name. A common example is that a `select()` function is included both in the `dplyr` and `MASS` packages. Therefore, to specify the use of a function from a particular package, you can precede the function with a the following notation: `package::function()`. 
 
-### Check Your Understanding
+### Check Your Understanding {#no-function}
 
 After installing the `janitor` package, you want to use the function `get_dupes()` to see if there are any duplicates in your data. 
 
@@ -571,7 +568,7 @@ quiz(
 )
 ```
 
-## Stuck? A Short Guide to Troubleshooting and Getting Help
+## Troubleshooting
 
 If you've been coding for more than an hour, you've definitely had to troubleshoot your code. However, errors can be cryptic, using a new package can be confounding, and, despite your best efforts, you may still end up needing help from someone else. In this section, you'll find a brief, non-exhaustive guide to troubleshooting.
 
@@ -582,17 +579,7 @@ RStudio enables debugging via:
 - `traceback()`
 - Flagging problematic lines of code
 
-After an error is thrown, RStudio will print the error message in the console and provide you with the option of running the `traceback()` function to identify the source of the error. You can run `traceback()` from the console after an error is raised, or you can set it as an error handler, which means it is called automatically. The latter option is demonstrated below. Just a heads up, the output is often quite cryptic so it's up to you to decide if it's helpful. 
-
-```{r traceback-setup}
-f <- function(x) x + 1 #a function that adds 1 to the input
-g <- function(x) f(x) #a function that calls f on its input
-```
-
-```{r traceback, exercise = TRUE, exercise.setup=traceback-setup}
-options(error = traceback)
-g("a")
-```
+After an error is thrown, RStudio will print the error message in the console and provide you with the option of running the `traceback()` function to identify the source of the error. You can run `traceback()` from the console after an error is raised. Just a heads up, the output is often quite cryptic so it's up to you to decide if it's helpful. 
 
 RStudio also flags problematic lines of code. It's a red dot that appears to the left of your code for lines where something isn't "quite right". Hovering over the red dot provides you with some additional information, but it typically appears when you make a syntax error like forgetting a closing bracket.
 
@@ -602,11 +589,20 @@ While `?function_name` is helpful when you know which function you want to use, 
 
 ### Asking for Help
 
-Before proceeding with this section, make sure you have exhausted all avenues for troubleshooting on your own. Some reliable sources are:
+Before proceeding with this section, make sure you have exhausted all avenues for troubleshooting on your own. The best way to learn how to resolve an error is to google it verbatim. Some reliable sources are:
 
 - Stack Exchange: A forum of crowdsourced answers to common problems
 - The Comprehensive R Archive Network (CRAN)/Bioconductor: Repositories for the vast majority of R packages. All vignettes can be found here as well. 
 - RStudio Community: Another forum, but it's specific to R and RStudio.
+
+Additionally, here is a compilation of the common errors we addressed in this tutorial:
+
+- [Object not found](#object)
+- [Invalid 'type' of argument](#invalid-type)
+- [Missing quotations and equal signs](#types)
+- [Missing dependencies](#dependency)
+- [Package not found](#no-package)
+- [Function not found](#no-function)
 
 When sending your code to someone else for review, it is important to also include:
 
