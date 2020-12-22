@@ -1,0 +1,81 @@
+---
+title: "Statistical models in R"
+author: >
+  Gil J. B. Henriques<br>
+  Based on notes by Yue Liu and Kim Dill-McFarland.<br>
+  A tutorial by [ECOSCOPE](http://ecoscope.ubc.ca/) at UBC.
+date: "version `r format(Sys.time(), '%B %d, %Y')`"
+description:  >
+  Learn to perform statistical analyses with complex data sets.
+  You will learn about linear regression, ANOVA, ANCOVA, 
+  mixed effects models, and generalized linear models.
+output: 
+  learnr::tutorial:
+      progressive: true
+      allow_skip: true
+runtime: shiny_prerendered
+---
+
+```{r setup, include = FALSE}
+# General learnr setup
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+library(educer)
+# Helper function to set path to images to "/images" etc.
+setup_resources()
+
+# Tutorial specific setup
+library(tidyverse)
+```
+
+## Introduction
+
+In this workshop, we introduce various types of regression models and how they are implemented in R. We cover linear regression, ANOVA, ANCOVA, and mixed effects models for continuous response data, logistic regression binary response data, as well as Poisson and Negative Binomial regression for count response data.
+
+You will learn:
+
+-   The different functions used to build a statistical model in R,
+-   The assumptions behind the different models,
+-   How the formula object in R is used to specify all the model terms,
+-   How to interpret the main effects and interaction terms in a model.
+
+This is an intermediate workshop series that assumes some prior experience with base R (see our "Introduction to R and RStudio" tutorial) and with the tidyverse package collection (see our "Introduction to the R tidyverse" tutorial).
+
+```{r child = system.file("resources/markdown", "how_to_follow_tutorials.Rmd", package = "educer")}
+```
+
+### Data description
+
+Unlike our other tutorials, "Statistical Models" utilizes several datasets in order to accurately demonstrate the use of statistical tests. These datasets are built into base R or into R packages. You will find more information on each of these datasets in its relevant section(s) in this tutorial.
+ 
+### Loading packages
+
+The [tidyverse](https://www.tidyverse.org/) is a collection of R packages. Packages expand R's capabilities by providing additional functions. In this tutorial we will use many functions from tidyverse packages such as dplyr (for data manipulation; pronounced *dee-plier*) and ggplot2 (for data visualization). You can learn more about the tidyverse in our "Introduction to the R tidyverse" tutorial.
+
+When you work in a script that makes heavy use of functions from a particular package, we recommend loading it at the top of your script. You can use the code below to load all of the tidyverse packages:
+
+```{r echo = TRUE, message = FALSE}
+library(tidyverse)
+```
+
+In this tutorial, we will also occasionally use functions from the following packages: gapminder, datasets, lme4, car, lsmeans, HSAUR. Because we will only make light use of each of these packages, there is no need to load all of the packages up-front at the top of our script. Instead of loading the entire package, we will access only the specific functions we need using the double colon operator, `::`. You will learn more about this operator later in the tutorial.
+
+Keep in mind that to use packages in a script, these packages *must already be installed* on your computer (see the "Introduction to R and RStudio" tutorial for more details about installing packages and working with scripts).
+
+### What is a statistical model?
+
+When addressing a scientific problem, a researcher often collects a *sample* (which consists of several *observations*, or measurements). These observations are ideally drawn at random from some larger *population*. While the researcher wants to make statements about the properties of the population (i.e., the population's *parameters*, such as the population mean), they only have information about the properties of the sample (which we call *estimates*). In order to make *inferences* about the population, the researcher must resort to a statistical model.
+
+A statistical model can be thought of as the set of assumptions we make about how our data were generated. Common assumptions (which are often considerably idealized) include:
+
+-   Observations in the sample are independent from each other,
+-   Observations are drawn from a normally distributed population,
+-   The number of observations in each treatment group is approximately equal.
+
+Different models make different assumptions. Given a set of assumptions (i.e., a model) we can formally determine what we would expect to observe in our sample. As such, a statistical model is "a formal representation of a theory" (according to sociologist Kenneth Bollen).
+
+In the rest of this tutorial, we will learn about a number of commonly employed statistical models. They all employ a family of techniques called *regression analysis*, where we estimate the relationship between an *independent variable* (also called a *predictor*) and a *dependent variable* (also called a *response* or *outcome*). We will start with a common type of regression used to analyse the differences among group means in a sample.
+
+## Analysis of variance (ANOVA)
+
+a
