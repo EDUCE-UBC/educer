@@ -2,6 +2,7 @@
 # educer
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/EDUCE-UBC/educer/workflows/R-CMD-check/badge.svg)](https://github.com/EDUCE-UBC/educer/actions)
 <!-- badges: end -->
 
 Please visit the EDUCE homepage for [install instructions of R and RStudio](https://educe-ubc.github.io/r_and_rstudio.html).
@@ -48,5 +49,9 @@ setup_resources()
 ```
 
 - To add an image in tutorial.Rmd, you can now give the path to an `image.ext` in `inst/resources/images/` like so (you MUST include the first `/`):
+
+```
 ![](/images/image.ext)
+```
+
 - You can learn more about the helper function `setup_resources` with `?setup_resources` and add other paths to resources (css is already established).
