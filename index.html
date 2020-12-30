@@ -66,7 +66,7 @@
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#educer" class="anchor"></a>educer</h1></div>
 <!-- badges: start -->
-<!-- badges: end -->
+
 <p>Please visit the EDUCE homepage for <a href="https://educe-ubc.github.io/r_and_rstudio.html">install instructions of R and RStudio</a>.</p>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
@@ -100,8 +100,10 @@
 <pre><code><a href="https://rdrr.io/r/base/library.html">library(educer)
 setup_resources()</a></code></pre>
 <ul>
-<li>To add an image in tutorial.Rmd, you can now give the path to an <code>image.ext</code> in <code>inst/resources/images/</code> like so (you MUST include the first <code><a href="https://rdrr.io/r/base/Arithmetic.html">/</a></code>): <img src="/images/image.ext">
-</li>
+<li>To add an image in tutorial.Rmd, you can now give the path to an <code>image.ext</code> in <code>inst/resources/images/</code> like so (you MUST include the first <code><a href="https://rdrr.io/r/base/Arithmetic.html">/</a></code>):</li>
+</ul>
+<pre><code>![](/images/image.ext)</code></pre>
+<ul>
 <li>You can learn more about the helper function <code>setup_resources</code> with <code><a href="reference/setup_resources.html">?setup_resources</a></code> and add other paths to resources (css is already established).</li>
 </ul>
 </div>
@@ -124,7 +126,13 @@ setup_resources()</a></code></pre>
 </ul>
 </div>
 
-  </div>
+  <div class="dev-status">
+<h2>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/EDUCE-UBC/educer/actions"><img src="https://github.com/EDUCE-UBC/educer/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
+</ul>
+</div>
+</div>
 </div>
 
 
