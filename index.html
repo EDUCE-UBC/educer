@@ -67,45 +67,26 @@
 <a href="#educer" class="anchor"></a>educer</h1></div>
 <!-- badges: start -->
 
+<!-- badges: end -->
 <p>Please visit the EDUCE homepage for <a href="https://educe-ubc.github.io/r_and_rstudio.html">install instructions of R and RStudio</a>.</p>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p>You can install the released version of educer from GitHub with:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va">devtools</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"EDUCE-UBC/educer"</span><span class="op">)</span></code></pre></div>
+<pre><code>if (!require(devtools)) install.packages("devtools")
+devtools::install_github("EDUCE-UBC/educer")</code></pre>
 <p>See the EDUCE homepage for more detailed <a href="https://educe-ubc.github.io/educer.html">install instructions</a>.</p>
 </div>
 <div id="loading-and-getting-help-on-the-educer-package" class="section level2">
 <h2 class="hasAnchor">
 <a href="#loading-and-getting-help-on-the-educer-package" class="anchor"></a>Loading and getting help on the educer package</h2>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">educer</span><span class="op">)</span>
-<span class="op">?</span><span class="va">educer</span></code></pre></div>
+<pre><code><a href="https://rdrr.io/r/base/library.html">library(educer)
+?educer</a></code></pre>
 </div>
 <div id="using-the-interactive-tutorials" class="section level2">
 <h2 class="hasAnchor">
 <a href="#using-the-interactive-tutorials" class="anchor"></a>Using the interactive tutorials</h2>
 <p>Please the the EDUCE homepage for information on how to <a href="https://educe-ubc.github.io/tutorials.html">start the tutorials</a>.</p>
-</div>
-<div id="for-developers" class="section level2">
-<h2 class="hasAnchor">
-<a href="#for-developers" class="anchor"></a>For developers</h2>
-<ul>
-<li>Place any images in the <code>inst/resources/images/</code> folder</li>
-<li>If it does not exist yet, create an r setup code chunk in the tutorial.Rmd file right after the yaml header</li>
-<li>Add the following line of code to the r setup code chunk:</li>
-</ul>
-<pre><code><a href="https://rdrr.io/r/base/library.html">library(educer)
-setup_resources()</a></code></pre>
-<ul>
-<li>To add an image in tutorial.Rmd, you can now give the path to an <code>image.ext</code> in <code>inst/resources/images/</code> like so (you MUST include the first <code><a href="https://rdrr.io/r/base/Arithmetic.html">/</a></code>):</li>
-</ul>
-<pre><code>![](/images/image.ext)</code></pre>
-<ul>
-<li>You can learn more about the helper function <code>setup_resources</code> with <code><a href="reference/setup_resources.html">?setup_resources</a></code> and add other paths to resources (css is already established).</li>
-</ul>
 </div>
 </div>
   </div>
@@ -117,6 +98,12 @@ setup_resources()</a></code></pre>
 <li>
 <a href="https://www.r-project.org/Licenses/GPL-3">GPL-3</a> + file <a href="LICENSE-text.html">LICENSE</a>
 </li>
+</ul>
+</div>
+<div class="community">
+<h2>Community</h2>
+<ul class="list-unstyled">
+<li><a href="CONTRIBUTING.html">Contributing guide</a></li>
 </ul>
 </div>
 <div class="developers">
