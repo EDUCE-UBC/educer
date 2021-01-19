@@ -30,7 +30,7 @@ library(tidyverse)
 
 ## Introduction
 
-In this workshop, we introduce various types of regression models and how they are implemented in R. We cover linear regression, ANOVA, ANCOVA, and mixed effects models for continuous response data, logistic regression binary response data, as well as Poisson and Negative Binomial regression for count response data.
+In this tutorial, we introduce various types of regression models and how they are implemented in R. We cover linear regression, ANOVA, ANCOVA, and mixed effects models for continuous response data, logistic regression binary response data, as well as Poisson and Negative Binomial regression for count response data.
 
 You will learn:
 
@@ -39,7 +39,7 @@ You will learn:
 -   How the formula object in R is used to specify all the model terms,
 -   How to interpret the main effects and interaction terms in a model.
 
-This is an intermediate workshop series that assumes some prior experience with base R (see our "Introduction to R and RStudio" tutorial) and with the tidyverse package collection (see our "Introduction to the R tidyverse" tutorial).
+This is an intermediate tutorial that assumes some prior experience with base R (see our "Introduction to R and RStudio" tutorial) and with the tidyverse package collection (see our "Introduction to the R tidyverse" tutorial).
 
 ```{r child = system.file("resources/markdown", "how_to_follow_tutorials.Rmd", package = "educer")}
 ```
@@ -60,22 +60,105 @@ library(tidyverse)
 
 In this tutorial, we will also occasionally use functions from the following packages: gapminder, datasets, lme4, car, lsmeans, HSAUR. Because we will only make light use of each of these packages, there is no need to load all of the packages up-front at the top of our script. Instead of loading the entire package, we will access only the specific functions we need using the double colon operator, `::`. You will learn more about this operator later in the tutorial.
 
-Keep in mind that to use packages in a script, these packages *must already be installed* on your computer (see the "Introduction to R and RStudio" tutorial for more details about installing packages and working with scripts).
+Keep in mind that to use packages in a script, these packages *must already be installed* on your computer (see the "Introduction to R and RStudio" tutorial for more details about installing packages and working with scripts). By installing the educer package, all of the packages we will use in this tutorial were automatically installed as well.
 
 ### What is a statistical model?
 
-When addressing a scientific problem, a researcher often collects a *sample* (which consists of several *observations*, or measurements). These observations are ideally drawn at random from some larger *population*. While the researcher wants to make statements about the properties of the population (i.e., the population's *parameters*, such as the population mean), they only have information about the properties of the sample (which we call *estimates*). In order to make *inferences* about the population, the researcher must resort to a statistical model.
+Scientists typically have questions about a *population* of interest. To address those questions, they often collect a *sample* (which consists of several *observations*, or measurements). These observations are ideally drawn at random from the larger population. While the researcher wants to make statements about the properties of the population (i.e., the population's *parameters*, such as the population mean), they only have information about the properties of the sample (which we call *estimates*). In order to make *inferences* about the population, the researcher must resort to a statistical model.
 
-A statistical model can be thought of as the set of assumptions we make about how our data were generated. Common assumptions (which are often considerably idealized) include:
+A statistical model can be thought of as the set of assumptions we make about how our data were generated, as well as the mathematical consequences of those assumptions. Common assumptions (which are often considerably idealized) include:
 
 -   Observations in the sample are independent from each other,
 -   Observations are drawn from a normally distributed population,
 -   The number of observations in each treatment group is approximately equal.
 
-Different models make different assumptions. Given a set of assumptions (i.e., a model) we can formally determine what we would expect to observe in our sample. As such, a statistical model is "a formal representation of a theory" (according to sociologist Kenneth Bollen).
+Different models make different assumptions. Given a set of assumptions (i.e., a model) we can make formal inferences about a population from a sample. As such, a statistical model is "a formal representation of a theory" (according to sociologist Kenneth Bollen).
 
-In the rest of this tutorial, we will learn about a number of commonly employed statistical models. They all employ a family of techniques called *regression analysis*, where we estimate the relationship between an *independent variable* (also called a *predictor*) and a *dependent variable* (also called a *response* or *outcome*). We will start with a common type of regression used to analyse the differences among group means in a sample.
+In the rest of this tutorial, we will learn about a number of common statistical models. They all employ a family of techniques called *regression analysis*, where we estimate the relationship between an *independent variable* (also called a *predictor*) and a *dependent variable* (also called a *response* or *outcome*). We will start with a common type of regression used to analyse the differences among group means in a sample.
 
 ## Analysis of variance (ANOVA)
 
-a
+ANOVA is used when you have data with:
+
+-   a quantitative response/dependent variable ($Y$) such as:
+  -   height
+  -   salary
+  -   number of offspring
+-   one or more categorical explanatory/independent variable(s) ($X$) such as:
+  -   eye color
+  -   sex
+  -   genotype at a given locus
+
+For example, you would use ANOVA to address questions like:
+
+-   Does diet has an effect on weight gain?
+  -   response variable: weight gain (e.g. kg)
+  -   explanatory variable: type of diet (e.g. low vs. medium vs. high sugar)
+-   Does the type sexual relationship practiced influence the fitness of male Red-winged Blackbirds?
+  -   response variable: fitness of male bird (e.g. number of eggs laid)
+  -   explanatory variable: sexual relationship (e.g. monagamy vs. polygamy)
+
+### Key assumptions
+
+-   Observations in the sample are independent from each other.
+-   ANOVA is robust to the non-normality of sample data
+-   Homoscedasticity — the variance of data in groups should be the same. However, if the ANOVA is balanced (groups have equal sample size) the model is robust to unequal variance.
+
+### The gist of the math
+
+When we run an ANOVA, we calculate a test statistic (*F*-statistic) that compares the **between** group variation with the **within** group variation:
+
+$$F=MSB/MSW$$
+where $MSB =$ Mean Square Between (i.e. the mean squared distance from each observation to the sample mean) and $MSW =$ Mean Square Within (i.e. the mean squared distance from each observation to the group mean).
+
+Essentially, if there is greater variation between the groups than within the groups we will get a large test statistic value (and correspondingly, a small *p*-value) and reject that null hypothesis ($H_0$: population means of all groups are equal).
+
+If you want to delve into ANOVA in more depth, check out [this video tutorial](https://www.khanacademy.org/math/statistics-probability/analysis-of-variance-anova-library).
+
+### One-way ANOVA with two groups
+
+Now let’s run some ANOVAs on real data! We will start simple, by comparing the mean of two-groups. We will focus first on the case of a single explanatory variable (which is called the *one-way* ANOVA).
+
+There are two perfectly acceptable statistical tests in R that we could apply to compare data between two groups. The first, which you may be very familiar with, is the *t*-test. The second is the ANOVA. Interestingly, the *t*-test is really a special case of ANOVA that can be used when only comparing only two groups. ANOVA is a more general test that we will later see can be used with more than two groups as well as more than one explanatory variable. 
+
+#### Load and explore the data
+
+The first experiment we are going to analyze was done to address the question of whether sexual activity effects the longevity of male fruit flies. To assess this, we are going to use a modified version of the fruitfly data from the [faraway R package](https://cran.r-project.org/web/packages/faraway/faraway.pdf).
+
+Our hypotheses for this experiment are as follows:
+
+Null hypothesis, $H_0$: Sexual activity has no effect on the population mean longevity of male fruit flies.
+Alternative hypothesis, $H_A$: Sexual activity has an effect on population mean longevity of male fruit flies.
+
+Let's now load the `fruitfly` dataset from the faraway package and assign it to a variable called `df_fly`. We haven't loaded this package, so we have to explicitly write the name of the package in front of the dataset's name (separated by a double colon operator `::`), so that R knows where to find it. Run the code box below to load and inspect the data. You will have to replace the `<placeholder>` by the name of the variable you have created:
+
+```{r load-faraway, exercise = TRUE}
+df_fly <- faraway::fruitfly
+head(<data_frame>)
+```
+
+```{r load-faraway-solution}
+df_fly <- faraway::fruitfly
+head(df_fly)
+```
+
+```{r setup-fly, include = FALSE}
+df_fly <- faraway::fruitfly
+```
+
+The first two columns are continuous variables representing the fruit fly's thorax length and longevity. The final column, `activity`, is a categorical variable that encodes the fly's sexual activity. If the male was kept solitary (`isolated`) or with pregnant females (either `one` or `many`), he was not sexually active. On the other hand, the male may have been kept with virgin females, in which case he was sexually active (`low` = one virgin female; `high` = eight virgin females).
+
+The next step is to create two-level categorical groups from the numerical variables. We will also subset the data set to equal group sizes (by randomly selecting twenty observations from each group) *If you are unfamiliar with the functions below, see our "Introduction to the R tidyverse" tutorial.*
+ 
+```{r fly-2-groups, exercise = TRUE, exercise.setup = "setup-fly"}
+fly_2_groups <- df_fly %>% 
+	# Change "activity" to a 2-level variable
+	mutate(activity = ifelse(activity %in% c("isolated", "one", "many"),
+														"no", "yes")) %>%
+	# Change size to a 2-level variable (for later)
+	mutate(thorax = ifelse(thorax <= 0.8, "short", "long")) %>% 
+	# Subset to equal group sizes
+	group_by(activity, thorax) %>% 
+	sample_n(20)
+``` 
+ 
