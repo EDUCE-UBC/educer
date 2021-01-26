@@ -119,21 +119,34 @@ $(document).ready(function () {
 
 <div id="section-learning-objectives" class="section level2">
 <h2>Learning objectives</h2>
-<p>In this tutorial, you will learn</p>
+<p>Here’s what you’ll learn from each section of this tutorial:</p>
+<p>Loops in R:</p>
 <ul>
-<li><p>Writing functions</p></li>
-<li><p>For and while loops</p></li>
-<li><p>Using multiple conditions (and/or/if/else)</p></li>
-<li><p>Dataframe stuff</p></li>
-<li><p>Selecting, filtering, mutating</p></li>
-<li><p>Operating on data frames and vectors</p></li>
-<li><p>Piping</p></li>
-<li><p>Cleaning data</p></li>
-<li><p>Joining data</p></li>
-<li><p>Factors as a data type</p></li>
-<li><p>Switching between data types</p></li>
-<li><p>Replacing NAs</p></li>
+<li>Explain the mechanisms of for and while loops</li>
+<li>Implement for and while loops</li>
+<li>Recognize and understand how nested loops work</li>
 </ul>
+<p>Conditionals in R:</p>
+<ul>
+<li>Write and evaluate and/or statements</li>
+<li>Identify the components of if/else statements</li>
+<li>Implement conditionals within loops</li>
+</ul>
+<p>Functions in R:</p>
+<ul>
+<li>Write functions that operate on arguments</li>
+<li>Understand the role of helper functions</li>
+<li>Implement helper functions</li>
+</ul>
+<p>Manipulating Data Frames:</p>
+<ul>
+<li>Implement the pipe operator</li>
+<li>Use the <code>select()</code>, <code>filter()</code>, and <code>mutate()</code> functions appropriately</li>
+<li>Operate on individual columns within a data frame</li>
+<li>Change the data type of columns in a data frame</li>
+<li>Replace NAs in a vector or data frame</li>
+</ul>
+<p>Other ideas: Tidying data, joining data frames, loading in data from an external source</p>
 </div>
 <div id="section-review" class="section level2">
 <h2>Review</h2>
@@ -208,7 +221,7 @@ session$onSessionEnded(function() {
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
-learnr:::question_prerendered_chunk(structure(list(type = "learnr_checkbox", label = "using-libraries-1",     question = structure("In no particular order, which actions are required before using functions from a new package?", html = TRUE, class = c("html",     "character")), answers = list(structure(list(id = "lnr_ans_5694f09",         option = "Install the package", value = "Install the package",         label = structure("Install the package", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_5dcb0eb",         option = "Download vignettes", value = "Download vignettes",         label = structure("Download vignettes", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_42a486e",         option = "Load the package", value = "Load the package",         label = structure("Load the package", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_a858876",         option = "Install dependencies", value = "Install dependencies",         label = structure("Install dependencies", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html",     "character")), try_again = structure("Try Again", html = TRUE, class = c("html",     "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html",     "character")), try_again = structure("Incorrect", html = TRUE, class = c("html",     "character")), incorrect = structure("Incorrect", html = TRUE, class = c("html",     "character")), message = NULL, post_message = NULL), ids = list(        answer = "using-libraries-1-answer", question = "using-libraries-1"),     loading = structure("<strong>Loading:<\u002fstrong> \nIn no particular order, which actions are required before using functions from a new package?\n<br/><br/><br/>", html = TRUE, class = c("html",     "character")), random_answer_order = FALSE, allow_retry = FALSE,     seed = 1423186692.83728, options = list()), class = c("learnr_checkbox", "tutorial_question")))
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_checkbox", label = "using-libraries-1",     question = structure("In no particular order, which actions are required before using functions from a new package?", html = TRUE, class = c("html",     "character")), answers = list(structure(list(id = "lnr_ans_86d06a9",         option = "Install the package", value = "Install the package",         label = structure("Install the package", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_4610b7f",         option = "Download vignettes", value = "Download vignettes",         label = structure("Download vignettes", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_162d6b3",         option = "Load the package", value = "Load the package",         label = structure("Load the package", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_1fb40dd",         option = "Install dependencies", value = "Install dependencies",         label = structure("Install dependencies", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html",     "character")), try_again = structure("Try Again", html = TRUE, class = c("html",     "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html",     "character")), try_again = structure("Incorrect", html = TRUE, class = c("html",     "character")), incorrect = structure("Incorrect", html = TRUE, class = c("html",     "character")), message = NULL, post_message = NULL), ids = list(        answer = "using-libraries-1-answer", question = "using-libraries-1"),     loading = structure("<strong>Loading:<\u002fstrong> \nIn no particular order, which actions are required before using functions from a new package?\n<br/><br/><br/>", html = TRUE, class = c("html",     "character")), random_answer_order = FALSE, allow_retry = FALSE,     seed = 1757065519.1818, options = list()), class = c("learnr_checkbox", "tutorial_question")))
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
@@ -219,7 +232,7 @@ output$`tutorial-exercise-q-help-output` <- renderUI({
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
-learnr:::question_prerendered_chunk(structure(list(type = "learnr_checkbox", label = "review-1",     question = structure("What types of arguments can be passed to <code>quantile()<\u002fcode>?", html = TRUE, class = c("html",     "character")), answers = list(structure(list(id = "lnr_ans_f4626b8",         option = "Logical", value = "Logical", label = structure("Logical", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_c032157",         option = "Numeric", value = "Numeric", label = structure("Numeric", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_8bf5202",         option = "Logical Vector", value = "Logical Vector",         label = structure("Logical Vector", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_5617137",         option = "Numeric Vector", value = "Numeric Vector",         label = structure("Numeric Vector", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_3c465ac",         option = "Text", value = "Text", label = structure("Text", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html",     "character")), try_again = structure("Try Again", html = TRUE, class = c("html",     "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html",     "character")), try_again = structure("Incorrect", html = TRUE, class = c("html",     "character")), incorrect = structure("Incorrect", html = TRUE, class = c("html",     "character")), message = NULL, post_message = NULL), ids = list(        answer = "review-1-answer", question = "review-1"), loading = structure("<strong>Loading:<\u002fstrong> \nWhat types of arguments can be passed to <code>quantile()<\u002fcode>?\n<br/><br/><br/>", html = TRUE, class = c("html",     "character")), random_answer_order = FALSE, allow_retry = FALSE,     seed = 1185347304.94803, options = list()), class = c("learnr_checkbox", "tutorial_question")))
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_checkbox", label = "review-1",     question = structure("What types of arguments can be passed to <code>quantile()<\u002fcode>?", html = TRUE, class = c("html",     "character")), answers = list(structure(list(id = "lnr_ans_d83209c",         option = "Logical", value = "Logical", label = structure("Logical", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_b077c44",         option = "Numeric", value = "Numeric", label = structure("Numeric", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_751a4cf",         option = "Logical Vector", value = "Logical Vector",         label = structure("Logical Vector", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_a22773a",         option = "Numeric Vector", value = "Numeric Vector",         label = structure("Numeric Vector", html = TRUE, class = c("html",         "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer")), structure(list(id = "lnr_ans_7d9eefc",         option = "Text", value = "Text", label = structure("Text", html = TRUE, class = c("html",         "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer",     "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html",     "character")), try_again = structure("Try Again", html = TRUE, class = c("html",     "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html",     "character")), try_again = structure("Incorrect", html = TRUE, class = c("html",     "character")), incorrect = structure("Incorrect", html = TRUE, class = c("html",     "character")), message = NULL, post_message = NULL), ids = list(        answer = "review-1-answer", question = "review-1"), loading = structure("<strong>Loading:<\u002fstrong> \nWhat types of arguments can be passed to <code>quantile()<\u002fcode>?\n<br/><br/><br/>", html = TRUE, class = c("html",     "character")), random_answer_order = FALSE, allow_retry = FALSE,     seed = 986834359.040469, options = list()), class = c("learnr_checkbox", "tutorial_question")))
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
@@ -230,7 +243,7 @@ output$`tutorial-exercise-q-vector-output` <- renderUI({
 </script>
  
 <script type="application/shiny-prerendered" data-context="server">
-learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "q-25-1", question = structure("What is the 75% quantile for <code>x<\u002fcode>?", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_9c4f9a2",     option = "36", value = "36", label = structure("36", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_453304c",     option = "50.25", value = "50.25", label = structure("50.25", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_f7ae272",     option = "42.5", value = "42.5", label = structure("42.5", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Incorrect", html = TRUE, class = c("html", "character")), incorrect = structure("Incorrect", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "q-25-1-answer", question = "q-25-1"), loading = structure("<strong>Loading:<\u002fstrong> \nWhat is the 75% quantile for <code>x<\u002fcode>?\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = FALSE,     seed = 182917814.414822, options = list()), class = c("learnr_radio", "tutorial_question")))
+learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label = "q-25-1", question = structure("What is the 75% quantile for <code>x<\u002fcode>?", html = TRUE, class = c("html", "character")), answers = list(structure(list(id = "lnr_ans_a32821e",     option = "36", value = "36", label = structure("36", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_fef32ff",     option = "50.25", value = "50.25", label = structure("50.25", html = TRUE, class = c("html",     "character")), correct = FALSE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer")), structure(list(id = "lnr_ans_ba4db69",     option = "42.5", value = "42.5", label = structure("42.5", html = TRUE, class = c("html",     "character")), correct = TRUE, message = NULL), class = c("tutorial_question_answer", "tutorial_quiz_answer"))), button_labels = list(submit = structure("Submit Answer", html = TRUE, class = c("html", "character")), try_again = structure("Try Again", html = TRUE, class = c("html", "character"))), messages = list(correct = structure("Correct!", html = TRUE, class = c("html", "character")), try_again = structure("Incorrect", html = TRUE, class = c("html", "character")), incorrect = structure("Incorrect", html = TRUE, class = c("html", "character")), message = NULL, post_message = NULL), ids = list(    answer = "q-25-1-answer", question = "q-25-1"), loading = structure("<strong>Loading:<\u002fstrong> \nWhat is the 75% quantile for <code>x<\u002fcode>?\n<br/><br/><br/>", html = TRUE, class = c("html", "character")), random_answer_order = FALSE, allow_retry = FALSE,     seed = 1967566088.58378, options = list()), class = c("learnr_radio", "tutorial_question")))
 </script>
  <!--html_preserve-->
 <script type="application/shiny-prerendered" data-context="dependencies">
@@ -255,7 +268,7 @@ learnr:::question_prerendered_chunk(structure(list(type = "learnr_radio", label 
 <div id="doc-metadata">
 <h2 class="title toc-ignore" style="display:none;">Intermediate R and RStudio</h2>
 <h4 class="author"><em>Cathy Yan</em></h4>
-<h4 class="date"><em>version January 18, 2021</em></h4>
+<h4 class="date"><em>version January 20, 2021</em></h4>
 </div>
 <!-- end doc-metadata -->
 
