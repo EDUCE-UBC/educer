@@ -157,7 +157,7 @@ myfunction <- function(arg1, arg2){
 }
 ```
 
-Let's break down each component:
+Let's break down each component while writing a function that divides numbers by two:
 
 #### Naming your function
 
@@ -165,7 +165,17 @@ In the previous tutorial, you used the function `sum()` to add a vector of numbe
 
 #### Using the `function()` function
 
-Defining a function uses the same syntax as defining a variable, so how does R tell them apart? Using the `function()` function identifies your function name as such rather than as a variable. 
+Defining a function uses the same syntax as defining a variable, so how does R tell them apart? Using the `function()` function identifies your function name as such rather than as a variable.
+
+To begin writing our function, which we'll name `halve()`, fill in the blanks below:
+
+```{r fun-start, exercise = TRUE, eval=FALSE, error=TRUE}
+... <- ...(){}
+```
+
+```{r fun-start-solution}
+halve <- function(){}
+```
 
 #### Setting arguments
 
@@ -173,7 +183,7 @@ In the review quiz, you passed a vector of numbers as an argument to the functio
 
 Right now, in order for the function to work, the user will need to provide both arguments. However, you can also set default values for arguments. The syntax is as follows:
 
-```{r fun-ex, eval=FALSE, error=TRUE}
+```{r fun-ex2, eval=FALSE, error=TRUE}
 myfunction <- function(arg1, arg2 = 5){
   myoutput <- myaction(arg1, arg2)
   return(myoutput)
@@ -182,28 +192,98 @@ myfunction <- function(arg1, arg2 = 5){
 
 Now, the user is only required to provide `arg1`. If they don't provide `arg2`, the function will run using the default value of 5. If `arg2` is provided, the input value overrides the default (i.e. if the user specifies a value of 7 for `arg2`, the function will use that instead of 5, the default).
 
+For our function, we'll only need one argument, which we'll call `num`. It doesn't make sense for it to have a default value since there's no universal number people want to halve, so we won't include one.
+
+```{r fun-arg, exercise = TRUE, eval = FALSE, error = TRUE}
+halve <- function(...){}
+```
+
+```{r fun-arg-solution}
+halve <- function(num){}
+```
+
 #### Operating on arguments
 
-The function's body is enclosed by curly braces. Within, the arguments are transformed through one or more operations. In this case, there is only one operation, `myaction()`, which acts upon both arguments. The output of `myaction()` is assigned to the variable `myoutput`. This variable assignment works in the same way as usual, except for one caveat: `myoutput` cannot be used outside of the function. You will not see it show up in your environment.  
+The function's body is enclosed by curly braces. Within, the arguments are transformed through one or more operations. In this case, there is only one operation, `myaction()`, which acts upon both arguments. The output of `myaction()` is assigned to the variable `myoutput`. This variable assignment works in the same way as usual, except for one caveat: `myoutput` cannot be used outside of the function. You will not see it show up in your environment.
+
+We want our function to halve, or divide by two, any number we provide. We'll name our output variable `half`.
+
+```{r fun-act, exercise = TRUE, eval = FALSE, error = TRUE}
+halve <- function(num){
+  half <- ...
+}
+```
+
+```{r fun-act-solution}
+halve <- function(num){
+  half <- num / 2
+}
+```
 
 #### Returning outputs
 
-When you define a variable normally, you need to call on the variable to see its value. Within functions, the sample principle applies. Although `myoutput` is assigned a value, `myfunction()` will not actually return it unless you explicitly tell it to do so. In this example, the `return()` function is used to accomplish this.
+When you define a variable normally, you need to call on the variable to see its value. Within functions, the sample principle applies. Although `myoutput` is assigned a value, `myfunction()` will not actually return it unless you explicitly tell it to do so. In this example, the `return()` function is used to accomplish this. Let's return `half`:
+
+```{r fun-ret, exercise = TRUE, eval = FALSE, error = TRUE}
+halve <- function(num){
+  half <- num / 2
+  ...
+}
+```
+
+```{r fun-ret-solution}
+halve <- function(num){
+  half <- num / 2
+  return(half)
+}
+```
 
 ### Helper Functions
 
-Need green light on loops first.
+Of course, all of the functions you'll need will be much more complex than `half()`. In fact, some will be so complex that you'll need *helper functions* to complete the task. In the example below, we have a function that adds 5 to the average of a list of numbers:
+
+```{r num-list, exercise = TRUE}
+avg_minus_five <- function(num_list){
+  output <- mean(num_list) + 5
+  return(output)
+}
+
+list = c(1, 2, 3, 4, 5, 6)
+
+answer <- avg_minus_five(list)
+answer
+```
+
+
 
 ### Check Your Understanding
 
-Need green light on loops first.
+
 
 ## Manipulating Data Frames
 
 ### Replacing NAs
 
+In the last tutorial, you were introduced to NAs, which denote missing data.
 
+#### Removing rows with NAs
 
+The simplest way to deal with NAs is to remove them. There are two options for this route: 
+
+- Removing all rows with any NAs
+- Removing rows with NAs in specific columns
+
+Removing NAs is quick and easy, but real life data can have a large proportion of NAs, leading to significant data loss. 
+
+#### Replacing NAs with a fixed value
+
+- Replacing with the mean
+- Replacing with 0/most common value
+
+#### Replacing NAs based on neighbours
+
+- Replacing with last occurring value
+- Replacing with mean of two neighbouring values
 
 
 
