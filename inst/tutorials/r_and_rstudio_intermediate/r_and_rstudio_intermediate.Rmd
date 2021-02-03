@@ -240,7 +240,7 @@ halve <- function(num){
 
 ### Helper Functions
 
-Of course, all of the functions you'll need will be much more complex than `half()`. In fact, some will be so complex that you'll need *helper functions* to complete the task. In the example below, we have a function that adds 5 to the average of a list of numbers:
+Of course, all of the functions you'll need will be much more complex than `halve()`. In fact, some will be so complex that you'll need *helper functions* to complete the task. In the example below, we have a function that adds 5 to the average of a list of numbers:
 
 ```{r num-list, exercise = TRUE}
 avg_minus_five <- function(num_list){
@@ -254,13 +254,54 @@ answer <- avg_minus_five(list)
 answer
 ```
 
+Did you notice anything different with `avg_minus_five()` compared to `halve()`? In the former, we're using another function, `mean()`, inside of the function we wrote. Instead of writing code to calculate the average from scratch, we're using `mean()` to help us get to our desired output in a quicker and more concise way. In this case, `mean()` is our helper function.
 
+### This section may be more appropriate later?
+
+Let's walk through the process for writing and implementing a helper function. Below, we have a long function. Can you guess what it does?
+
+```{r long-func, exercise = TRUE}
+
+```
 
 ### Check Your Understanding
 
 
 
 ## Manipulating Data Frames
+
+### Transforming Data
+
+The functions you have implemented so far all perform operations on one piece of data at a time. For example, `halve()` takes a single number and divides it by two, but can it be used on columns in a data frame?
+
+```{r df, include=FALSE}
+grades <- data.frame(
+  name = c("John", "Jane", "Charles", "Amy", "Joe"),
+  score = c(30, 80, 65, 92, 73),
+  passing = c(FALSE, TRUE, TRUE, TRUE, TRUE)
+)
+```
+
+We're going to be using our dataset with students' grades from the last tutorial:
+
+```{r df2, exercise=TRUE, exercise.setup="df"}
+grades
+```
+
+Try to divide all of the students' grades by half using the `halve()` function. The `$` symbol is used to select columns from a data frame.
+
+```{r halve-col, exercise = TRUE, error=TRUE, exercise.setup="df"}
+halve <- function(num){
+  half <- num / 2
+  return(half)
+}
+
+halve(grades$score)
+```
+
+
+
+
 
 ### Replacing NAs
 
