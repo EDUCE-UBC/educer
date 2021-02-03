@@ -548,7 +548,7 @@ quickplot(data = reduced_data,
           main = "Saanich Inlet: Seasonal oxygen depth profile")
 ```
 
-Subsetting is extremely useful when working with large data. You can learn more complex subsets in our [Tidyverse](https://github.com/EDUCE-UBC/workshops_access/tree/main/intro_tidyverse) workshop using the tidyverse packages, which are a popular and widely used suite of R package for working with and visualizing data.
+Subsetting is extremely useful when working with large data. You can learn more complex subsets in our [Tidyverse](https://github.com/EDUCE-UBC/workshops_access/tree/main/R/intro_tidyverse) workshop using the tidyverse packages, which are a popular and widely used suite of R package for working with and visualizing data.
 
 ## Using R in your own computer
 
@@ -741,7 +741,7 @@ fluidRow(
 ```
 
 ```{r context = "server"}
-dataset <- read.csv("https://raw.githubusercontent.com/EDUCE-UBC/workshops_access/main/intro_R_2hr/data.csv") 
+dataset <- read.csv("https://raw.githubusercontent.com/EDUCE-UBC/educer/main/data-raw/data_intro_ws.csv") 
 
 # Download button shiny app server
 output$downloadData <- downloadHandler(

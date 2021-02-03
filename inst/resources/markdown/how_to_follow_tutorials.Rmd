@@ -1,6 +1,6 @@
 ### How to follow this tutorial
 
-If you haven'done so yet, click on the "Show in new window" button ![](images/one.png){width=20} to enlarge the window for the tutorial.
+If you haven't done so yet, click on the "Show in new window" button ![](images/one.png){width=20} to enlarge the window for the tutorial.
 
 ![](images/running_tutorial.png){width=100%}
 
@@ -10,6 +10,6 @@ You will also encounter coding exercises in interactive windows, such as the one
 
 ![](images/code_exercise_small.png){width="500"}
 
-In both text paragraphs and inside interactive code windows, you should replace any placeholder indicated by angular brackets`<placeholder>` with your own code.
+In both text paragraphs and inside interactive code windows, you should replace any placeholder indicated by angular brackets `<placeholder>` with your own code.
 
 You can leave this tutorial at any time: it will remember your progress when you return. If you would like to start over from scratch, click on "Start Over" in the left-hand navigation (only visible if you selected "Show in new window" for this tutorial as described above).
