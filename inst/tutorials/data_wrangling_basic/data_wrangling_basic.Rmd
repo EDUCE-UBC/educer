@@ -1,0 +1,668 @@
+---
+title: "Introduction to data wrangling"
+author: "Michelle Kang"
+date: "05/02/2020"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+description: This file contains the first of three data wrangling tutorials using the tidyverse package in R. Along with an introduction on downloading and loading packages, this tutorial introduces loading and visualising tabular data tables, and the filter, slice and select functions of tidyverse.  
+---
+
+```{r setup, include = FALSE}
+# General learnr setup
+library(learnr)
+knitr::opts_chunk$set(echo = TRUE)
+library(educer)
+# Helper function to set path to images to "/images" etc.
+setup_resources()
+
+# Tutorial specific setup
+library(readr)
+library(tidyverse)
+
+x = 10 #for boolean exercise
+restricted_columns <- select(OTU_metadata_table, OTU0001,
+                             OTU0002, OTU0004, Depth)
+summary_solution_1 <-
+  geochemicals %>%
+  select(Cruise, Date, Depth, CTD_O2) %>%
+  filter(Cruise == 72 & Depth >= 0.05)
+
+summary_solution_2 <-
+  geochemicals %>% 
+  filter(CTD_O2 > 0 | NO3 > 0) %>% 
+  select(Cruise, Depth)
+```
+
+
+
+## Motivation
+
+### Why use R for data processing?
+
+Imagine you are looking at an environmental library of 10,000 plasmids, and you are asked to make arrow plots of only the plasmids that are less than `7500 bp`, originating only from bacteria or archea, and that have shown activity in your screen. It is more likely than not that you are used to using programs like Excel for general data processing. But how would you do this particular task in excel? You would have to apply conditional filters to multiple rows, then find a program online that accepts annotated plasmid maps as input and manually make each plot.
+
+It would be a time-consuming process, and one you would have to repeat every time you had to complete this particular workflow. Thankfully, R provides packages for data management that make the filtering process a breeze, and the results of your filtering can be fed into a package that can sequentially generate the plots you want. If you had reason, you could even write an R script that will generate these plots for you in one click!
+
+While the learning curve is somewhat steeper than programs like Excel, R is a highly modular language that allows for implementation of many different workflows (almost anything you can imagine)! And more importantly, you can write *general* scripts that can take predictable raw input from another source and process it automatically into whatever shape or form you would like.
+
+### Structure of Data Wrangling Tutorials
+
+We have developed three "data wrangling" modules for R. "Data wrangling," the process of taking raw data and transforming it into another, possibly more useful form, is a linchpin of R competency. By learning these basic techniques, you will open the door to creating beautiful figures using `ggplot2`, training machine learning models with `caret`, and so on.
+
+We have split the contents into beginner, intermediate, and advanced modules.
+
+#### Beginner
+
+In this tutorial, we will demonstrate how to load data from your disk in from another data format (usually `.csv`) into R, how to manipulate that data table in R by subsetting it and doing some light data processing, and how to write your processed data to your disk.
+
+
+#### Intermediate
+
+In this tutorial, we will discuss how to join different datasets together using the numerous `*_join()` functions found in R. We will also discuss how to turn "wide-format" data into "long-format" data, and vice-versa.
+
+#### Advanced
+
+Here, we will introduce the `purrr` package, which allows you to perform more advanced processing on subsets of your dataset in parallel, and how to apply your own custom functions to columns in your data table.
+
+
+## Learning Goals
+
+- Load tabular data using `read_csv()` and save the data to your R environment.
+- Writing your processed data to your disk.
+- Introduce the use of logical operators and conditional statements in R for subsetting your data.
+- Use the `select()`, `slice()`, and `filter()` functions to conditionally subset your data, and use the `mutate()` function to create new variables in your dataset using your existing variables.
+- Use the pipe operator to more efficiently daisy-chain functions together.
+
+
+## What is the Tidyverse?
+
+The [tidyverse](https://www.tidyverse.org/) is a collection of R packages for data wrangling, analysis, and visualization.
+
+The main advantages of using the tidyverse to read in data over base R are:
+
+- Faster data processing
+- Seamless integration with other tidyverse functions
+- Automatic designation of data types
+- Data storage in tibbles as opposed to data frames
+    - Tibbles are data frames with an additional layer of formatting that causes them to print nicely in the console and always return a tibble in functions
+    
+    
+A popular package for data wrangling is *dplyr* in the tidyverse. This package is so good at what it does, and integrates so well with other popular tools like *ggplot2*, that it has rapidly become the de-facto standard.
+
+dplyr code is very readable because all operations are based on using dplyr functions or *verbs* (select, filter, mutate...). 
+
+Typical *verbs* in dplyr:
+
+- `select()` a subset of variables (columns)
+- `slice()` out rows by their ordinal position in the tbl
+- `filter()` out a subset of observations (rows)
+- `rename()` variables
+- `arrange()` the observations by sorting a variable in ascending or descending order
+- `mutate()` all values of a variable (apply a transformation)
+- `group_by()` a variable and `summarise` data by the grouped variable
+- `*_join()` two data frames into a single data frame
+
+Each verb works similarly:
+
+- Input data frame in the first argument.
+- Other arguments can refer to variables as if they were local objects
+- Output is another data frame
+
+Before working with our data, we first want to make a copy of the raw data so that we may revert to it quickly if we make any mistakes. This is best practices for data science in general.
+
+```{r eval = F}
+working_data <- raw_data
+```
+
+We will then repeatedly overwrite this object with the assignment operator (`<-`) as we further process it in R, as follows.
+
+```{r eval = F}
+working_data <- working_data + 7
+working_data <- working_data / 3
+```
+
+<!-- ### Data description test -->
+
+<!-- ``` {r child = system.file("resources/markdown", "data_description.Rmd", package = "educer")} -->
+<!-- ``` -->
+
+### Data description
+
+<!-- This will eventually be a child document, drawing on a markdown file in the 'educer' package. -->
+
+The data used throughout this module were collected as part of an on-going oceanographic time series program in Saanich Inlet, a seasonally anoxic fjord on the East coast of Vancouver Island, British Columbia.
+
+The data that you will use in R are 16S amplicon profiles of microbial communities at several depths in Saanich Inlet from one time point in this series (August 2012). These ~300 bp sequences were processed using [mothur](https://www.mothur.org/wiki/Main_Page) to yield 97% (approximately species-level) operational taxonomic units (OTUs). 
+
+`combined` is a comma-delimited table of counts of four OTUs in each sample, normalized to 100,000 sequences per sample and the corresponding conditions of each sample (Depth, NO2, NO3 etc). 
+
+For a brief introduction to these data, see Hallam SJ et al. 2017. Monitoring microbial responses to ocean deoxygenation in a model oxygen minimum zone. Sci Data 4: 170158 [doi:10.1038/sdata.2017.158](https://www.nature.com/articles/sdata2017158).
+
+Click the button below to save a copy of this data set to your computer:
+
+```{r echo = FALSE}
+# Download button shiny app UI
+fluidRow(
+  column(12, align = "center", downloadButton("downloadData", "Download"))
+)
+
+```
+
+```{r context = "server"}
+# Download button shiny app server
+output$downloadData <- downloadHandler(
+  filename = "combined.csv",
+  content = function(file) {
+    write_csv(combined, file)
+  }
+)
+```
+
+## Reading and Writing Data
+
+### Reading in a Dataset
+
+First, ensure that you have downloaded the `combined.csv` file from the previous section, and you have saved it to your working directory. If you saved the file to another location, the data import function below will fail. To check your working directory, you can run the following.
+
+```{r eval = F}
+getwd()
+```
+
+We can load our Saanich data into R with `read_csv()` for comma separated files and specify the arguments that describe our data as follows.
+
+- `col_names`: tells R that the first row is column names, not data
+
+```{r eval = F}
+raw_data <- read_csv(file = "combined.csv", col_names = TRUE)
+```
+
+<!-- Load in the dataset from educer -->
+
+```{r include=FALSE}
+raw_data <- combined
+```
+
+Now our data is formatted nicely into table form, and we can have a look at it with the `head()` function.
+
+```{r}
+head(raw_data)
+```
+
+The `head()` function prints the first six rows of your dataset, alongside your column names. The `<dbl>` printed below column names like `Cruise` is the data type of the column. In this case, it's a `<dbl>`, which is short for [double-precision floating-point format](https://en.wikipedia.org/wiki/Double-precision_floating-point_format), a particular way of holding numbers in memory. The details are beyond the scope of this tutorial, but just keep in mind it's a different data type than, say, a character string (`<chr>`). Anyway, we see that our import was successful.
+
+As an exercise, go ahead and place a copy of `combined.csv` in a folder called `import_exercise` in your working directory. Then, try to read in `combined.csv` directly from the folder, and use `head()` to ensure the data import was successful and nothing looks funny.
+
+```{r folder-import, exercise = TRUE, exercise.lines = 2}
+
+
+```
+
+```{r folder-import-hint-1}
+# How do you specify that a file is inside a folder in a filepath?
+# If a folder is called "foo", then you would include "foo/" in your filepath.
+```
+
+```{r folder-import-hint-2}
+raw_data <- read_csv(file = "import_exercise/combined.csv", col_names = TRUE)
+head(raw_data)
+```
+
+### Writing Data to Disk
+
+Although we have done no processing to our dataset, let's assume that we have. Now we want to save a processed dataset to disk. First, let's make a dummy processed dataset that we can practice saving to disk.
+
+```{r}
+processed_data <- raw_data
+```
+
+Then, to save it to disk, we have to use the `write_csv()` function. The `write_csv()` function takes two critical arguments, `x` and `path`. `x` is simply the tibble you wish to save to memory, and `path` is a character string indicating the filepath of the new object. The following command will save `processed_data` as `processed.csv` in your current working directory. There are other optional arguments that can tweak how your data is saved, which you can read about by running `?write_csv`. 
+
+```{r eval = F}
+write_csv(processed_data, path = "processed.csv", col_names = TRUE)
+```
+
+### Data exploration
+
+Let's explore the data that we've imported into R. Although we've discussed the use of `head()`, the simplest way to view your imported data is to call the variable name directly. This view displays a subset of large data table.
+
+```{r tibble, exercise = TRUE, exercise.lines = 5}
+raw_data
+```
+
+`glimpse()` is a function that allows us to get a "glimpse" of the contents of a data table. Running `glimpse()` on a data table outputs its number of rows (observations); its number of columns (variables); a list of each column name, along with its type and a portion of its contents. We can run `glimpse()` on `raw_data` like so:
+
+```{r}
+glimpse(raw_data)
+```
+
+From the output above, we see that our table has 7 rows and 10 columns. As discussed above, each $ is followed by a column name, a portion of the data it contains, and its data type.
+
+```{r glimpse-quiz, echo = FALSE}
+quiz(
+  question("Which columns are in raw_data?",
+           answer("OTU001", correct = TRUE),
+           answer("Otu002"),
+           answer("72"),
+           answer("NO3", correct = TRUE),
+           answer("NO3_Mean"),
+           answer("Mean_N2O", correct = TRUE),
+           answer("Depth", correct = TRUE)
+           )
+)
+```
+
+If we want to know the dimensions of our tibble, we can use the `dim()` function, which prints the number of rows followed by the number of columns. 
+
+```{r}
+dim(raw_data)
+```
+
+Simple functions to obtain only the number of rows or only the number of columns in a data table are `nrow()` and `ncol()`.
+
+```{r}
+nrow(raw_data)
+ncol(raw_data)
+```
+
+Lastly, we can list the column names using `colnames()`. 
+
+```{r}
+colnames(raw_data)
+```
+
+## Logical Operators in R
+
+Logical operators are special symbols in R that one can use to ask `TRUE/FALSE` questions about your data. For instance, say you had a column in a data frame containing the following data: `c("apple", "pear", "banana")`. You could then ask R, "which entries in my column are equivalent to the character string `"pear"`? R would then return the following vector: `c(FALSE, TRUE, FALSE)`. As you might imagine, the next step could be to tell R to only keep the entries for which the answer to this question is `TRUE` or only keep those that are `FALSE`.
+
+The `==` operator asks R whether the left-hand side is equivalent to the right-hand side. So here is how you would ask the above question in R.
+
+```{r}
+# create our fruit vector
+fruits = c("apple", "pear", "banana")
+
+# ask our question
+fruits == "pear"
+```
+
+We see that our predicted vector is returned.
+
+This process also works with variables containing single pieces of data too. For instance, let's initialize the following variables.
+
+```{r}
+number <- 6
+animal <- "cat"
+```
+
+And ask some questions. Is `number` less than 3?
+
+```{r}
+number < 3
+```
+
+Is the `animal` a dog?
+
+```{r}
+animal == "dog"
+```
+
+As a simple exercise, manipulate the below code to make both equations `TRUE`. 
+
+```{r boolean-exercise, exercise = TRUE, exercise.lines = 5}
+number <- 6
+animal <- "cat"
+
+number < 3
+animal == "dog"
+```
+
+```{r boolean-exercise-hint-1}
+number <- #A number less than 3
+animal <- #A string
+
+number < 3
+animal == "dog"
+```
+
+```{r boolean-exercise-hint-2}
+number <- 1
+animal <- "dog"
+
+number < 3
+animal == "dog"
+```
+
+Note that in R, only the double `==` is a logical operator. Using a single `=` will result in error. As you may have noticed, a single `=` can only be used to assign a variable to a value.
+
+We can chain together multiple logical operators in a single question. Say we wanted to ask, "is `number` less than 10 but also greater than 4?" We would do so with the following operator: `number < 10 & number > 4`.
+
+For quick reference, here are the most commonly used statements and operators.
+
+R Operator | Meaning
+---------- | ---------------
+`==`       | equivalent to
+`!=`       | not equivalent to
+`< or >`   | less/greater than
+`<= or >= `| less/greater than or equal to
+`%in%`     | in
+`is.na`    | is missing (`NA`)
+`&`        | and
+`|`        | or
+
+
+### Exercise
+
+Create a variable `x`, and write a boolean equation for "`x` is greater than 6 or less than 12", it should return `TRUE` after running.
+
+```{r boolean-exercise-2, exercise = TRUE, exercise.lines = 5}
+
+```
+
+```{r boolean-exercise-2-hint-1}
+# Consider how we represent the "greater/less than" 
+# operator and the "OR" operator in R.
+
+# "x is greater than n" can be represented in the following way.
+x > n
+```
+
+```{r boolean-exercise-2-hint-2}
+# "x is greater than n or less than m" can be represented in the following way.
+x > n | x < m
+```
+
+
+## `select()`, `slice()`, `filter()`, and `mutate()`
+
+Now that we know how to ask logical questions in R, we can take advantage of this to subset our data in any way we'd like. In a nutshell, the `select()` function allows you to select certain *columns* of your data frame to work with, while the `slice()` function allows you to select certain rows. You can isolate specific entries with a combination of `slice()` and `select()`. `filter()` allows you to apply a conditional statement to the rows of your table, using the logical operators we talked about in the previous section.
+
+### `select()`
+
+You can use the `select()` function to keep only a subset of variables (columns). Let's select the variables `OTU0001`, `OTU0002`, `OTU0004`, `Depth`.
+
+```{r select-1}
+selected_data <- select(raw_data, OTU0001, OTU0002, OTU0004, Depth)
+```
+
+To view our new `selected_data` variable, just type in the variable name and run the code like this:
+
+```{r select-2}
+selected_data
+```
+
+### Exercise
+As an exercise, select for only the depth and geochemical columns (Depth, NO3, Mean_NO2, Mean_N2O, and Mean_NH4) in `raw_data` and name the new table `select_exercise_data`:
+
+```{r select-exercise, exercise = TRUE, exercise.lines = 5}
+
+```
+
+```{r select-exercise-hint-1}
+# Remember, you can select variables with the following function 
+select(raw_data, <variable1>, <variable2>, <...>)
+```
+
+```{r select-exercise-hint-2}
+# To select certain columns, type in their names as additionl arguments
+# to the select function
+select(raw_data, Depth, NO3, Mean_NO2, Mean_N2O, Mean_NH4)
+```
+
+### `slice()`
+
+We can also only choose to work with specific rows in our data table using the `slice()` function. We do so by specifying the row number of the row we want to work with. The following code selects the first row of the `raw_data` dataset.
+
+```{r slice-1}
+slice(raw_data, 1)
+```
+
+You can list multiple row numbers to select multiple observations at once.
+
+```{r slice-2}
+slice(raw_data, 1, 2, 3, 4, 5)
+```
+
+If you would like to to select a range of observations, give the starting and end position separated by a colon like so: `<start>:<end>`.
+
+```{r slice-3}
+slice(raw_data, 1:5)
+```
+
+Now, go ahead and use the slice function to answer the following question.
+
+```{r slice-exercise, exercise = TRUE, exercise.lines = 5}
+
+```
+
+```{r slice-quiz, echo = FALSE}
+quiz(
+  question("What is the value of OTU0003 in the 6th row of raw_data?",
+           answer("0"),
+           answer("156"),
+           answer("178", correct=TRUE),
+           answer("72")
+           )
+)
+```
+
+### Exercise: `slice()` and `select()`
+
+We can use `slice()` and `select()` in conjunction to determine which value is in a specific column of a specific row. Recall the protocol for nesting functions. If you have a data frame `a` to which you want to apply the function `f()` and then `g()`, you would do so as follows: `g(f(a))`, exactly as you might have learned in math class!
+
+Using `slice()` and `select()` on `raw_data`, determine:
+
+A) what depth value occurs in the 20th row?
+B) what methane value occurs in the 170th row?
+    
+```{r slice_exercise, exercise=TRUE, exercise.lines=5}
+
+```
+
+```{r slice_exercise-hint-1}
+# Recall that slice() allows you to find a row
+# and select() allows you to find a column
+slice(raw_data, 20)
+select(raw_data, depth)
+```
+
+```{r slice_exercise-hint-2}
+# Recall the protocol for nesting functions.
+slice(select(raw_data, Depth), 20)
+select(slice(raw_data, 170), methane)
+```
+
+
+### `filter()`
+
+Remember the logical operators we were working with in the previous section? `dplyr` allows you to subset the rows of your data frame with a logical statement on any of the columns. Say, for instance, we wanted to only work with rows below a certain ocean depth in `raw_data`. We could do so by using the filter function in conjunction with a logical operator.
+
+
+```{r}
+filter(raw_data, Depth >= 140)
+```
+
+We can look for exact matches using the `==` operator:
+
+```{r equal-to}
+filter(raw_data, NO3 == 26.4)
+```
+
+The 'not equal to' operator, `!=`, returns rows where the variable does not match the value:
+
+```{r not-equal-to}
+filter(raw_data, NO3 != 26.4)
+```
+
+`variable %in% values` returns rows where the variable matches one of the given values.
+Values are provided as a vector `c(value1, value2, ...)`:
+
+```{r match-in}
+filter(raw_data, NO3 %in% c(26.4, 5.278))
+```
+
+We can look for a range of values by finding the rows where the value of the variable is <= 120 **AND** >= 20 by using the logical operator `&`.
+
+```{r and}
+filter(raw_data, CTD_O2 <= 120 & CTD_O2 >= 20)
+```
+
+Lastly, we can use the logical OR (`|`) to find the rows where the value is <= 50 **OR** >= 150.
+
+```{r or}
+filter(raw_data, CTD_O2 <= 50 | CTD_O2 >= 150)
+```
+
+### Exercise
+
+As an exercise, filter for rows where the value of `Depth` is less than or equal to 135m. 
+```{r filter-exercise, exercise = TRUE, exercise.lines = 5}
+
+```
+
+```{r filter-exercise-hint-1}
+# Recall the general syntax for filtering.
+filter(dataset, (column, operator, quantity))
+```
+
+```{r filter-exercise-hint-2}
+filter(raw_data, depth <= 135)
+```
+
+### `mutate()`
+
+There is a handy function in `dplyr` that can streamline your data processing. The `mutate()` function can create new columns by operating on existing columns. For instance, say we wish to compute the sum of all the `OTU` columns in `raw_data`. We can easily do so with the `mutate()` function.
+
+```{r mutate-demo}
+mutate(raw_data, OTU_sum = OTU0001 + OTU0002 + OTU0003 + OTU0004)
+
+# Or, expressed more succinctly:
+# mutate(raw_data, OTU_sum = sum(OTU0001, OTU0002, OTU0003, OTU0004))
+```
+
+Notice that, like many `dplyr` functions, the first argument of `mutate()` is the dataset we wish to modify. The second argument is a variable assignment expressing the value of the new variable we wish to create. Conveniently, this new column is appended as a named column at the end of our tibble `raw_data`.
+
+You can actually use a single column multiple times in the `mutate()` function. Say you wanted to express `Depth` as a percentage of the maximum depth. You could do so with the following code.
+
+```{r}
+mutate(raw_data, relative_Depth = Depth/max(Depth))
+```
+
+As an exercise for you, say you wanted to do some statistical analysis of the values in `NO3` in `raw_data`. The z-score of a single observation, $x_i$, is defined as the following:
+
+$$z({x_i}) = \frac{x_i - \mu_{x_i}}{\sigma_{x_i}}$$
+
+Using the above example in which the relative depth was computed, as well as the `mean()` and `sd()` (standard deviation) functions, try to compute the z-score of the `NO3` column in a column named `z_score`.
+
+
+```{r mutate-exercise, exercise = TRUE, exercise.lines = 5}
+
+```
+
+```{r mutate-exercise-hint-1}
+# Remember, the mutate function understands expressions like mean(x) or sd(x).
+# x/mean(x) will divide all elements of the vector x by the mean of the vector x.
+# The result is another vector, which we can call relative_x.
+
+relative_x = x/mean(x)
+```
+
+```{r mutate-exercise-hint-2}
+# You can use x or functions of x as many times as you'd like in the mutate function.
+# You'd want an expression like z_score = (x - mean of x)/(standard deviation of x).
+```
+
+```{r mutate-exercise-hint-3}
+mutate(raw_data, z_score = (NO3 - mean(NO3)/(sd(NO3)))
+```
+
+## The Pipe Operator (`%>%`)
+
+This one is a game-changer--the pipe operator, originally introduced in the `magrittr` package and included in the `tidyverse`, allows for elegant composition of functions in R. Say you want to take a vector `x`, and apply the function `f()` to it. Then, you want to take the output of `f()` and apply the function `g()` to it. Logically, what you might be picturing is the following:
+
+$$x \rightarrow f \rightarrow g$$
+
+However, in R, the composition is done with the following syntax:
+
+$$g(f(x))$$
+
+You are left to peel a composition onion to try to figure out what is being done to the data, and similarly to peeling an actual onion, you might be inclined to cry at this un-elegant syntax!
+
+The above statement is a hyperbole, of course, but you can imagine that this default syntax does get cumbersome for composition of many functions:
+
+$$y = j(i(h(g(f(x)))))$$
+Thankfully, we can use the pipe (`%>%`) operator to clean up our notation, and bring it closer to what we might be picturing in our heads when we think of a series of functions acting on a vector.
+
+We use the pipe vector to feed the output of the previous function to the next function in the sequence. That is to say the following sequence of functions:
+
+```g(f(x))```
+
+is equivalent to the below series of functions:
+
+```x %>% f() %>% g()```
+
+Formally, the pipe operator takes all of what is behind it and feeds it as the first argument to the function in front of it.
+
+Let's look at some use cases to build our proficiency with the pipe operator.
+
+Do you remember how we previously used the `slice()` and `select()` function in conjunction to find the value in a specific row and column? We did it like so:
+
+```{r slice-select-no-pipe}
+slice(select(raw_data, Depth), 20)
+```
+
+We can express this in a clearer way with the pipe operator! We tell R "start with raw_data, select `Depth`, and then take the 20th slice of the `Depth` column."
+
+```{r slice-select-pipe}
+raw_data %>%
+  select(Depth) %>%
+  slice(20)
+```
+
+We can also, say, take all the rows with `NO3 >= 10` and add a variable `z_score` which is the z-score of the `OTU0001` column.
+
+```{r}
+raw_data %>%
+  filter(NO3 >= 10) %>%
+  mutate(z_score = (NO3 - mean(NO3))/(sd(NO3)))
+```
+
+
+## Summary Exercise
+
+The `geochemicals` dataset is included in the "educer" package. This dataframe contains time series observations on the water column chemistry. Learn more about the `geochemicals` dataset by running the following line in your R console. 
+
+```{r dataset_exercise, exercise = TRUE, exercise.lines = 5}
+?geochemicals
+```
+
+Using the geochemical data:
+
+1. Select the Cruise, Date, Depth, and oxygen variables.
+2. Filter the data to retain data on Cruise 72 where Depth is greater than or equal to 0.05 km.
+
+Your resulting pdat object should be a [`r dim(summary_solution_1)`] data frame. The data has been loaded for you into the `dat` variable.
+
+```{r summary-exercise, exercise = TRUE, exercise.lines = 5}
+dat <- geochemicals
+```
+
+### Challenge exercise: `select()` and `filter()`
+
+If you want more practice or have previous experience in R, try this more challenging exercise! Be sure to create a fresh `dat`.
+
+3. Keep only the Cruise and Depth variables and the rows where oxygen OR nitrate is greater than zero.
+
+Your resulting pdat object should be a [`r dim(summary_solution_2)`] data frame. *Hint:* Can you filter based on a variable that you previously removed by not selecting it?
+
+```{r summary-exercise-2, exercise = TRUE, exercise.lines = 5}
+dat <- geochemicals
+```
+
+## Additional resources
+
+* [R cheatsheets](https://www.rstudio.com/resources/cheatsheets/) also available in RStudio under Help > Cheatsheets
+* [Introduction to dplyr](https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html)
+* [dplyr tutorial](https://rpubs.com/justmarkham/dplyr-tutorial)
+* [dplyr video tutorial](https://www.r-bloggers.com/hands-on-dplyr-tutorial-for-faster-data-manipulation-in-r/)
