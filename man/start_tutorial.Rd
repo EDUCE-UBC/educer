@@ -7,7 +7,7 @@
 start_tutorial(name)
 }
 \arguments{
-\item{name}{A string giving the name of the educer tutorial}
+\item{name}{A string giving the name of the educer tutorial.}
 }
 \description{
 This wrapper runs learnr tutorials specifically in the educer package.
