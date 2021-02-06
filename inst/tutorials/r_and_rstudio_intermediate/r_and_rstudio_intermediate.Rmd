@@ -114,26 +114,6 @@ quiz(
 )
 ```
 
-```{r q-type7, echo=FALSE}
-quiz(
-  question("what is the 25% quantile for `x` if argument type = 1? ",
-    answer("27"),
-    answer("12"),
-    answer("15"),
-    answer("9", correct = TRUE))
-)
-```
-```{r q-25, echo=FALSE}
-quiz(
-  question("what is the 25% quantile for `x` if argument type = 7? ",
-    answer("27"),
-    answer("9"),
-    answer("15"),
-    answer("12", correct = TRUE))
-)
-
-```
-
 ## Writing Function in R
 
 In the previous tutorial, you learned how to use preexisting functions. Now, you will write your own.
@@ -256,7 +236,7 @@ answer
 
 Did you notice anything different with `avg_minus_five()` compared to `halve()`? In the former, we're using another function, `mean()`, inside of the function we wrote. Instead of writing code to calculate the average from scratch, we're using `mean()` to help us get to our desired output in a quicker and more concise way. In this case, `mean()` is our helper function.
 
-### This section may be more appropriate later?
+### Rewriting Functions with Helper Functions
 
 Let's walk through the process for writing and implementing a helper function. Below, we have a long function. Can you guess what it does?
 
@@ -299,32 +279,75 @@ halve <- function(num){
 halve(grades$score)
 ```
 
+Every value in the column is halved without needing to be passed to the function one at a time. This is called vectorization, allowing you to work with vectors in a concise and efficient manner. 
 
+Let's try to take this one step further. Below, we have a data frame tracking measurements for Jack's magical beanstalk. 
 
+```{r stalk, include=FALSE}
+measurements <- data.frame(
+  hours = seq(1:6),
+  height = c(0, 13, "not collected", 62, 87, "not collected"),
+  circumference = c(0, 4, 11, 23, "not collected", 52),
+  weight = c(0, "not collected", 25, 60, "not collected", 83)
+)
+```
 
+```{r stalk2, exercise=TRUE, exercise.setup="stalk"}
+measurements
+```
+What do you notice about the height, circumference, and weight columns? They're supposedly characters, but we know that's not right. As you may remember from the last tutorial, vectors can only hold one type of data. The "not collected" values forced R to treat the entire columns as being of type character due to coercion. Let's see what happens when we try to take the mean height:
+
+```{r mean-height, exercise = TRUE, error = TRUE, exercise.setup="stalk"}
+mean(measurements<select the height column>)
+```
+
+```{r mean-height-solution}
+mean(measurements$height)
+```
+
+We're not particularly surprised by this result since `mean()` can't operate on characters, even if they look like numbers. We can try to convert all of our columns to type numeric using the `as.numeric()` function, which takes a vector and coerces its data into numbers. Non-numerical data like "not collected" gets turned to NAs. Every column is supposed to be numeric, so can we just pass the entire data frame as an argument?
+
+```{r numer, exercise=TRUE, error=TRUE, exercise.setup="stalk"}
+as.numeric(measurements)
+```
+
+Unfortunately, as.numeric can only convert one vector at a time, but writing the same code for all three columns is clumsy. Instead, we can use the `sapply()` function, which applies functions to columns in a data frame iteratively (one by one). Its basic syntax is:
+
+```{r s-syntax, error=TRUE, eval=FALSE}
+sapply(my_df, my_func)
+```
+
+Let's try applying the `as.numeric()` function to all columns in `measurements`.
+
+```{r sapply, exercise=TRUE, error=TRUE, exercise.setup="stalk"}
+num_measurements <- sapply(<name of df>, <name of function>) %>%
+  as.data.frame()
+num_measurements
+```
+
+```{r sapply-solution}
+num_measurements <- sapply(measurements, as.numeric) %>%
+  as.data.frame()
+num_measurements
+```
+
+As expected, our columns are now of type numeric with the "not collected" values being replaced by NAs. 
+
+We can also use `sapply()` with functions we write. Try halving all of the values in the data frame with the `halve()` function:
+
+```{r half-measure, exercise=TRUE, error=TRUE, exercise.setup="sapply"}
+halve <- function(num){
+  half <- num / 2
+  return(half)
+}
+
+half_measure <- sapply(num_measurements, <name of function>)
+half_measure
+```
 
 ### Replacing NAs
 
 In the last tutorial, you were introduced to NAs, which denote missing data.
-
-#### Removing rows with NAs
-
-The simplest way to deal with NAs is to remove them. There are two options for this route: 
-
-- Removing all rows with any NAs
-- Removing rows with NAs in specific columns
-
-Removing NAs is quick and easy, but real life data can have a large proportion of NAs, leading to significant data loss. 
-
-#### Replacing NAs with a fixed value
-
-- Replacing with the mean
-- Replacing with 0/most common value
-
-#### Replacing NAs based on neighbours
-
-- Replacing with last occurring value
-- Replacing with mean of two neighbouring values
 
 
 
