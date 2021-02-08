@@ -241,7 +241,7 @@ Did you notice anything different with `avg_minus_five()` compared to `halve()`?
 Let's walk through the process for writing and implementing a helper function. Below, we have a long function. Can you guess what it does?
 
 ```{r long-func, exercise = TRUE}
-
+# flow control?
 ```
 
 ### Check Your Understanding
@@ -335,7 +335,7 @@ As expected, our columns are now of type numeric with the "not collected" values
 
 We can also use `sapply()` with functions we write. Try halving all of the values in the data frame with the `halve()` function:
 
-```{r half-measure, exercise=TRUE, error=TRUE, exercise.setup="sapply"}
+```{r half-measure, exercise=TRUE, error=TRUE, exercise.setup="sapply-solution"}
 halve <- function(num){
   half <- num / 2
   return(half)
@@ -345,15 +345,34 @@ half_measure <- sapply(num_measurements, <name of function>)
 half_measure
 ```
 
-### Replacing NAs
+### Removing NAs
 
-In the last tutorial, you were introduced to NAs, which denote missing data.
+Our `num_measurements` data frame contains NAs, which denote missing data. This can cause problems in downstream analyses, so we can opt to remove them. First things first, though, we need to confirm if and how many NAs there are.
 
+The function `is.na()` can take the entire data frame. For each value, it asks if it's an NA. If so, it outputs `TRUE`, otherwise, `FALSE`. 
 
+```{r is-na, exercise=TRUE, exercise.setup="sapply-solution"}
+is.na(num_measurements)
+```
 
+So how many NAs, or `TRUE`s, are there in each column? For a small data frame like this, you can try to count manually, but you can imagine how painful the task would be for a data frame with a thousand rows. 
 
+Luckily, R can treat logicals like numbers. `TRUE` equates to 1 and `FALSE` to 0, so you can count how many `TRUE`s there are simply by adding them. The function `colSums()` calculates the sum of each column, displaying how many NAs there are:
 
+```{r colsum, exercise=TRUE, exercise.setup="sapply-solution"}
+colSums(is.na(num_measurements))
+```
 
+Now that we know how many NAs we have, we can move on to removing them. Let's start by removing all NAs using the `drop_na()` function:
 
+```{r drop-na, exercise=TRUE, exercise.setup="sapply-solution"}
+drop_na(num_measurements)
+```
+
+Wait, what happened? How did we lose all but two of our data points? As it turns out, when `drop_na()` finds one NA in the row, it removes the entire row. To preserve data, we can opt to only remove NAs with rows in specified columns. For example, if we only wanted to remove rows with NAs in the circumference column:
+
+```{r drop-na2, exercise=TRUE, exercise.setup="sapply-solution"}
+drop_na(num_measurements, circumference)
+```
 
 
