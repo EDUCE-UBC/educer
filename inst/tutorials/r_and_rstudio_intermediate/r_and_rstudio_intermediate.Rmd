@@ -22,6 +22,25 @@ setup_resources()
 library(dplyr)
 library(readr)
 library(tidyverse)
+
+# Data frames
+scores <- data.frame(
+  name = c("Mike", "Linda", "Sam", "Esther", "Alex"),
+  sex_age = c("m_12", "f_13", "m_11", "f_12", "m_13"),
+  test_1 = c(76, 78, 86, 64, 93),
+  test_2 = c(57, 82, 91, 68, 80)
+)
+
+jellybeans <- data.frame(
+  name = c("Mike", "Linda", "Sam", "Esther", "Alex"),
+  recess = c(12, 8, 4, 13, 9),
+  lunch = c(6, 10, 0, 8, 11)
+)
+
+countries <- data.frame(
+  name = c("Mike", "Linda", "Sam"),
+  countries = c("Canada,Canada", "Britain,France", "US,Mexico")
+)
 ```
 
 ## Learning objectives
@@ -55,6 +74,124 @@ Manipulating Data Frames:
 - Replace NAs in a vector or data frame
 
 Other ideas: Tidying data, joining data frames, loading in data from an external source
+
+## Tidying Data
+
+### What is tidy data?
+
+Tidy data fulfill three criteria:
+
+- Each row is a single observation
+- Each column is a single variable
+- Each cell contains a single value
+
+Take a look at the data frame below, which tracks students' performance across two exams. Is the data tidy?
+
+```{r untidy-view, exercise = TRUE}
+scores
+```
+
+The answer is no, the `scores` data frame is not tidy because:
+
+- Not every cell contains only a single value: The `sex_age` column contains both the gender of the student and their age, separating the two values with an underscore. 
+- Not every column is a variable: The columns `test_1` and `test_2` would both fall under a variable like "test". 
+
+### Pivoting to tidy data
+
+The `pivot*()` functions allow you to reshape and tidy your data. The `pivot_longer()` function combines columns that store values belonging to the same variable. In this case, we're going to combine `test_1` and `test_2` to make one column called `test`. 
+
+The function `pivot_longer()` takes three arguments in addition to the data frame:
+
+- cols: The names of the columns we want to combine
+- names_to: The name of a new column that contains the names of the columns we're combining
+- values_to: The name of a new column that contains the values of the columns we're combining
+
+Let's walk through an example with a data frame charting how many jelly beans people have at recess and lunch.
+
+```{r untidy-beans, exercise = TRUE}
+jellybeans
+```
+
+Just like `scores`, `jellybeans` is untidy. We want to combine the `recess` and `lunch` columns under one column called `timepoint`. See if you can figure out what the arguments to `pivot_longer()` are. 
+
+```{r tidy-beans, exercise = TRUE, error = TRUE}
+tidy_jellybeans <- pivot_longer(jellybeans,
+                                cols = <names of columns to combine>,
+                                names_to = <name of new column containing "recess" and "lunch">,
+                                values_to = <name of new column containing jellybean counts>)
+tidy_jellybeans
+```
+
+```{r tidy-beans-solution}
+tidy_jellybeans <- pivot_longer(jellybeans,
+                                cols = recess:lunch,
+                                names_to = "timepoint",
+                                values_to = "jellybean_counts")
+```
+
+Is this new data frame tidy? Yes! Every column is a variable, every row is an observation (how many jellybeans the child has at recess or lunch), and every cell contains only one value. Let's apply `pivot_longer()` to the `scores` data frame, combining `test_1` and `test_2` into a single column called `test`. 
+
+```{r tidy-scores, exercise = TRUE, error = TRUE}
+scores2 <- pivot_longer(<arguments>)
+scores2
+```
+
+```{r tidy-scores-solution}
+scores2 <- pivot_longer(scores,
+                        cols = test_1:test_2,
+                        names_to = "test",
+                        values_to = "score")
+```
+
+### Separating data based on delimiters
+
+There is one more step we have to take before `scores` is tidy, which is to separate the `sex_age` column into two. We can do this using the `separate()` function, which takes the following arguments in addition to the data frame:
+
+- col: The name of the column we want to split
+- into: A vector of column names that the split data will populate
+- sep: The separator to split by
+
+Below, we have a data frame with two columns. The first contains names, while the second contains the person's current country and the country they were born in, separated by a comma. 
+
+```{r countries-untidy, exercise = TRUE}
+countries
+```
+
+Use the `separate()` function to split the `countries` column into two - one called `current_country` and one called `birth_country`.
+
+```{r tidy-countries, exercise = TRUE, error = TRUE}
+tidy_countries <- separate(countries,
+                           col = <column to split>,
+                           into = <vector of column names>,
+                           sep = <delimiter>)
+tidy_countries
+```
+
+```{r tidy-countries-solution}
+tidy_countries <- separate(countries,
+                           col = countries,
+                           into = c("current_country", "birth_country"),
+                           sep = ",")
+```
+
+Now, let's apply `separate()` to the `scores2` data frame and separate the `sex_age` column into `sex` and `age`. 
+
+```{r tidier-scores, exercise = TRUE, error = TRUE, exercise.setup = "tidy-scores-solution"}
+tidy_scores <- separate(<arguments>)
+tidy_scores
+```
+
+```{r tidier-scores-solution}
+tidy_scores <- separate(scores2,
+                        col = sex_age,
+                        into = c("sex", "age"),
+                        sep = "_")
+```
+
+
+
+
+
 
 ## Review
 
