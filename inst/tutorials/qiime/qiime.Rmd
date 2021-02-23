@@ -200,7 +200,47 @@ qiime taxa barplot \
   --o-visualization taxa-bar-plots.qzv
 ```
 
+## Exporting data
 
+Fiannly, you will often take the data generated in QIIME2 and export it for analysis with other tools such as R.
+
+```{bash eval = FALSE}
+qiime tools export \
+  --input-path table.qza \
+  --output-path exported
+
+qiime tools export \
+  --input-path taxonomy.qza \
+  --output-path exported
+
+qiime tools export \
+  --input-path rooted-tree.qza \
+  --output-path exported
+```
+
+Open file in a text editor on server
+
+```{bash eval = FALSE}
+nano exported/taxonomy.tsv
+```
+
+Edit the column names and change
+
+- `Feature ID` to `#OTUID`
+- `Taxon` to `taxonomy`
+- `Confidence` to `confidence`
+
+Combine taxonomy with BIOM data
+
+```{bash eval = FALSE}
+biom add-metadata \
+  -i exported/feature-table.biom \
+  -o exported/table-with-taxonomy.biom \
+  --observation-metadata-fp exported/taxonomy.tsv \
+  --sc-separated taxonomy
+```
+
+You will continue to work with `table-with-taxonomy.biom`, `tree.nwk`, and the original `sample-metadata.tsv` file. Copy them to your local computer with `scp`.
 
 ## Additional resources
 
