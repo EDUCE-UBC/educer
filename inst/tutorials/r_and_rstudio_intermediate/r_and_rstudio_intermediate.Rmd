@@ -24,6 +24,12 @@ library(readr)
 library(tidyverse)
 
 # Data frames
+tidy_demo <- data.frame(
+  name = c("Mike", "Linda", "Sam", "Esther", "Alex"),
+  age = c(12, 13, 11, 12, 13),
+  fav_colour = c("blue", "green", "blue", "pink", "yellow")
+)
+
 scores <- data.frame(
   name = c("Mike", "Linda", "Sam", "Esther", "Alex"),
   sex_age = c("m_12", "f_13", "m_11", "f_12", "m_13"),
@@ -40,6 +46,31 @@ jellybeans <- data.frame(
 countries <- data.frame(
   name = c("Mike", "Linda", "Sam"),
   countries = c("Canada,Canada", "Britain,France", "US,Mexico")
+)
+
+census <- data.frame(
+  name = c("Joe", "Janet", "Mary", "James"),
+  city_2016 = c("Vancouver", "Surrey", "Langley", "Delta"),
+  city_2020 = c("Burnaby", "Surrey", "Vancouver", "Richmond")
+)
+
+mailing_list <- data.frame(
+  variable = c("signup_date", "occupation", "email"),
+  Alexis = c("21-03-2019", "doctor", "alexis@hospital.com"),
+  James = c("15-11-2007", "plumber", "james@gmail.com"),
+  Sam = c("07-07-2015", "accountant", "sam@company.com")
+)
+
+day1_data <- data.frame(
+  date = c("01-03-2021", "01-03-2021", "01-03-2021", "01-03-2021"),
+  site = c("Northwest", "Southwest", "North", "South"),
+  beavers = c(5, 12, 1, 8)
+)
+
+day2_data <- data.frame(
+  date = c("02-03-2021", "02-03-2021", "02-03-2021", "02-03-2021"),
+  site = c("Northwest", "Southwest", "North", "South"),
+  beavers = c(3, 15, 4, 5)
 )
 ```
 
@@ -85,7 +116,15 @@ Tidy data fulfill three criteria:
 - Each column is a single variable
 - Each cell contains a single value
 
-Take a look at the data frame below, which tracks students' performance across two exams. Is the data tidy?
+Here is an example of tidy data:
+
+```{r tidy-example, exercise = TRUE}
+tidy_demo
+```
+
+We clearly have three distinct variables, each in its own column. Each row holds one observation, which, in this case, are attributes of a single student. Each cell contains only one value. 
+
+Now, take a look at the data frame below, which tracks students' performance across two exams. Is the data tidy?
 
 ```{r untidy-view, exercise = TRUE}
 scores
@@ -95,6 +134,13 @@ The answer is no, the `scores` data frame is not tidy because:
 
 - Not every cell contains only a single value: The `sex_age` column contains both the gender of the student and their age, separating the two values with an underscore. 
 - Not every column is a variable: The columns `test_1` and `test_2` would both fall under a variable like "test". 
+
+### Why does data need to be tidy?
+
+- Enables downstream analyses: Functions for plotting and modeling data expect the input to be tidy
+- Conforms to a standard: When other people work with your data, they expect them to be tidy
+
+As a quick example, imagine if you wanted to calculate and plot the mean age for each gender using the data frame above. Unfortunately, since both variables are "squished" into a single column, it's difficult to do this in R. On the other hand, if they were in separate columns, the task would be straightforward. 
 
 ### Pivoting to tidy data
 
@@ -187,6 +233,137 @@ tidy_scores <- separate(scores2,
                         into = c("sex", "age"),
                         sep = "_")
 ```
+
+To concretely demonstrate the practical advantages of tidy data, let's count how many male and female students there are using the `table()` function. This function takes a vector and tallies how many times each element occurs. Using it on the untidy dataset gets us:
+
+```{r untidy-table, exercise=TRUE}
+table(scores$sex_age)
+```
+
+What happened? Since the gender of the student is appended to their age, `table()` treats each element as a unique value (because it is!). Now, see what happens when we use the tidy version of the data:
+
+```{r tidy-table, exercise=TRUE, exercise.setup="tidier-scores-solution"}
+table(tidy_scores$sex)
+```
+
+Using the tidy dataset, it's easy to see that we have 4 entries attributed to female students and 6 entries for male students. 
+
+### Check Your Understanding
+
+Determine how many of the attributes of tidy data are fulfilled by `census` and `mailing_list`. As a reminder, they are:
+
+- Each row is a single observation
+- Each column is a single variable
+- Each cell contains a single value
+
+```{r census, echo=FALSE}
+census
+```
+
+```{r census-quiz, echo=FALSE}
+quiz(
+  question("How many of the attributes of tidy data are fulfilled?",
+           answer("One of them"),
+           answer("Two of them", correct = TRUE),
+           answer("Three of them"))
+)
+```
+
+```{r mail, echo=FALSE}
+mailing_list
+```
+
+```{r mailing-quiz, echo=FALSE}
+quiz(
+  question("Attributes of tidy data:",
+           answer("One of them", correct = TRUE),
+           answer("Two of them"),
+           answer("Three of them"))
+)
+```
+
+Convert `census` to tidy data:
+
+```{r census-tidy, exercise=TRUE, error=TRUE}
+tidy_census <- <function>(<arguments for function>)
+```
+
+```{r census-tidy-hint-1, error=TRUE}
+tidy_census <- pivot_longer(<arguments for function>)
+```
+
+```{r census-tidy-solution}
+tidy_census <- pivot_longer(data = census,
+                            cols = city_2016:city_2020,
+                            names_to = "Year",
+                            values_to = "City")
+```
+
+Bonus! Using two functions, remove the "city" prefix from the values in the `Year` column.
+
+```{r city-remove, exercise=TRUE, error=TRUE, exercise.setup="census-tidy-solution"}
+tidier_census <- tidy_census %>%
+  <first function>(<arguments for first function>) %>%
+  <second function>(<arguments for second function>)
+```
+
+```{r city-remove-hint-1, error=TRUE}
+tidier_census <- tidy_census %>%
+  separate(<arguments for function>) %>%
+  select(<arguments for function>)
+```
+
+```{r city-remove-solution}
+tidier_census <- tidy_census %>%
+  separate(col = Year, into = c("remove", "Year"), sep = "_") %>%
+  select(-remove)
+```
+
+## Joining Data
+
+Often, you'll be working with more than one data frame and want to join them together in a meaningful way. There are two options:
+
+- Binding based on rows or columns
+- Joining based on values
+
+### Binding data frames
+
+Pretend you're a researcher studying beaver populations at four sites. Every day, you go through the camera footage and count how many beavers have passed by. A log looks like this:
+
+```{r beaver-1}
+day1_data
+```
+
+On the second day, you ask your assistant to perform the same task. This is their log:
+
+```{r beaver-2}
+day2_data
+```
+
+To analyze results over time, you need to combine the two data frames. Since they both have the same columns (`date`, `site`, and `beavers`), you can "stack" them vertically. To do this in R, you can use the `rbind()` function, which binds the rows of two data frames together. 
+
+```{r rbind, exercise=TRUE, error=TRUE}
+rbind(<first data frame>, <second data frame>)
+```
+
+```{r rbind-solution}
+rbind(day1_data, day2_data)
+```
+
+### Joining data frames based on values
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
