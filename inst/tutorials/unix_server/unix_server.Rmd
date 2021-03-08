@@ -83,12 +83,12 @@ Enter some text like "mew mew mew!" Then write out/save (by pressing \^O or Ctrl
 
 Then exit (<kbd>Ctrl</kbd>+<kbd>X</kbd>) and use `ls` to see your new file!
 
+<!-- Expand on ssh keys
 ```{bash eval = FALSE}
-ssh-keygen -t rsa -b 4096
-ssh-copy-id -i ~/.ssh/tatu-key-ecdsa <username>@<server
+ssh-keygen -t rsa -b 2048
+ssh-copy-id -i ~/.ssh/<key name> <username>@<server address>
 ```
-
-
+-->
 
 ## File transfer to/from the server
 
@@ -121,9 +121,11 @@ Let's copy the `kitten.txt` file from the server `sandbox` to our local director
 scp <username>@<server address>:~/practice/kitten.txt ~/my_first_transfer
 ```
 
+<!-- Expand on `rsync`
     rsync -ahRvu --stats <from/> <to>
     rsync -ahnvu --stats from to
     rsync -ahRvu --stats ~/Documents/ ~/Documents
+-->
 
 ### Running jobs in the background
 
