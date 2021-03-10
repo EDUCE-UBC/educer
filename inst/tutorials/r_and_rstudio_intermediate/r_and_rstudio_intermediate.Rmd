@@ -37,6 +37,16 @@ scores <- data.frame(
   test_2 = c(57, 82, 91, 68, 80)
 )
 
+scores2 <- pivot_longer(scores,
+                        cols = test_1:test_2,
+                        names_to = "test",
+                        values_to = "score")
+
+tidy_scores <- separate(scores2,
+                        col = sex_age,
+                        into = c("sex", "age"),
+                        sep = "_")
+
 jellybeans <- data.frame(
   name = c("Mike", "Linda", "Sam", "Esther", "Alex"),
   recess = c(12, 8, 4, 13, 9),
@@ -71,6 +81,26 @@ day2_data <- data.frame(
   date = c("02-03-2021", "02-03-2021", "02-03-2021", "02-03-2021"),
   site = c("Northwest", "Southwest", "North", "South"),
   beavers = c(3, 15, 4, 5)
+)
+
+all_data <- rbind(day1_data, day2_data)
+
+beaver_geo <- data.frame(
+  site = c("Northwest", "Southwest", "North", "East"),
+  elevation_m = c(0, 200, 50, 500),
+  river_width_m = c(25, 50, 10, 45)
+)
+
+tree_width <- data.frame(
+  site = c("Northwest", "North", "North", "Southwest", "Southwest"),
+  species = c("Fir", "Pine", "Cedar", "Cedar", "Spruce"),
+  width_m = c(10, 8, 30, 2, 5)
+)
+
+tree_height <- data.frame(
+  site = c("Northwest", "North", "South", "North", "Southwest"),
+  species = c("Fir", "Cedar", "Pine", "Pine", "Fir"),
+  height_m = c(50, 25, 100, 45, 15)
 )
 ```
 
@@ -227,7 +257,7 @@ tidy_scores <- separate(<arguments>)
 tidy_scores
 ```
 
-```{r tidier-scores-solution}
+```{r tidier-scores-solution, exercise.setup = "tidy-scores-solution"}
 tidy_scores <- separate(scores2,
                         col = sex_age,
                         into = c("sex", "age"),
@@ -343,24 +373,99 @@ day2_data
 To analyze results over time, you need to combine the two data frames. Since they both have the same columns (`date`, `site`, and `beavers`), you can "stack" them vertically. To do this in R, you can use the `rbind()` function, which binds the rows of two data frames together. 
 
 ```{r rbind, exercise=TRUE, error=TRUE}
-rbind(<first data frame>, <second data frame>)
+all_data <- rbind(<first data frame>, <second data frame>)
 ```
 
 ```{r rbind-solution}
-rbind(day1_data, day2_data)
+all_data <- rbind(day1_data, day2_data)
 ```
 
 ### Joining data frames based on values
 
+If two data frames share one column with the same elements, they can be merged based on the values of that column. For example, consider this data frame with geographic information on the beaver sites:
 
+```{r beaver-site-geo}
+beaver_geo
+```
 
+You'll notice that there aren't any geographical information recorded for the Southwest site, and no beaver counts for the East site. In the `all_data` data frame, sites are repeated as beavers are counted daily. How would you add this new geographical information to the `all_data` data frame? By using the `*_join()` functions!
 
+There are four main types of `*_join()` functions:
 
+- `inner_join()`: Keeps only rows whose values are present in both data frames
+- `left_join()` and `right_join()`: Keeps only rows whose values are present in either the first or second data frame, respectively
+- `full_join()`: Keeps all rows from both data frames
 
+These functions take three basic arguments:
 
+- x: The first, or "left", data frame
+- y: The second, or "right", data frame
+- by: If you want to join by one column with the same name, you don't need to specify this argument. If not, read on!
 
+Here's what these functions look like when applied to `all_data` and `beaver_geo`:
 
+**Inner join**:
 
+```{r inner, error = TRUE, exercise.setup = "rbind-solution"}
+inner_join(x = all_data, y = beaver_geo)
+```
+
+As you can see, the South and East sites aren't present in the new data frame as they aren't present in both input data sets. 
+
+**Left join**:
+
+```{r left, error = TRUE, exercise.setup = "rbind-solution"}
+left_join(x = all_data, y = beaver_geo)
+```
+
+Since we don't have geographical information for the South site, those cells have NA as their value.
+
+**Right join**:
+
+```{r right, error = TRUE, exercise.setup = "rbind-solution"}
+right_join(x = all_data, y = beaver_geo)
+```
+
+Compare this data frame to the one above. How are they different? 
+
+**Full join**:
+
+```{r full, error = TRUE, exercise.setup = "rbind-solution"}
+full_join(x = all_data, y = beaver_geo)
+```
+
+#### Joining by more than one column
+
+You and your research assistant also want to collect measurements on nearby trees at the sites. You're responsible for measuring the height of trees while they measure the width. At the end of the day, there are two data frames:
+
+```{r tree_measure}
+tree_height
+tree_width
+```
+
+You want to match up the width and height of trees, and figure out which trees are missing measurements. 
+
+```{r join_type, echo = FALSE}
+quiz(
+  question("Which `*_join()` function do you need?",
+           answer("Inner"),
+           answer("Left"),
+           answer("Right"),
+           answer("Full", correct = TRUE))
+)
+```
+
+Use the correct join function to join the two data frames by both the site and species columns:
+
+```{r tree_join, error = TRUE, exercise = TRUE}
+full_join(x = <first data frame>, y = <second data frame>, by = <character vector of column names>)
+```
+
+```{r tree_join_solution}
+full_join(tree_height, tree_width, by = c("site", "species"))
+```
+
+#### Joining data frames with different column names
 
 
 
