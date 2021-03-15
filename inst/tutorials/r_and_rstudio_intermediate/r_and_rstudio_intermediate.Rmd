@@ -102,6 +102,35 @@ tree_height <- data.frame(
   species = c("Fir", "Cedar", "Pine", "Pine", "Fir"),
   height_m = c(50, 25, 100, 45, 15)
 )
+
+beaver_colour <- data.frame(
+  beaver_id = c("101", "102", "103"),
+  beaver_colour = c("brown", "green", "tan")
+)
+
+beaver_weight <- data.frame(
+  name = c("101", "102", "103"),
+  beaver_weight = c(50, 23, 45)
+)
+
+game_prices <- data.frame(
+  name = c("FIFA 2020", "Cyberpunk 2077", "Stardew Valley", "Call of Duty V"),
+  price = c(30, 50, 25, 10)
+)
+
+player_stats <- data.frame(
+  name = c("Joe", "Claire", "James", "Paul", "Alice"),
+  most_played = c("Cyberpunk 2077", "Call of Duty V", "Cyberpunk 2077", "Stardew Valley", "Stardew Valley"),
+  hrs_game_perweek = c(10, 4, 12, 2, 20)
+)
+
+player_stats2 <- data.frame(
+  name = c("Joe", "Claire", "James", "Paul", "Alice"),
+  most_played = c("Cyberpunk 2077", "Chess", "Stardew Valley", "FIFA 2020", "Chess"),
+  hrs_game_perweek = c(5, 24, 8, 12, 3)
+)
+
+players_bind <- rbind(player_stats, player_stats2)
 ```
 
 ## Learning objectives
@@ -467,13 +496,102 @@ full_join(tree_height, tree_width, by = c("site", "species"))
 
 #### Joining data frames with different column names
 
+A type of algae is blooming in the fur of some beavers, turning them green. You and your assistant are tasked with tracking their colour and weight:
 
+```{r beaver-w}
+beaver_colour
+beaver_weight
+```
 
+You want to merge your work, but there are no columns with the same name. However, it's clear that `name` and `beaver_id` are referring to the same attribute. In cases like this, you can pass a named vector to the `by` argument of the `*_join()` functions:
 
+```{r special-by, exercise = TRUE}
+inner_join( # for this exercise, you can use any *_join() function
+  beaver_colour,
+  beaver_weight,
+  by = c("beaver_id" = "name") # column names are passed in the order of the data frames
+)
+```
 
+### Check Your Understanding
 
+You've been tasked with observing the trend between video game costs and how long people spend playing them. You have data on the prices of four games and the time five people spent playing them over the last week. 
 
+```{r game}
+game_prices
+player_stats
+```
 
+If you were to merge the two data frames in the order they appear and keep only the rows with games that are in both datasets, which `*_join()` function would you use?
+
+```{r join_type2, echo = FALSE}
+quiz(
+  question("Which `*_join()` function do you need?",
+           answer("Inner", correct = TRUE),
+           answer("Left"),
+           answer("Right"),
+           answer("Full"))
+)
+```
+
+Merge them below:
+
+```{r merge-game, exercise = TRUE, error = TRUE}
+merged_df <- <join function>(<arguments for join function>)
+merged_df
+```
+
+```{r merge-game-hint-1}
+merged_df <- inner_join(x = <first data frame>,
+                        y = <second data frame>,
+                        by = <named vector>)
+```
+
+```{r merge-game-solution}
+merged_df <- inner_join(x = game_prices,
+                        y = player_stats,
+                        by = c("name" = "most_played"))
+```
+
+You check in with your study population a week later, and get some interesting results:
+
+```{r game2}
+player_stats2
+```
+
+First, bind this data frame with the data from last week:
+
+```{r game-bind, error = TRUE, exercise = TRUE}
+players_bind <- <function for binding>(<arguments for function>)
+players_bind
+```
+
+```{r game-bind-solution}
+players_bind <- rbind(player_stats, player_stats2)
+```
+
+Next, you want to merge with `game_prices` again, but keep all of the games that appear in `players_bind` in order to see if there are any popular games you weren't aware of. If `game_prices` is the first data frame, which `*_join()` function do you need?
+
+```{r join_type2, echo = FALSE}
+quiz(
+  question("Which `*_join()` function do you need?",
+           answer("Inner"),
+           answer("Left"),
+           answer("Right", correct = TRUE),
+           answer("Full"))
+)
+```
+
+Merge the two data frames:
+
+```{r game-merge2, exercise = TRUE, error = TRUE}
+all_merged <- <join function>(<arguments for join function>)
+all_merged
+```
+
+```{r game-merge2-solution}
+all_merged <- right_join(game_prices, players_bind, by = c("name" = "most_played"))
+```
 
 ## Review
 
