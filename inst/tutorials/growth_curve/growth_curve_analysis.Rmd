@@ -1,0 +1,566 @@
+---
+title: "E. coli growth rate analysis"
+author: "Avery J. C. Noonan<br>
+        Enabled by notes from Stephan Koenig and Linnea, as well as the contribution of several EDUCE TAs. <br>
+        A tutorial by [ECOSCOPE](http://ecoscope.ubc.ca/) at UBC."
+date: "version `r format(Sys.time(), '%B %d, %Y')`"
+description: In-depth description will follow.
+output:
+  learnr::tutorial:
+      progressive: true
+      allow_skip: true
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+# General learnr setup
+library(learnr)
+library(gradethis)
+library(knitr)
+library(berryFunctions)
+gradethis_setup()
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
+library(educer)
+# Helper function to set path to images to "/images" etc.
+setup_resources()
+
+# Tutorial specific setup
+library(tidyverse)
+library(growthrates)
+
+# Helper functions
+calc_blank <- function(dataframe, Media) {
+  blank_OD <- dataframe %>%
+    filter(!is.na(Time)) %>%
+    filter(blank == TRUE, media == Media ) %>%
+    summarise(blank_OD = min(OD600))
+
+  blank_OD[[1]]
+}
+
+growthrate_model <- function(filtered_dataframe) {
+  growth_fit <-fit_easylinear(filtered_dataframe$Time,
+                              filtered_dataframe$net_OD600)
+  
+  growth_fit@par[[3]]
+}
+
+growthrate_plot <- function(filtered_dataframe) {
+  growth_fit <- fit_easylinear(filtered_dataframe$Time,
+                               filtered_dataframe$net_OD600)
+  return(plot(growth_fit))
+}
+
+calc_growthrates <- function(dataframe) {
+  growth_rates <- dataframe %>%
+    distinct(interaction(well), .keep_all = TRUE) %>%
+    select(c(well, student, blank, media)) %>%
+    filter(blank == FALSE)
+  
+  growth_rates$growth_rate <- NA
+  for (w in 1:length(growth_rates$well)){
+    growth_rate_data <- dataframe %>%
+    filter(well == growth_rates$well[w])
+    
+    error_check <- is.error(fit_easylinear(growth_rate_data$Time,
+                                           growth_rate_data$net_OD600))
+    if (error_check == FALSE) {
+      growth_fit <- fit_easylinear(growth_rate_data$Time,
+                                   growth_rate_data$net_OD600)
+      growth_rates$growth_rate[w] = growth_fit@par[[3]]
+    }
+  }
+  growth_rates
+}
+
+# Setup for common variables
+raw_growth_data <- read_csv(system.file("resources/data",
+                                        "growth_data.csv",
+                                        package = "educer"),
+                            skip = 12)
+
+
+well_data <- read_csv(system.file("resources/data",
+                                  "well_information.csv",
+                                  package = "educer")) %>% 
+  filter(!is.na(media))
+
+growth_data <- raw_growth_data %>%
+  pivot_longer(-c(Time, Temp), names_to = "well", values_to = "OD600") %>% 
+  inner_join(well_data, .)
+
+blank_LB <- calc_blank(growth_data, "LB")
+blank_MM <- calc_blank(growth_data, "MM")
+
+growth_data <- mutate(growth_data, net_OD600 = OD600 - ifelse(media == "LB",
+                                                              blank_LB,
+                                                              blank_MM))
+
+growth_rates <- calc_growthrates(growth_data)
+```
+
+## Introduction
+
+Microbes depend on nutrients in their environment for their growth. But how can we show the impact of growth media on the growth of microbes? Previously, we grew *E. coli* cultures in a 96-well plate in both rich media (LB) and minimal media (MM).  Optical density (OD~600~) measurements of these cultures were taken over approximately 24 hours, as a metric of cell number, using a microplate reader.
+
+In this tutorial, we will import optical density (OD~600~) data and plot growth curves of the *E. coli* cultures. We will then use the growthrates package to calculate maximum growth rates, before determining whether there is a statistical difference in growth rates between LB and MM cultures.
+
+The learning objectives for this tutorial are:
+
+- Use `filter()` to choose specific rows of a data table.
+-	Demonstrate how to reshape data.
+- Demonstrate how to combine data.
+- Demonstrate how to plot data using R.
+- Explain the assumptions of a t-test.
+- Calculate *t*-test.
+- Explain what a *p*-value is and how it can be used.
+- Describe 1 benefit to using R and RStudio to process data.
+
+## Setup and data import
+
+Necessary packages are first loaded into R, using the `library(<package>)` function. In this tutorial, we use tidyverse and growthrates packages.
+
+```{r}
+library(tidyverse)
+library(growthrates)
+```
+
+Custom function were designed for this tutorial. For educational purposes details can be found in the "Helper Function" section of this tutorial.
+
+We will work with two files. `well_information.csv` contains the metadata for each well, i.e. who set up the well, was it a blank, and what media did it contain. `growth_data.csv` contains the OD~600~ measurements themselves. We will import both files using the `tidyverse` function `read_csv()`. When we look at `growth_data.csv` using a text editor like Notepad (Windows) or TextEdit (macOS), we notice that the first 12 rows contain run-specific information. The actual data, beginning with column names, start in row 13. We can tell `read_csv()` to `skip` the first `12` lines. 
+
+```{r import, message = FALSE}
+raw_growth_data <- read_csv(system.file("resources/data",
+                                        "growth_data.csv",
+                                        package = "educer"),
+                            skip = 12)
+
+well_data <- read_csv(system.file("resources/data",
+                                  "well_information.csv",
+                                  package = "educer"))
+```
+
+## Data processing
+
+When analyzing data, it is often important to reformat data sets so they can be combined. At the moment the metadata and  OD~600~ measurements are separate from each other and we need to combine them. After we have the combined data set, we will then subtract the blank reading for use function from the `tidyverse` package to reformat, combine and filter and well information data accordingly.
+
+The key steps in this process are:
+
+1. `raw_growth_data` reformatting with `pivot_longer()`.
+
+2. Remove empty wells from  `well_data` using `filter()`.
+
+2. Joining `growth_data` and `well_data` with `inner_join()`.
+
+3. Calculating `net_OD600` values (blank OD~600~ values subtracted from measured OD~600~) for each media type separately using `calc_blank(<dataframe>, <Media-Type>)`, `mutate()` and `ifelse()`.
+
+### Transforming data frame from wide to long format
+
+Before we can combine metadata and  OD~600~ measurements, we have to make sure that they are both in the correct format. Comparing `raw_growth_data` and `well_data`, we can see that each well in `raw_growth_data` has its own column (the well data is "wide") while in `well_data` all wells are collected into a single column (the well data is "long"). For that reason we have to first transform the well data in raw_growth_data` from wide to long (animation by [Garrick Aden‑Buie](https://www.garrickadenbuie.com/project/tidyexplain/).
+
+![](/images/pivot_wider_longer.gif)
+
+We can tranform the data using `pivot_longer()`. The first argument is the data frame, followed by the columns we want to pivot. In our case it is easier to define which columns we do NOT want to pivot. All the names of the well columns will be collected in a new column defined in the `name_to` argument, while all the values of the well columns will be collected in a new column defined in the `values_to` argument.
+
+```{r data_reformating1, exercise = TRUE, message = FALSE}
+growth_data <- pivot_longer(raw_growth_data,
+                            - c(Time, Temp),
+                            names_to = "well",
+                            values_to = "OD600")
+```
+
+### Removing empty wells
+
+When we explore the `well_data`, we see a lot of wells that were empty, i.e. they only contain `NA`s for all columns other than the well. We can `filter()` the rows by for each row that is not `NA`. `is.na()` checks for `NA`, while `!` means "not" and will give us only the rows that or not `NA`. We will filter out any wells that did not contain any `media`.
+
+```{r}
+well_data <- filter(well_data, !is.na(media))
+```
+
+### Combining two data frames
+
+We are finally ready to combine the two data frames with `inner_join()`. `inner_join()` takes two data frames and looks for a column that is shared between them (in our case `well`). It then fuses the rows that share the same value in that column. In an `inner_join()` any non-mating row are discarded. For example, since we removed all empty wells in `well_data` those wells are also dropped from `growth_data`.
+
+![](/images/inner_join.gif)
+
+```{r}
+growth_data <- inner_join(well_data, growth_data)
+```
+
+### Subtracting blank OD~600~ reading
+
+Our data is almost ready for plotting. In our final step we have to first determine the blank OD~600~ value for both media. We have provided you with helper function `calc_blank(<dataframe>, <Media-Type>)` that determines the lowest OD~600~ reading for a given medium across the whole experiment.
+
+```{r}
+blank_LB <- calc_blank(growth_data, "LB")
+blank_MM <- calc_blank(growth_data, "MM")
+```
+
+Finally, we want to subtract the blank reading from the bacterial cultures. We can create a new variable using the `mutate(<data frame>, <new variable> = <some calculation>)` function. In our case we want to subtract `blank_LB` if the media is `"LB"` and `blank_MM` if media is `"MM"`. We can do so by using `ifelse(<condition>, <true value>, <false value>)`, which returns `<true value>` if the `<condition>` is `TRUE`, and `<false value>` if `FALSE`.
+
+```{r}
+growth_data <- mutate(growth_data, net_OD600 = OD600 - ifelse(media == "LB",
+                                                              blank_LB,
+                                                              blank_MM))
+```
+
+Use the interactive box below to calculate (as shown above) and display the values of `blank_LB` and `blank_MM` variables.
+
+```{r data_reformating2, exercise = TRUE}
+blank_LB <-
+print(blank_LB)
+  
+blank_MM <- 
+print(blank_MM)
+```
+
+What is the value of `blank_LB`?
+
+```{r blank_LB_check, exercise=TRUE}
+
+```
+
+```{r blank_LB_check-check}
+grade_result(
+  pass_if(~identical(.result, 0.085))
+)
+```
+
+What is the value of `blank_MM`?
+
+```{r blank_MM_check, exercise=TRUE}
+
+```
+
+```{r blank_MM_check-check}
+grade_result(
+  pass_if(~identical(.result, 0.075))
+)
+```
+
+```{r letter-a, echo=FALSE}
+question("Does the relationship between `blank_LB` and `blank_MM` values make sense?",
+  answer("No, we would expect values to be identical"),
+  answer("Yes, LB medium is darker coloured that Minimal medium, so we expect the OD~600~ of LB to be slightly higher", correct = TRUE),
+  answer("No, Minimal medium is darker coloured that LB medium, so we expect the OD~600~ of MM to be slightly higher"),
+  answer("We have no way of knowing what these values might be"),
+  random_answer_order = TRUE,
+  allow_retry = TRUE
+)
+```
+
+## Plotting growth curves
+
+*E. coli* growth curves represent the optical density of cultures over time. The shape of these curves has been extensively characterized by the scientific community and plotting these curves can help identify irregularities or contamination.
+
+### Graphics with ggplot2
+
+ggplot2 is an add-on package to R aand is part of the tidyverse. It is an alternative to base graphics that has become very popular, to the point where it is recommended/preferred unless you have old code that already uses a different graphing package.
+
+*ggplot2* documentation is available at
+[docs.ggplot2.org](http://docs.ggplot2.org/current/)
+
+#### Why ggplot?
+
+- Wilkinson, *Grammar of Graphics* (1999)
+- ggplot2 is an implementation of Grammar of Graphics for R
+- Benefits:
+    - handsome default settings
+    - snap-together building block approach
+    - automatic legends, colors, facets
+    - statistical overlays: regressions lines and smoothers (with confidence intervals)
+- Drawbacks:
+    - it can be hard to get it to look *exactly* the way you want
+    - requires having the input data in a certain format
+
+### ggplot building blocks
+
+- data: 2D table (`data.frame`) of *variables*
+- *aesthetics*: map variables to visual attributes (*e.g.* position)
+- *geoms*: graphical representation of data (points, lines, etc.)
+- *stats*: statistical transformations to get from data to points in
+the plot(binning, summarizing, smoothing)
+- *scales*: control *how* to map a variable to an aesthetic
+- *facets*: juxtapose mini-plots of data subsets, split by variable(s)
+- *guides*: axes, legend, etc. reflect the variables and their values
+
+Idea: independently specify and combine the blocks to create the plot you want.
+
+There are at least three things we have to specify to create a plot:
+
+1. Data.
+2. Aesthetic mappings from data variables to visual properties.
+3. A layer describing how to draw those properties.
+
+### geom_point
+
+Let's begin by exploring scatterplots in ggplot using `geom_point()`.
+
+The first argument of ggplot is the data. We can either specify this argument within the ggplot function or pipe it in like so.
+
+```{r eval=FALSE}
+ggplot(growth_data)
+```
+
+The second argument is the aesthetics `aes`, where we specify visual attributes of our plot like the x- and y-variables.
+
+```{r}
+ggplot(growth_data, aes(x = Time, y = net_OD600))
+```
+
+Finally we add the geom to specify how we want to map our data onto these axes. Note how we add the geom by using a `+`.
+
+```{r}
+ggplot(growth_data, aes(x = Time, y = net_OD600)) +
+  geom_point()
+```
+
+We can also add custom labels using `labs()`.
+
+```{r}
+ggplot(growth_data, aes(x = Time, y = net_OD600)) +
+  geom_point() + 
+  labs(x = "Time (h:m:s)", y = "OD600")
+```
+
+The code below generates a graph showing all measured OD~600~ values over time.  Using the `filter()` function, modify the code below to show only non-blank samples.
+
+```{r plotting_growth_curves1, exercise = TRUE}
+ggplot(growth_data, aes(x = Time, y = net_OD600)) +
+  geom_point() + 
+  labs(x = "Time (h:m:s)", y = "OD600")
+```
+
+```{r plotting_growth_curves1-solution}
+ggplot(filter(growth_data, blank == FALSE), aes(x = Time, y = net_OD600)) +
+  geom_point() + 
+  labs(x = "Time (h:m:s)", y = "OD600")
+```
+
+Now copy the code above into the box below and define the `colour` aesthetic as `media`, in order to differentiate between LB and MM.
+
+```{r plotting_growth_curves2, exercise=TRUE}
+
+```
+
+```{r plotting_growth_curves2-solution}
+ggplot(filter(growth_data, blank == FALSE),
+       aes(x = Time, y = net_OD600, colour = media)) +
+  geom_point() + 
+  labs(x = "Time (h:m:s)", y = "OD600")
+```
+
+Try modifying the code to show only blank samples and use the `colour` aesthetic as `media`, in order to differentiate between LB and MM.
+
+```{r plotting_growth_curves3, exercise = TRUE}
+
+```
+
+```{r plotting_growth_curves3-solution}
+ggplot(filter(growth_data, blank == TRUE),
+       aes(x = Time, y = net_OD600, colour = media)) +
+  geom_point() + 
+  labs(x = "Time (h:m:s)", y = "OD600")
+```
+
+## Calculating growth rates
+
+Here, we use the `growthrate_model(<filtered dataframe>)` and `growthrate_plot(<filtered dataframe>)` functions to model and plot the maximum growth rate of a single sample.  To do this, first filter your data frame down to a single `well`.
+
+```{r test_growth_rates, exercise=TRUE}
+single_well_data <- filter(growth_data, well == "A10")
+
+growthrate_model(single_well_data)
+
+growthrate_plot(single_well_data)
+```
+
+Use the `growthrate_model()` and `growthrate_plot()` functions to calculate and plot maximum growth rates for the following cultures:
+
+```{r table1, echo = FALSE, results = "asis"}
+table <- growth_data %>%
+  filter(well %in% c("A2", "A4", "A8", "A10")) %>%
+  filter(Time == min(Time)) %>%
+  select(c(well, student, blank, media))
+
+kable(table, caption = "*Table 1*: Wells for `growthrate` calculations")
+```
+
+Using what you've learned, plot the growth curves for all of the wells identified in *Table 1*.
+
+```{r test_growth_rates1, exercise = TRUE}
+
+```
+
+```{r test_growth_rates1-hint-1}
+well == "***" # plot one well at a time filter for all 4 using the OR operator `|`
+```
+
+```{r test_growth_rates1-hint-2}
+filter(well == "A2" | well == "A4"...)
+```
+
+```{r test_growth_rates1-solution}
+growth_data %>%
+  filter(well == "A2" | well == "A4" | well == "A8" | well == "A10") %>%
+  ggplot(aes(x=Time, y=net_OD600, colour = media)) +
+  geom_point() + 
+  labs(x = "Time (h:m:s)", y = "OD600")
+```
+
+Using the functions described above, calculate and plot growthrates for all non-blank wells identified in _Table 1_ (the `growthrate_model()` is not designed to handle growth rates of near 0)
+
+```{r test_growth_rates2, exercise = TRUE}
+
+```
+
+```{r test_growth_rates2-hint-1}
+single_well_data <- growth_data %>% # dataframe must be filtered to 1 well
+  filter(well == "A4")
+```
+
+```{r test_growth_rates2-solution}
+single_well_data <- growth_data %>%
+  filter(well == "A4")
+
+growthrate_model(single_well_data)
+
+growthrate_plot(single_well_data)
+```
+
+What is the growth rate of well A4?
+
+```{r C4_check, exercise = TRUE}
+
+```
+
+```{r C4_check-check}
+grade_result(
+  pass_if(~identical(.result, 0.0001247002))
+)
+```
+
+What is the growth rate of well A10?
+
+```{r C10_check, exercise = TRUE}
+
+```
+
+```{r C10_check-check}
+grade_result(
+  pass_if(~identical(.result, 9.921588e-05))
+)
+```
+
+```{r growth_rates_question, echo = FALSE}
+question("Is the relationship between _E. coli_ growth rates in LB and MM as expected?",
+  answer("The max growth rate in LB is  more than 1.25 times the max growth rate in MM. We would expect it to be slightly higher.", correct = TRUE),
+  answer("The max growth rate in LB is more than 10 times the max growth rate in MM. We would expect it to be higher."),
+  answer("The max growth rate in LB is about 1.25 times the max growth rate in MM. This seem incorect, as we would expect it to be slightly lower."),
+  answer("We don't have a way of predicting the relationship between growth rates in LB vs. MM"),
+  answer("The max growth rate in MM is more than 1.25 times the max growth rate in LB This seem incorect, as we would expect it to be slightly lower."),
+  random_answer_order = TRUE,
+  allow_retry = TRUE
+  )
+```
+
+Use the `calc_growthrate(<dataframe>)` function to calculate growth rates for all the wells in a your dataframe, outputting a new dataframe.  
+
+```{r calculating_growth_rates, exercise = TRUE}
+growth_rates <-
+
+growth_rates
+```
+
+```{r calculating_growth_rates-solution}
+growth_rates <- calc_growthrates(growth_data)
+
+growth_rates
+```
+
+
+## Statistical analysis
+
+In order to determine whether there is a significant difference between growth rates in LB and MM media, we will employ the `t.test()` function. Growth rate distributions are also plotted using the `geom_boxplot()` function, from the `ggplot2` package.
+
+### *t*-test
+
+-   Compares 2 sample means.
+-   Null hypothesis H~0~: the population means are not different.
+-   Alternate hypothesis H~1~: the population means are different.
+-   Hypotheses are about the underlying **populations** even though we only have data from samples.
+-   The alternate says *nothing* about greater than / less than.
+
+### *t*-test assumptions
+
+1.  Simple random sample.
+2.  Approximately normal distributions of sample means.
+3.  Reasonably large sample size.
+4.  Equal sample sizes\*.
+5.  Equal sample variances\*.
+
+\* Different equations exist if these are not true.
+
+### Data distribution
+
+Understanding the distribution of data and the relationship between data sets is important in determining what kind of statistical analyses should be performed. Since we want to apply a *t*-test, we have to ensure that our data is normally distributed.
+
+In the following section, we plot the distribution of the calculated growth rates using the `geom_density()` function from `ggplot2`
+
+Use what you learned previously about plotting with `ggplot()` the distributions of **growthrate** in the `growth_rates` data frame you made earlier. *(Note that only the `x = growthrate` and `color = media` aesthetics need to be defined for the `geom_density` function.)*
+
+```{r data_distribution, exercise = TRUE}
+
+```
+
+```{r data_distribution-hint-1}
+growth_rates %>%
+  ggplot(<your code>) +
+  <your code>
+```
+
+```{r data_distribution-hint-2}
+growth_rates %>%
+  ggplot(aes(<your code>)) +
+  geom_density()
+```
+
+```{r data_distribution-solution}
+growth_rates %>%
+  ggplot(aes(x = growth_rate, color = media)) +
+  geom_density()
+```
+
+
+```{r data_distribution_shapiro, exercise = TRUE}
+LB_rates <- growth_rates %>%
+  filter(media == "LB")
+
+MM_rates <- growth_rates %>%
+  filter(media == "MM")
+
+shapiro.test(LB_rates$growth_rate)
+
+shapiro.test(MM_rates$growth_rate)
+```
+
+### *t*-test
+
+Now that we have established that the growth rates for each sample are normally distributed, we can perform the *t*-test.
+
+```{r staistical_analysis, exercise = TRUE}
+ggplot(growth_rates, aes(x = media, y = growth_rate, fill = media)) +
+  geom_boxplot()
+
+growth_rate_ttest <- t.test(growth_rate ~ media,
+                            data = growth_rates,
+                            paired = FALSE)
+growth_rate_ttest
+```
+
+### The *p*-value
+
+-   Probability value.
+-   Measure of significance.
+-   Probability that the difference in means would be $\geq$ the observed results if the true population means are not different (H~0~).
+-   Probability of a false positive (i.e. you conclude that the population means are different when, in reality, they're actually not).
