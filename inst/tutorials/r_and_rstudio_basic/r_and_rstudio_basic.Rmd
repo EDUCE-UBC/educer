@@ -1,0 +1,623 @@
+---
+title: "Introduction to R and RStudio Fundamentals"
+author: "Michelle Kang (adapted from Dr. Kim Dill-McFarland)"
+date: "version `r format(Sys.time(), '%B %d, %Y')`"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+description: Welcome to R! If you want to analyze and visualize data reproducibly, you've come to the right place. This tutorial covers the basics of R and RStudio. RStudio is a free program used for coding in R. After learning about its features and functionality, we will dive into R language basics.
+---
+
+```{r setup, include = FALSE}
+# General learnr setup
+library(learnr)
+knitr::opts_chunk$set(echo = TRUE)
+library(educer)
+# Helper function to set path to images to "/images" etc.
+setup_resources()
+
+# Tutorial specific setup
+library(dplyr)
+library(readr)
+library(tidyverse)
+total <- 4
+```
+
+## Learning objectives
+
+Here's what you'll learn from each section of this tutorial:
+
+A Tour of RStudio:
+
+- Name the three panes in RStudio and what they do
+- Change the sizes of the panes
+- Navigate through the console using common keyboard shortcuts
+- Change the appearance of RStudio
+
+RStudio Projects:
+
+- List the benefits of using RStudio Projects
+- Create a new RStudio Project
+- Open or switch to an existing RStudio Project
+
+R Scripts:
+
+- Create an R script file
+- List the benefits of using R scripts
+- Annotate R scripts with comments
+
+Variables in R:
+
+- Declare variables
+- Perform operations to change the value of variables
+
+Functions in R:
+
+- Explain what functions and arguments are
+- Use R to understand how any given function works
+- Recognize string, numeric, and logical data types
+- Identify required and optional arguments for functions
+
+Vectors and Data Frames:
+
+- Explain what vectors and data frames are
+- Create vectors
+- Understand what NAs are
+
+R Packages:
+
+- Understand what R packages are and how they are used
+- Install and load packages
+
+## A Tour of RStudio {#object}
+
+When you start RStudio, you will see something like the following window appear:
+
+![](/images/rstudio.png){width=100%}
+
+Notice that the window has three "panes":
+
+- Console (lower left side): this is your view of the R engine. You can type in R commands here and see the output printed by R. (To tell them apart, your input is in blue, and the output is black.) There are several editing conveniences available: up and down arrow keys to go back to previously entered commands which you then can edit and re-run, TAB for completing the name before the cursor, and so on. See more in [online docs](http://www.rstudio.com/ide/docs/using/keyboard_shortcuts).
+
+- Environment/History/Tutorial (tabbed in the upper right): view current user-defined objects and previously-entered commands, and access tutorials.
+
+- Files/Help/Plots/Packages (tabbed in the lower right): as their names suggest, you can view the contents of the current directory, the built-in help pages, and the graphics you created, as well as manage R packages.
+
+To change the look of RStudio, you can go to Tools &rarr; Global Options &rarr; Appearance and select colours, font size, etc. If you plan on working for longer periods of time, we suggest choosing a dark background colour which is less hard on your computer battery and your eyes.
+You can also change the sizes of the panes by dragging the dividers or clicking on the expand and compress icons at the top right corner of each pane.
+
+### Check Your Understanding
+
+The command below is used to display the object `dog`. However, when running it, you get an error.
+
+```{r object-error, exercise=TRUE, error = TRUE}
+dog
+```
+
+```{r Tour, echo=FALSE}
+quiz(
+  question("Where would you type the command?",
+    answer("The console", correct=TRUE),
+    answer("The History tab"),
+    answer("The Help tab")),
+  
+  question("Where would `dog` show up if it had been defined in R?",
+    answer("The console"),
+    answer("The Files tab"),
+    answer("The Environment tab", correct=TRUE))
+)
+```
+
+## RStudio Projects
+
+When you create a project, RStudio creates an `.Rproj` file that links all of your files and outputs to the project directory. When you import data from a file, R automatically looks for it in the project directory instead of you having to specify a full file path on your computer (like `/Users/<username>/Desktop/`). R also automatically saves any output to the project directory. Finally, projects allow you to save your R environment in `.RData` so that when you close RStudio and then re-open it, you can start right where you left off without re-importing any data or re-calculating any intermediate steps.
+
+RStudio has a simple interface to create and switch between projects, accessed from the button in the top-right corner of the RStudio window. (Labeled "Project: (None)", initially.)
+
+Let's create a project to work in for this tutorial. Start by clicking the "Project" button in the upper right or going to the "File" menu. Select "New Project", and the following will appear:
+
+![](/images/create_project.png){width=75%}
+
+
+Choose "New Directory" followed by "New Project" and click on "Browse...". Navigate to your Desktop, and name the directory `<course_name> R`(replace `<course_name>` with the name of your class, e.g. `MICB301`) for this project.
+
+After your project is created, navigate to its directory using your Finder/File explorer or the integrated Terminal in RStudio. You will see the ".RProj" file has been created.
+
+You can open this project in the future in one of three ways:
+
+- In your file browser (e.g. Finder or Explorer), simply double-click on the `.RProj` file 
+- In an open RStudio window, choose "File" &rarr; "Open Project"
+- Switch among projects by clicking on the R project symbol in the upper left
+corner of RStudio
+
+
+## R Scripts
+
+R script files are the primary way in which R facilitates reproducible research. They contain the code that loads your raw data, cleans it, performs the analyses, and creates and saves visualizations. R scripts maintain a record of everything that is done to the raw data to reach the final result. That way, it is very easy to write up and communicate your methods because you have a document listing the precise steps you used to conduct your analyses. This is one of R's primary advantages compared to traditional tools like Excel, where it may be unclear how to reproduce the results. 
+
+Generally, if you are testing an operation (*e.g.* what would my data look like if I applied a log-transformation to it?), you should do it in the console (left pane of RStudio). If you are committing a step to your analysis (*e.g.* I want to apply a log-transformation to my data and then conduct the rest of my analyses on the log-transformed data), you should add it to your R script so that it is saved for future use. 
+
+Additionally, you should annotate your R scripts with comments. In each line of code, any text preceded by the `#` symbol will not execute. Comments can be useful to remind yourself and to tell other readers what a specific chunk of code does. 
+
+Let's create an R script (File > New File > R Script) and save it as `tidyverse.R` in your main project directory. If you again look to the project directory on your computer, you will see `tidyverse.R` is now saved there.
+
+We can copy and paste the previous commands in this tutorial and aggregate it in our R script.
+
+
+## Variables in R
+
+### Defining Variables
+
+We use variables to store data that we want to access or manipulate later. Variables must have unique names.  
+
+Without declaring a variable the sum of these two numbers will be printed to console but cannot be accessed for future use:
+
+```{r novar, exercise=TRUE}
+2 + 2 
+```
+
+To declare a variable, follow the pattern of: `variable <- value`. Let's declare a variable `total` as the sum of two numbers.
+
+```{r d_var, exercise=TRUE}
+total <- 2 + 2
+```
+
+We access the value of `total`:
+
+```{r var, exercise=TRUE}
+total
+```
+
+We can use the value stored in `total`:
+
+```{r sub_var, exercise=TRUE}
+total - 1
+```
+
+After declaring a variable, we can perform operations to change the value stored in the variable:
+
+```{r sub_var2, exercise=TRUE}
+total <- total - 1
+
+
+total
+```
+
+Now it's your turn! Declare a variable `product` and set its value to the product of the numbers 3 and 5. Next, using the variable `product`, declare a variable called `difference`, whose final value is 8.
+
+```{r product, exercise=TRUE}
+# First declare "product"
+product
+
+# Operate on "product" to get 8 as the value for "difference"
+difference
+```
+
+```{r product-hint-1}
+# First declare "product"
+product <- #your code here
+
+# Operate on "product" to get 8 as the value for "difference"
+difference <- product #your code here
+```
+
+```{r product-solution}
+# First declare "product"
+product <- 3 * 5
+
+# Operate on "product" to get 8 as the value for "difference"
+difference <- product - 7
+```
+
+### Check Your Understanding
+
+Without running the code below, what is the final value of `x`?
+
+```{r solve-x, exercise=TRUE, exercise.eval=FALSE}
+x <- 5
+y <- 2
+x <- y * x
+y <- x - 4
+```
+
+```{r solve-x-q, echo=FALSE}
+quiz(
+  question("What is the final value of `x`?",
+    answer("5"),
+    answer("10", correct=TRUE),
+    answer("6"))
+)
+```
+
+## Functions in R {#functions}
+
+### Overview 
+
+Functions are one of the basic units in programming. Generally speaking, a function takes some input and generates some output, in a reproducible way. Every R function follows the same basic syntax, where `function()` is the name of the function and `arguments` are the different parameters you can specify (i.e. your input):
+
+`function(argument1 = ..., argument2 = ..., ...)`
+
+You can treat functions as a black box and do not necessarily need to know how it works under the hood as long as your provided input conforms to a specific format.
+
+![](/images/function.png){width=75%}
+
+For example, the function `sum()` (which outputs the sum of the arguments) expects numbers:
+
+```{r sum_function, exercise=TRUE}
+sum(3, 5, 9, 18)
+```
+
+If you instead pass text as arguments to `sum()` you will receive an error:
+
+```{r sum_text, exercise=TRUE, error = TRUE}
+sum("Sum", "does", "not", "accept", "text!")
+```
+
+On the other hand, the function `paste()`, which links together words, does accept text as arguments. 
+
+```{r paste_function, exercise=TRUE}
+paste("Hello", "world", sep = " ")
+```
+
+### Data Types in R
+
+You've seen that `paste()` operates on text while `sum()` does not. In other words, different functions accept different data types. In this section, we'll cover three basic data types: numeric, character, and logical. The function `class()` tells you what the variable's type is.
+
+Run the code below:
+
+```{r class, exercise=TRUE}
+y <- 4
+class(y)
+```
+
+As you can see, numbers are of type numeric. Now, run the next code block. Is the output the same? If not, what changed?
+
+```{r class-string, exercise=TRUE}
+z <- "4"
+class(z)
+```
+
+When you put numbers and letters in quotations, the variable they're assigned to is of type character. If you write text without quotes, however, R assumes you're referring to a variable. Can you change the code so that it runs without errors?
+
+```{r quotes, exercise=TRUE, error=TRUE}
+a <- hello
+a
+```
+
+```{r quotes-solution}
+a <- "hello"
+a
+```
+
+The last data type we'll cover is logical, which takes on the values of `TRUE` or `FALSE`. In addition to being function arguments, they are also the outputs of logical statements. Logical statements use logical operators to compare two elements. You've likely seen some of the logical operators before, but here is a list of the basic ones:
+
+```{r logical, exercise=TRUE}
+0 < 1 # smaller than
+0 >= 0 # larger-or-equal to
+5 == 7.1 # equal to. Note TWO equal symbols.
+"cat" == "dog" # you can also use this symbol to compare text
+5 != pi # not equal to
+```
+
+Run the code below. Is it what you expected? Based on the code above, what's missing?
+```{r equal, exercise=TRUE, error=TRUE}
+5 = 7
+```
+
+In R, to test if two elements are equal, you have to use two equal signs. When you use only one, R assumes you're trying to assign a value to a variable. We can't assign 7 to 5, so an error gets thrown. 
+
+Below, write two logical statements using the template, one evaluating to `TRUE` and the other to `FALSE`.
+
+```{r logical-statements, exercise=TRUE}
+# ... <= ...
+# ... == ...
+```
+
+### Getting Help
+
+You can get help with any function in R by inputting `?function_name` into the Console. This will open a window in the bottom right under the Help tab with information on that function, including input options and example code.
+
+```{r eval = FALSE}
+?read_delim
+```
+
+The **Description** section tells us that `read_delim()` is a general case of the function we used, `read_csv()`, and `read_tsv()`.  
+
+The **Usage** section tells us the inputs that need to be specified and default inputs of read_delim:
+
+- `file` and `delim` need to be specified as they are not followed by `=`
+- all other parameters have a default value e.g. `quote = "\"` and do not have to be specified to run the function.
+
+The **Arguments** Section describes the requirements of each input argument in detail.   
+
+The **Examples** Section has examples of the function that can be directly copy and pasted into your terminal and ran. 
+
+Another example from base R that may be widely used is the function `nrow()` 
+
+```{r eval = FALSE}
+?nrow
+```
+
+The **Description** section tells us that `nrow()` from a matrix or an array.
+
+The **Usage** section tells us the inputs that need to be specified and default inputs of `nrow()`:
+
+- `x` is the data matrix or array for which the user is interested in identifying the number of rows
+
+The **Arguments** Section describes the requirements of each input argument in detail.
+
+The **Examples** Section has examples of the function that can be directly copy and pasted into your terminal and ran.
+
+
+
+Tidyverse is a wrapper for many valuable functions widely used in R. One of the examples from Tidyverse would be `select()`
+
+```{r eval = FALSE}
+if (!require("tidyverse")) install.packages("tidyverse")
+library(tidyverse)
+?select
+```
+
+The **Description** section tells us that `select()` can be used to select certain columns from a parent dataset, or optionally rename the columns
+
+The **Overview of selection features** section provides the user a list of operators and selection helpers to fully realize the power of `select()` 
+
+The **Usage** section tells us the inputs that need to be specified and default inputs of `select()`
+
+- `.data` is a mandatory input which refers to the parent dataset or tibble to subset from
+- the helper functions and list of operators could be used to specify the columns to subset
+
+The **Value** section describes an object integral to `select()`. A more descriptive account can be read in the help section
+
+The **Method** section describes the implementation method of the function `select()`
+
+The **Examples** Section has examples of the function that can be directly copied and pasted into your terminal and run. 
+
+### Check Your Understanding
+
+Pull up the help page for the function `mean()`
+
+```{r mean-help, exercise=TRUE}
+# your code here
+```
+
+```{r mean-help-solution}
+?mean
+```
+
+```{r Functions1, echo=FALSE}
+quiz(
+  question("What types of arguments can be passed to `mean()`?",
+    answer("Logical", correct=TRUE),
+    answer("Numeric", correct=TRUE),
+    answer("Text"))
+)
+```
+
+## Vectors and Data Frames
+
+### Vectors
+
+Two basic data structures we'll cover in this tutorial are vectors and data frames. Vectors are essentially lists containing elements of the same data type. They can be created using the `c()` function.
+
+```{r vector-1, exercise=TRUE}
+x <- c(1, 2, 3, 4) # a vector containing numeric data
+y <- c("hello", "world") # a vector containing character data 
+x
+y
+```
+
+You can use the `typeof()` function to check what type of data the vector contains.
+
+```{r vector-2, exercise=TRUE}
+x <- c(1, 2, 3, 4)
+y <- c("hello", "world") 
+typeof(x)
+typeof(y)
+```
+
+Use the `typeof()` function to check what type of data `z` contains. Is it what you expected?
+
+```{r vector-3, exercise=TRUE}
+z <- c(1, 4, "hello")
+# your code here
+```
+
+Since vectors must only contain data of the same type, R performed a process called coercion to turn the numbers into type character. If you print `z` above, you'll see quotation marks around 1 and 4. 
+
+### Data Frames
+
+Data frames are tables where columns represent variables and rows represent sets of observations. Run the code below to see an example:
+
+```{r df, include=FALSE}
+grades <- data.frame(
+  name = c("John", "Jane", "Charles", "Amy", "Joe"),
+  score = c(30, 80, 65, 92, NA),
+  passing = c(FALSE, TRUE, TRUE, TRUE, NA)
+)
+```
+
+```{r df2, exercise=TRUE, exercise.setup="df"}
+grades
+```
+
+In `grades`, we have three columns for the three variables we're interested in: the student's name, their score on an exam, and whether they passed the exam. Each of the five rows represents a set of data collected from a student. Under each column name, the data type of the column is displayed. The three types here are `chr`, or character; `dbl`, a type of numeric data; and `lgl`, or logical. 
+
+What do you notice about the last row? Joe hasn't taken the exam yet, so his score, and consequently his passing status, are missing. `NA` is used to represent missing data in vectors and data frames. It doesn't have an explicit data type, so it can be used in vectors and columns of any type. 
+
+### Check Your Understanding
+
+Pull up the documentation for `mean()` again. 
+
+```{r mean-help2, exercise=TRUE}
+# your code here
+```
+
+```{r mean-help2-solution}
+?mean
+```
+
+```{r mean1, echo=FALSE}
+quiz(
+  question("Which argument for `mean()` is a vector?",
+    answer("x", correct=TRUE),
+    answer("trim"),
+    answer("na.rm"))
+)
+```
+
+Let's take the mean of 12, 56, 7, and 89. Create a vector with these numbers below and assign it to the variable `x`:
+
+```{r mean2, exercise=TRUE}
+x <- # your code here
+mean(x)
+```
+
+```{r mean2-solution}
+x <- c(12, 56, 7, 89)
+mean(x)
+```
+
+Take the mean of `y`. Looking at the documentation for `mean()`, can you modify the code so that the output isn't `NA`?
+
+```{r mean3, exercise=TRUE}
+y <- c(5, 12, 64, 1, NA)
+# take the mean of y
+```
+
+```{r mean3-hint-1, exercise=TRUE}
+y <- c(5, 12, 64, 1, NA)
+mean(y)
+```
+
+```{r mean3-solution}
+y <- c(5, 12, 64, 1, NA)
+mean(y, na.rm=TRUE)
+```
+
+## R packages {#package}
+
+The first functions we will look at are used to install and load R packages. R packages are units of shareable code, containing functions that facilitate and enhance analyses. In simpler terms, think of R packages as iPhone Applications. Each App has specific capabilities that can be accessed when we install and then open the application. The same holds true for R packages. To use the functions contained in a specific R package, we first need to install the package, then each time we want to use the package we need to "open" the package by loading it.
+
+### Installing Packages
+
+In this tutorial, we will be using the "tidyverse" package. This package contains a versatile set of functions designed for easy manipulation of data.
+
+You should have already installed the "tidyverse" package using RStudio's graphical interface. Packages can also be installed by entering the function `install.packages()` in the console (to install a different package just replace "tidyverse" with the name of the desired package):
+
+```{r eval = FALSE}
+install.packages("tidyverse")
+```
+
+When you install a package, you'll see an output like this in the console:
+
+![](/images/packageinstall.png){width=75%}
+
+The key part to focus on here is the line, "also installing the dependencies...." Dependencies are other packages that the package you're installing needs to run. Although they're typically installed alongside, you may run into an error or warning message like the one below:
+
+![](/images/dependerror.png){width=75%}
+
+This tells you that, for whatever reason, these dependencies were not installed properly and therefore your package either can't be installed or run. The best way to resolve this issue is to install these dependencies using separate `install.packages()` commands.
+
+### Loading packages
+
+After installing a package, and *everytime* you open a new RStudio session, you need to first load (open) the packages you want to use with the `library()` function. This tells R to access the package's functions and prevents RStudio from lags that would occur if it automatically loaded every downloaded package every time you opened it.
+
+Packages can be loaded like this:
+
+```{r eval = FALSE}
+library(tidyverse)
+```
+
+The package `janitor` is used for cleaning up your data. Run the code below to load it:
+
+```{r janitor, exercise=TRUE, error=TRUE}
+library(janitor)
+```
+
+We got an error because we haven't actually installed the package. Packages need to be installed before they can be loaded. 
+
+It is a little tricker to load Bioconductor packages, as they are often not stored on the Comprehensive R Archive Network (CRAN) where most packages live. There is a package, however, that lives on CRAN and serves as an interface between CRAN and the Bioconductor packages.
+
+To load a Bioconductor package, you must first install and load the BiocManager package, like so.
+
+`install.packages("BiocManager")`
+`library("BiocManager)`
+
+You can then use the function `BiocManager::install()` to install a Bioconductor package. To install the Annotate package, we would execute the following code.
+
+`BiocManager::install("annotate")`
+Sometimes two packages include functions with the same name. A common example is that a `select()` function is included both in the `dplyr` and `MASS` packages. Therefore, to specify the use of a function from a particular package, you can precede the function with a the following notation: `package::function()`. 
+
+### Check Your Understanding
+
+After installing the `janitor` package, you want to use the function `get_dupes()` to see if there are any duplicates in your data. 
+
+```{r get, exercise=TRUE, error=TRUE}
+get_dupes(your_data)
+```
+
+```{r Packages, echo=FALSE}
+quiz(
+  question("What caused this error?",
+    answer("The function `get_dupes()` wasn't installed"),
+    answer("The package `janitor` wasn't loaded after installation", correct=TRUE),
+    answer("The arguments given to `get_dupes()` are invalid"))
+)
+```
+
+## Troubleshooting
+
+If you've been coding for more than an hour, you've definitely had to troubleshoot your code. However, errors can be cryptic, using a new package can be confounding, and, despite your best efforts, you may still end up needing help from someone else. In this section, you'll find a brief, non-exhaustive guide to troubleshooting.
+
+### Tackling Errors
+
+RStudio enables debugging via:
+
+- `traceback()`
+- Flagging problematic lines of code
+
+After an error is thrown, RStudio will print the error message in the console and provide you with the option of running the `traceback()` function to identify the source of the error. You can run `traceback()` from the console after an error is raised. Just a heads up, the output is often quite cryptic so it's up to you to decide if it's helpful. 
+
+RStudio also flags problematic lines of code. It's a red dot that appears to the left of your code for lines where something isn't "quite right". Hovering over the red dot provides you with some additional information, but it typically appears when you make a syntax error like forgetting a closing bracket.
+
+### Working with New Packages
+
+While `?function_name` is helpful when you know which function you want to use, vignettes are what you need when you don't know where to start. Vignettes are detailed summaries of packages. They go over common workflows and functions, and explain the background and theory behind their implementation. You can search for vignettes with `browseVignettes("package_name")`. For example, running `browseVignettes("tidyverse")` will open a browser page listing all of the vignettes available for the `tidyverse` package. 
+
+### Asking for Help
+
+Before proceeding with this section, make sure you have exhausted all avenues for troubleshooting on your own. The best way to learn how to resolve an error is to google it verbatim. Some reliable sources are:
+
+- Stack Exchange: A forum of crowdsourced answers to common problems
+- The Comprehensive R Archive Network (CRAN)/Bioconductor: Repositories for the vast majority of R packages. All vignettes can be found here as well. 
+- RStudio Community: Another forum, but it's specific to R and RStudio.
+
+Additionally, here is a compilation of the common errors we addressed in this tutorial:
+
+- [Object not found](#object)
+- [Invalid 'type' of argument](#functions)
+- [Missing quotations and equal signs](#functions)
+- [Missing dependencies](#package)
+- [Package not found](#package)
+- [Function not found](#package)
+
+When sending your code to someone else for review, it is important to also include:
+
+- Any files you're loading in your script
+- R session info
+
+Without the files, the person reviewing your code won't be able to run your script. Additionally, the function `sessionInfo()` will generate a report on your operating system, R version, and loaded packages, which helps with troubleshooting.
+
+```{r session, exercise = TRUE}
+sessionInfo()
+```
+
+If you know roughly where your error is occurring, you can generate a "reprex" report. Reprex stands for "reproducible example", and outputs your code and errors in a way that someone else is able to reproduce your results. Using the `reprex` package, simply run `reprex()` in the console to generate your report. For best results:
+
+- Make sure to create all of the relevant variables
+- Load required packages using `library()`
+- Include only the parts of the code related to the error, not the entire script
+
