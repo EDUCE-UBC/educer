@@ -21,6 +21,8 @@
 #' @keywords internal
 #'
 #' @seealso \code{\link[shiny]{addResourcePath}()}
+#'
+#' @export
 setup_resources <- function(css     = "resources/css",
                             images  = "resources/images",
                             scripts = "resources/scripts") {
@@ -34,32 +36,34 @@ setup_resources <- function(css     = "resources/css",
 #' This wrapper lists learnr tutorials specifically in the educer package.
 #'
 #' @seealso \code{\link[learnr]{available_tutorials}()}
+#'
+#' @export
 list_tutorials <- function() {
   message(
-    paste(
-      paste0(
-        utils::capture.output(learnr::available_tutorials(package = "educer")),
-        collapse = "\n"
-      ),
-      "\n\n",
-      "Use the <name> on the left-hand side of the colon to start a tutorial ",
-      "by\n",
-      "entering the following command into the console:\n\n",
-      "start_tutorial(\"<name>\")\n\n",
-      "For example, use\n\n",
-      "start_tutorial(\"r_and_rstudio_basic\")\n\n",
-      "to start the \"Introduction to R and RStudio\" tutorial."
+    paste0(
+      utils::capture.output(learnr::available_tutorials(package = "educer")),
+      collapse = "\n"
+    ),
+    "\n\n",
+    "If you are using RStudio version 1.3.1093 or newer, you can find ",
+    "all tutorials in the Tutorial tab of the right top pane (in default ",
+    "layout). Otherwise, use the <name> on the left-hand side of the colon ",
+    "to start a tutorial by entering 'start_tutorial(\"<name>\")' (without ",
+    "single quotes) into the Console. For example, use ",
+    "'start_tutorial(\"r_and_rstudio_ws\")' to open the \"Introduction to R ",
+    "and RStudio\" workshop tutorial."
     )
-  )
 }
 
 #' Start tutorial in the educer package
 #'
 #' This wrapper runs learnr tutorials specifically in the educer package.
 #'
-#' @param name A string giving the name of the educer tutorial
+#' @param name A string giving the name of the educer tutorial.
 #'
 #' @seealso \code{\link[learnr]{run_tutorial}()}
+#'
+#' @export
 start_tutorial <- function(name) {
   learnr::safe(learnr::run_tutorial(!!name, package = "educer"))
 }
