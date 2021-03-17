@@ -1,0 +1,915 @@
+---
+title: "Intermediate R and RStudio"
+author: "Cathy Yan"
+date: "version `r format(Sys.time(), '%B %d, %Y')`"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+description: [DESCRIPTION]
+---
+
+```{r setup, include = FALSE}
+# General learnr setup
+library(learnr)
+knitr::opts_chunk$set(echo = TRUE)
+library(educer)
+# Helper function to set path to images to "/images" etc.
+setup_resources()
+
+# Tutorial specific setup
+library(dplyr)
+library(readr)
+library(tidyverse)
+
+# Data frames
+tidy_demo <- data.frame(
+  name = c("Mike", "Linda", "Sam", "Esther", "Alex"),
+  age = c(12, 13, 11, 12, 13),
+  fav_colour = c("blue", "green", "blue", "pink", "yellow")
+)
+
+scores <- data.frame(
+  name = c("Mike", "Linda", "Sam", "Esther", "Alex"),
+  sex_age = c("m_12", "f_13", "m_11", "f_12", "m_13"),
+  test_1 = c(76, 78, 86, 64, 93),
+  test_2 = c(57, 82, 91, 68, 80)
+)
+
+scores2 <- pivot_longer(scores,
+                        cols = test_1:test_2,
+                        names_to = "test",
+                        values_to = "score")
+
+tidy_scores <- separate(scores2,
+                        col = sex_age,
+                        into = c("sex", "age"),
+                        sep = "_")
+
+jellybeans <- data.frame(
+  name = c("Mike", "Linda", "Sam", "Esther", "Alex"),
+  recess = c(12, 8, 4, 13, 9),
+  lunch = c(6, 10, 0, 8, 11)
+)
+
+countries <- data.frame(
+  name = c("Mike", "Linda", "Sam"),
+  countries = c("Canada,Canada", "Britain,France", "US,Mexico")
+)
+
+census <- data.frame(
+  name = c("Joe", "Janet", "Mary", "James"),
+  city_2016 = c("Vancouver", "Surrey", "Langley", "Delta"),
+  city_2020 = c("Burnaby", "Surrey", "Vancouver", "Richmond")
+)
+
+mailing_list <- data.frame(
+  variable = c("signup_date", "occupation", "email"),
+  Alexis = c("21-03-2019", "doctor", "alexis@hospital.com"),
+  James = c("15-11-2007", "plumber", "james@gmail.com"),
+  Sam = c("07-07-2015", "accountant", "sam@company.com")
+)
+
+day1_data <- data.frame(
+  date = c("01-03-2021", "01-03-2021", "01-03-2021", "01-03-2021"),
+  site = c("Northwest", "Southwest", "North", "South"),
+  beavers = c(5, 12, 1, 8)
+)
+
+day2_data <- data.frame(
+  date = c("02-03-2021", "02-03-2021", "02-03-2021", "02-03-2021"),
+  site = c("Northwest", "Southwest", "North", "South"),
+  beavers = c(3, 15, 4, 5)
+)
+
+all_data <- rbind(day1_data, day2_data)
+
+beaver_geo <- data.frame(
+  site = c("Northwest", "Southwest", "North", "East"),
+  elevation_m = c(0, 200, 50, 500),
+  river_width_m = c(25, 50, 10, 45)
+)
+
+tree_width <- data.frame(
+  site = c("Northwest", "North", "North", "Southwest", "Southwest"),
+  species = c("Fir", "Pine", "Cedar", "Cedar", "Spruce"),
+  width_m = c(10, 8, 30, 2, 5)
+)
+
+tree_height <- data.frame(
+  site = c("Northwest", "North", "South", "North", "Southwest"),
+  species = c("Fir", "Cedar", "Pine", "Pine", "Fir"),
+  height_m = c(50, 25, 100, 45, 15)
+)
+
+beaver_colour <- data.frame(
+  beaver_id = c("101", "102", "103"),
+  beaver_colour = c("brown", "green", "tan")
+)
+
+beaver_weight <- data.frame(
+  name = c("101", "102", "103"),
+  beaver_weight = c(50, 23, 45)
+)
+
+game_prices <- data.frame(
+  name = c("FIFA 2020", "Cyberpunk 2077", "Stardew Valley", "Call of Duty V"),
+  price = c(30, 50, 25, 10)
+)
+
+player_stats <- data.frame(
+  name = c("Joe", "Claire", "James", "Paul", "Alice"),
+  most_played = c("Cyberpunk 2077", "Call of Duty V", "Cyberpunk 2077", "Stardew Valley", "Stardew Valley"),
+  hrs_game_perweek = c(10, 4, 12, 2, 20)
+)
+
+player_stats2 <- data.frame(
+  name = c("Joe", "Claire", "James", "Paul", "Alice"),
+  most_played = c("Cyberpunk 2077", "Chess", "Stardew Valley", "FIFA 2020", "Chess"),
+  hrs_game_perweek = c(5, 24, 8, 12, 3)
+)
+
+players_bind <- rbind(player_stats, player_stats2)
+```
+
+## Learning objectives
+
+Here's what you'll learn from each section of this tutorial:
+
+Loops in R:
+
+- Explain the mechanisms of for and while loops
+- Implement for and while loops
+- Recognize and understand how nested loops work
+
+Conditionals in R:
+
+- Write and evaluate and/or statements
+- Identify the components of if/else statements
+- Implement conditionals within loops
+
+Functions in R:
+
+- Write functions that operate on arguments
+- Understand the role of helper functions
+- Implement helper functions
+
+Manipulating Data Frames:
+
+- Implement the pipe operator
+- Use the `select()`, `filter()`, and `mutate()` functions appropriately
+- Operate on individual columns within a data frame
+- Change the data type of columns in a data frame
+- Replace NAs in a vector or data frame
+
+Other ideas: Tidying data, joining data frames, loading in data from an external source
+
+## Tidying Data
+
+### What is tidy data?
+
+Tidy data fulfill three criteria:
+
+- Each row is a single observation
+- Each column is a single variable
+- Each cell contains a single value
+
+Here is an example of tidy data:
+
+```{r tidy-example, exercise = TRUE}
+tidy_demo
+```
+
+We clearly have three distinct variables, each in its own column. Each row holds one observation, which, in this case, are attributes of a single student. Each cell contains only one value. 
+
+Now, take a look at the data frame below, which tracks students' performance across two exams. Is the data tidy?
+
+```{r untidy-view, exercise = TRUE}
+scores
+```
+
+The answer is no, the `scores` data frame is not tidy because:
+
+- Not every cell contains only a single value: The `sex_age` column contains both the gender of the student and their age, separating the two values with an underscore. 
+- Not every column is a variable: The columns `test_1` and `test_2` would both fall under a variable like "test". 
+
+### Why does data need to be tidy?
+
+- Enables downstream analyses: Functions for plotting and modeling data expect the input to be tidy
+- Conforms to a standard: When other people work with your data, they expect them to be tidy
+
+As a quick example, imagine if you wanted to calculate and plot the mean age for each gender using the data frame above. Unfortunately, since both variables are "squished" into a single column, it's difficult to do this in R. On the other hand, if they were in separate columns, the task would be straightforward. 
+
+### Pivoting to tidy data
+
+The `pivot*()` functions allow you to reshape and tidy your data. The `pivot_longer()` function combines columns that store values belonging to the same variable. In this case, we're going to combine `test_1` and `test_2` to make one column called `test`. 
+
+The function `pivot_longer()` takes three arguments in addition to the data frame:
+
+- cols: The names of the columns we want to combine
+- names_to: The name of a new column that contains the names of the columns we're combining
+- values_to: The name of a new column that contains the values of the columns we're combining
+
+Let's walk through an example with a data frame charting how many jelly beans people have at recess and lunch.
+
+```{r untidy-beans, exercise = TRUE}
+jellybeans
+```
+
+Just like `scores`, `jellybeans` is untidy. We want to combine the `recess` and `lunch` columns under one column called `timepoint`. See if you can figure out what the arguments to `pivot_longer()` are. 
+
+```{r tidy-beans, exercise = TRUE, error = TRUE}
+tidy_jellybeans <- pivot_longer(jellybeans,
+                                cols = <names of columns to combine>,
+                                names_to = <name of new column containing "recess" and "lunch">,
+                                values_to = <name of new column containing jellybean counts>)
+tidy_jellybeans
+```
+
+```{r tidy-beans-solution}
+tidy_jellybeans <- pivot_longer(jellybeans,
+                                cols = recess:lunch,
+                                names_to = "timepoint",
+                                values_to = "jellybean_counts")
+```
+
+Is this new data frame tidy? Yes! Every column is a variable, every row is an observation (how many jellybeans the child has at recess or lunch), and every cell contains only one value. Let's apply `pivot_longer()` to the `scores` data frame, combining `test_1` and `test_2` into a single column called `test`. 
+
+```{r tidy-scores, exercise = TRUE, error = TRUE}
+scores2 <- pivot_longer(<arguments>)
+scores2
+```
+
+```{r tidy-scores-solution}
+scores2 <- pivot_longer(scores,
+                        cols = test_1:test_2,
+                        names_to = "test",
+                        values_to = "score")
+```
+
+### Separating data based on delimiters
+
+There is one more step we have to take before `scores` is tidy, which is to separate the `sex_age` column into two. We can do this using the `separate()` function, which takes the following arguments in addition to the data frame:
+
+- col: The name of the column we want to split
+- into: A vector of column names that the split data will populate
+- sep: The separator to split by
+
+Below, we have a data frame with two columns. The first contains names, while the second contains the person's current country and the country they were born in, separated by a comma. 
+
+```{r countries-untidy, exercise = TRUE}
+countries
+```
+
+Use the `separate()` function to split the `countries` column into two - one called `current_country` and one called `birth_country`.
+
+```{r tidy-countries, exercise = TRUE, error = TRUE}
+tidy_countries <- separate(countries,
+                           col = <column to split>,
+                           into = <vector of column names>,
+                           sep = <delimiter>)
+tidy_countries
+```
+
+```{r tidy-countries-solution}
+tidy_countries <- separate(countries,
+                           col = countries,
+                           into = c("current_country", "birth_country"),
+                           sep = ",")
+```
+
+Now, let's apply `separate()` to the `scores2` data frame and separate the `sex_age` column into `sex` and `age`. 
+
+```{r tidier-scores, exercise = TRUE, error = TRUE, exercise.setup = "tidy-scores-solution"}
+tidy_scores <- separate(<arguments>)
+tidy_scores
+```
+
+```{r tidier-scores-solution, exercise.setup = "tidy-scores-solution"}
+tidy_scores <- separate(scores2,
+                        col = sex_age,
+                        into = c("sex", "age"),
+                        sep = "_")
+```
+
+To concretely demonstrate the practical advantages of tidy data, let's count how many male and female students there are using the `table()` function. This function takes a vector and tallies how many times each element occurs. Using it on the untidy dataset gets us:
+
+```{r untidy-table, exercise=TRUE}
+table(scores$sex_age)
+```
+
+What happened? Since the gender of the student is appended to their age, `table()` treats each element as a unique value (because it is!). Now, see what happens when we use the tidy version of the data:
+
+```{r tidy-table, exercise=TRUE, exercise.setup="tidier-scores-solution"}
+table(tidy_scores$sex)
+```
+
+Using the tidy dataset, it's easy to see that we have 4 entries attributed to female students and 6 entries for male students. 
+
+### Check Your Understanding
+
+Determine how many of the attributes of tidy data are fulfilled by `census` and `mailing_list`. As a reminder, they are:
+
+- Each row is a single observation
+- Each column is a single variable
+- Each cell contains a single value
+
+```{r census, echo=FALSE}
+census
+```
+
+```{r census-quiz, echo=FALSE}
+quiz(
+  question("How many of the attributes of tidy data are fulfilled?",
+           answer("One of them"),
+           answer("Two of them", correct = TRUE),
+           answer("Three of them"))
+)
+```
+
+```{r mail, echo=FALSE}
+mailing_list
+```
+
+```{r mailing-quiz, echo=FALSE}
+quiz(
+  question("Attributes of tidy data:",
+           answer("One of them", correct = TRUE),
+           answer("Two of them"),
+           answer("Three of them"))
+)
+```
+
+Convert `census` to tidy data:
+
+```{r census-tidy, exercise=TRUE, error=TRUE}
+tidy_census <- <function>(<arguments for function>)
+```
+
+```{r census-tidy-hint-1, error=TRUE}
+tidy_census <- pivot_longer(<arguments for function>)
+```
+
+```{r census-tidy-solution}
+tidy_census <- pivot_longer(data = census,
+                            cols = city_2016:city_2020,
+                            names_to = "Year",
+                            values_to = "City")
+```
+
+Bonus! Using two functions, remove the "city" prefix from the values in the `Year` column.
+
+```{r city-remove, exercise=TRUE, error=TRUE, exercise.setup="census-tidy-solution"}
+tidier_census <- tidy_census %>%
+  <first function>(<arguments for first function>) %>%
+  <second function>(<arguments for second function>)
+```
+
+```{r city-remove-hint-1, error=TRUE}
+tidier_census <- tidy_census %>%
+  separate(<arguments for function>) %>%
+  select(<arguments for function>)
+```
+
+```{r city-remove-solution}
+tidier_census <- tidy_census %>%
+  separate(col = Year, into = c("remove", "Year"), sep = "_") %>%
+  select(-remove)
+```
+
+## Joining Data
+
+Often, you'll be working with more than one data frame and want to join them together in a meaningful way. There are two options:
+
+- Binding based on rows or columns
+- Joining based on values
+
+### Binding data frames
+
+Pretend you're a researcher studying beaver populations at four sites. Every day, you go through the camera footage and count how many beavers have passed by. A log looks like this:
+
+```{r beaver-1}
+day1_data
+```
+
+On the second day, you ask your assistant to perform the same task. This is their log:
+
+```{r beaver-2}
+day2_data
+```
+
+To analyze results over time, you need to combine the two data frames. Since they both have the same columns (`date`, `site`, and `beavers`), you can "stack" them vertically. To do this in R, you can use the `rbind()` function, which binds the rows of two data frames together. 
+
+```{r rbind, exercise=TRUE, error=TRUE}
+all_data <- rbind(<first data frame>, <second data frame>)
+```
+
+```{r rbind-solution}
+all_data <- rbind(day1_data, day2_data)
+```
+
+### Joining data frames based on values
+
+If two data frames share one column with the same elements, they can be merged based on the values of that column. For example, consider this data frame with geographic information on the beaver sites:
+
+```{r beaver-site-geo}
+beaver_geo
+```
+
+You'll notice that there aren't any geographical information recorded for the Southwest site, and no beaver counts for the East site. In the `all_data` data frame, sites are repeated as beavers are counted daily. How would you add this new geographical information to the `all_data` data frame? By using the `*_join()` functions!
+
+There are four main types of `*_join()` functions:
+
+- `inner_join()`: Keeps only rows whose values are present in both data frames
+- `left_join()` and `right_join()`: Keeps only rows whose values are present in either the first or second data frame, respectively
+- `full_join()`: Keeps all rows from both data frames
+
+These functions take three basic arguments:
+
+- x: The first, or "left", data frame
+- y: The second, or "right", data frame
+- by: If you want to join by one column with the same name, you don't need to specify this argument. If not, read on!
+
+Here's what these functions look like when applied to `all_data` and `beaver_geo`:
+
+**Inner join**:
+
+```{r inner, error = TRUE, exercise.setup = "rbind-solution"}
+inner_join(x = all_data, y = beaver_geo)
+```
+
+As you can see, the South and East sites aren't present in the new data frame as they aren't present in both input data sets. 
+
+**Left join**:
+
+```{r left, error = TRUE, exercise.setup = "rbind-solution"}
+left_join(x = all_data, y = beaver_geo)
+```
+
+Since we don't have geographical information for the South site, those cells have NA as their value.
+
+**Right join**:
+
+```{r right, error = TRUE, exercise.setup = "rbind-solution"}
+right_join(x = all_data, y = beaver_geo)
+```
+
+Compare this data frame to the one above. How are they different? 
+
+**Full join**:
+
+```{r full, error = TRUE, exercise.setup = "rbind-solution"}
+full_join(x = all_data, y = beaver_geo)
+```
+
+#### Joining by more than one column
+
+You and your research assistant also want to collect measurements on nearby trees at the sites. You're responsible for measuring the height of trees while they measure the width. At the end of the day, there are two data frames:
+
+```{r tree_measure}
+tree_height
+tree_width
+```
+
+You want to match up the width and height of trees, and figure out which trees are missing measurements. 
+
+```{r join_type, echo = FALSE}
+quiz(
+  question("Which `*_join()` function do you need?",
+           answer("Inner"),
+           answer("Left"),
+           answer("Right"),
+           answer("Full", correct = TRUE))
+)
+```
+
+Use the correct join function to join the two data frames by both the site and species columns:
+
+```{r tree_join, error = TRUE, exercise = TRUE}
+full_join(x = <first data frame>, y = <second data frame>, by = <character vector of column names>)
+```
+
+```{r tree_join_solution}
+full_join(tree_height, tree_width, by = c("site", "species"))
+```
+
+#### Joining data frames with different column names
+
+A type of algae is blooming in the fur of some beavers, turning them green. You and your assistant are tasked with tracking their colour and weight:
+
+```{r beaver-w}
+beaver_colour
+beaver_weight
+```
+
+You want to merge your work, but there are no columns with the same name. However, it's clear that `name` and `beaver_id` are referring to the same attribute. In cases like this, you can pass a named vector to the `by` argument of the `*_join()` functions:
+
+```{r special-by, exercise = TRUE}
+inner_join( # for this exercise, you can use any *_join() function
+  beaver_colour,
+  beaver_weight,
+  by = c("beaver_id" = "name") # column names are passed in the order of the data frames
+)
+```
+
+### Check Your Understanding
+
+You've been tasked with observing the trend between video game costs and how long people spend playing them. You have data on the prices of four games and the time five people spent playing them over the last week. 
+
+```{r game}
+game_prices
+player_stats
+```
+
+If you were to merge the two data frames in the order they appear and keep only the rows with games that are in both datasets, which `*_join()` function would you use?
+
+```{r join_type2, echo = FALSE}
+quiz(
+  question("Which `*_join()` function do you need?",
+           answer("Inner", correct = TRUE),
+           answer("Left"),
+           answer("Right"),
+           answer("Full"))
+)
+```
+
+Merge them below:
+
+```{r merge-game, exercise = TRUE, error = TRUE}
+merged_df <- <join function>(<arguments for join function>)
+merged_df
+```
+
+```{r merge-game-hint-1}
+merged_df <- inner_join(x = <first data frame>,
+                        y = <second data frame>,
+                        by = <named vector>)
+```
+
+```{r merge-game-solution}
+merged_df <- inner_join(x = game_prices,
+                        y = player_stats,
+                        by = c("name" = "most_played"))
+```
+
+You check in with your study population a week later, and get some interesting results:
+
+```{r game2}
+player_stats2
+```
+
+First, bind this data frame with the data from last week:
+
+```{r game-bind, error = TRUE, exercise = TRUE}
+players_bind <- <function for binding>(<arguments for function>)
+players_bind
+```
+
+```{r game-bind-solution}
+players_bind <- rbind(player_stats, player_stats2)
+```
+
+Next, you want to merge with `game_prices` again, but keep all of the games that appear in `players_bind` in order to see if there are any popular games you weren't aware of. If `game_prices` is the first data frame, which `*_join()` function do you need?
+
+```{r join_type2, echo = FALSE}
+quiz(
+  question("Which `*_join()` function do you need?",
+           answer("Inner"),
+           answer("Left"),
+           answer("Right", correct = TRUE),
+           answer("Full"))
+)
+```
+
+Merge the two data frames:
+
+```{r game-merge2, exercise = TRUE, error = TRUE}
+all_merged <- <join function>(<arguments for join function>)
+all_merged
+```
+
+```{r game-merge2-solution}
+all_merged <- right_join(game_prices, players_bind, by = c("name" = "most_played"))
+```
+
+## Review
+
+Before proceeding, complete the five questions below reviewing content from Introduction to R and RStudio Fundamentals. If any of the concepts seem unfamiliar, please revisit the previous tutorial.
+
+```{r using-libraries, echo=FALSE}
+quiz(question("In no particular order, which actions are required before using functions from a new package?",
+      answer("Install the package", correct=TRUE),
+      answer("Download vignettes"),
+      answer("Load the package", correct=TRUE),
+      answer("Install dependencies"))
+)
+```
+
+Pull up the help page for the function `quantile()`.
+
+```{r q-help, exercise=TRUE}
+# your code here
+```
+
+```{r q-help-solution}
+?quantile
+```
+
+```{r review, echo=FALSE}
+quiz(
+  question("What types of arguments can be passed to `quantile()`?",
+    answer("Logical", correct=TRUE),
+    answer("Numeric", correct=TRUE),
+    answer("Logical Vector"),
+    answer("Numeric Vector", correct=TRUE),
+    answer("Text"))
+)
+```
+
+Create a vector with the numbers 9, 27, 15, 74, 36, 4, and 49 and assign it to the variable `x`. Calculate the quantiles for `x`.
+
+```{r q-vector, exercise=TRUE}
+# your code here
+```
+
+```{r q-vector-hint-1}
+x <- c(9, 27, 15, 74, 36, 4, 49)
+```
+
+```{r q-vector-solution}
+x <- c(9, 27, 15, 74, 36, 4, 49)
+quantile(x)
+```
+
+```{r q-type1, echo=FALSE}
+quiz(
+  question("What is the 75% quantile for `x`?",
+    answer("36"),
+    answer("50.25"),
+    answer("42.5", correct=TRUE))
+)
+```
+
+## Writing Function in R
+
+In the previous tutorial, you learned how to use preexisting functions. Now, you will write your own.
+
+### Why Write Functions?
+
+When you're performing the same set of transformations on the same kinds of inputs, you should consider writing a function to automate the task. Functions make your code:
+
+- Reproducible
+- Concise
+- Easier to understand
+
+### Syntax for Writing Functions
+
+Functions take on the following form:
+
+```{r fun-ex, eval=FALSE, error=TRUE}
+myfunction <- function(arg1, arg2){
+  myoutput <- myaction(arg1, arg2)
+  return(myoutput)
+}
+```
+
+Let's break down each component while writing a function that divides numbers by two:
+
+#### Naming your function
+
+In the previous tutorial, you used the function `sum()` to add a vector of numbers. You used the word "sum", the function's name, to call for it. Similarly, your own function also needs a name to be used. In our example above, the function's name is "myfunction", and you would call for it by typing `myfunction()`.
+
+#### Using the `function()` function
+
+Defining a function uses the same syntax as defining a variable, so how does R tell them apart? Using the `function()` function identifies your function name as such rather than as a variable.
+
+To begin writing our function, which we'll name `halve()`, fill in the blanks below:
+
+```{r fun-start, exercise = TRUE, eval=FALSE, error=TRUE}
+... <- ...(){}
+```
+
+```{r fun-start-solution}
+halve <- function(){}
+```
+
+#### Setting arguments
+
+In the review quiz, you passed a vector of numbers as an argument to the function `quantile()`. Similarly, you'll need to be able to pass arguments to you own function. To do this, you'll need to name each of your arguments, and list them within the `function()` function. In the example above, we have two arguments: `arg1` and `arg2`. 
+
+Right now, in order for the function to work, the user will need to provide both arguments. However, you can also set default values for arguments. The syntax is as follows:
+
+```{r fun-ex2, eval=FALSE, error=TRUE}
+myfunction <- function(arg1, arg2 = 5){
+  myoutput <- myaction(arg1, arg2)
+  return(myoutput)
+}
+```
+
+Now, the user is only required to provide `arg1`. If they don't provide `arg2`, the function will run using the default value of 5. If `arg2` is provided, the input value overrides the default (i.e. if the user specifies a value of 7 for `arg2`, the function will use that instead of 5, the default).
+
+For our function, we'll only need one argument, which we'll call `num`. It doesn't make sense for it to have a default value since there's no universal number people want to halve, so we won't include one.
+
+```{r fun-arg, exercise = TRUE, eval = FALSE, error = TRUE}
+halve <- function(...){}
+```
+
+```{r fun-arg-solution}
+halve <- function(num){}
+```
+
+#### Operating on arguments
+
+The function's body is enclosed by curly braces. Within, the arguments are transformed through one or more operations. In this case, there is only one operation, `myaction()`, which acts upon both arguments. The output of `myaction()` is assigned to the variable `myoutput`. This variable assignment works in the same way as usual, except for one caveat: `myoutput` cannot be used outside of the function. You will not see it show up in your environment.
+
+We want our function to halve, or divide by two, any number we provide. We'll name our output variable `half`.
+
+```{r fun-act, exercise = TRUE, eval = FALSE, error = TRUE}
+halve <- function(num){
+  half <- ...
+}
+```
+
+```{r fun-act-solution}
+halve <- function(num){
+  half <- num / 2
+}
+```
+
+#### Returning outputs
+
+When you define a variable normally, you need to call on the variable to see its value. Within functions, the sample principle applies. Although `myoutput` is assigned a value, `myfunction()` will not actually return it unless you explicitly tell it to do so. In this example, the `return()` function is used to accomplish this. Let's return `half`:
+
+```{r fun-ret, exercise = TRUE, eval = FALSE, error = TRUE}
+halve <- function(num){
+  half <- num / 2
+  ...
+}
+```
+
+```{r fun-ret-solution}
+halve <- function(num){
+  half <- num / 2
+  return(half)
+}
+```
+
+### Helper Functions
+
+Of course, all of the functions you'll need will be much more complex than `halve()`. In fact, some will be so complex that you'll need *helper functions* to complete the task. In the example below, we have a function that adds 5 to the average of a list of numbers:
+
+```{r num-list, exercise = TRUE}
+avg_minus_five <- function(num_list){
+  output <- mean(num_list) + 5
+  return(output)
+}
+
+list = c(1, 2, 3, 4, 5, 6)
+
+answer <- avg_minus_five(list)
+answer
+```
+
+Did you notice anything different with `avg_minus_five()` compared to `halve()`? In the former, we're using another function, `mean()`, inside of the function we wrote. Instead of writing code to calculate the average from scratch, we're using `mean()` to help us get to our desired output in a quicker and more concise way. In this case, `mean()` is our helper function.
+
+### Rewriting Functions with Helper Functions
+
+Let's walk through the process for writing and implementing a helper function. Below, we have a long function. Can you guess what it does?
+
+```{r long-func, exercise = TRUE}
+# flow control?
+```
+
+### Check Your Understanding
+
+
+
+## Manipulating Data Frames
+
+### Transforming Data
+
+The functions you have implemented so far all perform operations on one piece of data at a time. For example, `halve()` takes a single number and divides it by two, but can it be used on columns in a data frame?
+
+```{r df, include=FALSE}
+grades <- data.frame(
+  name = c("John", "Jane", "Charles", "Amy", "Joe"),
+  score = c(30, 80, 65, 92, 73),
+  passing = c(FALSE, TRUE, TRUE, TRUE, TRUE)
+)
+```
+
+We're going to be using our dataset with students' grades from the last tutorial:
+
+```{r df2, exercise=TRUE, exercise.setup="df"}
+grades
+```
+
+Try to divide all of the students' grades by half using the `halve()` function. The `$` symbol is used to select columns from a data frame.
+
+```{r halve-col, exercise = TRUE, error=TRUE, exercise.setup="df"}
+halve <- function(num){
+  half <- num / 2
+  return(half)
+}
+
+halve(grades$score)
+```
+
+Every value in the column is halved without needing to be passed to the function one at a time. This is called vectorization, allowing you to work with vectors in a concise and efficient manner. 
+
+Let's try to take this one step further. Below, we have a data frame tracking measurements for Jack's magical beanstalk. 
+
+```{r stalk, include=FALSE}
+measurements <- data.frame(
+  hours = seq(1:6),
+  height = c(0, 13, "not collected", 62, 87, "not collected"),
+  circumference = c(0, 4, 11, 23, "not collected", 52),
+  weight = c(0, "not collected", 25, 60, "not collected", 83)
+)
+```
+
+```{r stalk2, exercise=TRUE, exercise.setup="stalk"}
+measurements
+```
+What do you notice about the height, circumference, and weight columns? They're supposedly characters, but we know that's not right. As you may remember from the last tutorial, vectors can only hold one type of data. The "not collected" values forced R to treat the entire columns as being of type character due to coercion. Let's see what happens when we try to take the mean height:
+
+```{r mean-height, exercise = TRUE, error = TRUE, exercise.setup="stalk"}
+mean(measurements<select the height column>)
+```
+
+```{r mean-height-solution}
+mean(measurements$height)
+```
+
+We're not particularly surprised by this result since `mean()` can't operate on characters, even if they look like numbers. We can try to convert all of our columns to type numeric using the `as.numeric()` function, which takes a vector and coerces its data into numbers. Non-numerical data like "not collected" gets turned to NAs. Every column is supposed to be numeric, so can we just pass the entire data frame as an argument?
+
+```{r numer, exercise=TRUE, error=TRUE, exercise.setup="stalk"}
+as.numeric(measurements)
+```
+
+Unfortunately, as.numeric can only convert one vector at a time, but writing the same code for all three columns is clumsy. Instead, we can use the `sapply()` function, which applies functions to columns in a data frame iteratively (one by one). Its basic syntax is:
+
+```{r s-syntax, error=TRUE, eval=FALSE}
+sapply(my_df, my_func)
+```
+
+Let's try applying the `as.numeric()` function to all columns in `measurements`.
+
+```{r sapply, exercise=TRUE, error=TRUE, exercise.setup="stalk"}
+num_measurements <- sapply(<name of df>, <name of function>) %>%
+  as.data.frame()
+num_measurements
+```
+
+```{r sapply-solution}
+num_measurements <- sapply(measurements, as.numeric) %>%
+  as.data.frame()
+num_measurements
+```
+
+As expected, our columns are now of type numeric with the "not collected" values being replaced by NAs. 
+
+We can also use `sapply()` with functions we write. Try halving all of the values in the data frame with the `halve()` function:
+
+```{r half-measure, exercise=TRUE, error=TRUE, exercise.setup="sapply-solution"}
+halve <- function(num){
+  half <- num / 2
+  return(half)
+}
+
+half_measure <- sapply(num_measurements, <name of function>)
+half_measure
+```
+
+### Removing NAs
+
+Our `num_measurements` data frame contains NAs, which denote missing data. This can cause problems in downstream analyses, so we can opt to remove them. First things first, though, we need to confirm if and how many NAs there are.
+
+The function `is.na()` can take the entire data frame. For each value, it asks if it's an NA. If so, it outputs `TRUE`, otherwise, `FALSE`. 
+
+```{r is-na, exercise=TRUE, exercise.setup="sapply-solution"}
+is.na(num_measurements)
+```
+
+So how many NAs, or `TRUE`s, are there in each column? For a small data frame like this, you can try to count manually, but you can imagine how painful the task would be for a data frame with a thousand rows. 
+
+Luckily, R can treat logicals like numbers. `TRUE` equates to 1 and `FALSE` to 0, so you can count how many `TRUE`s there are simply by adding them. The function `colSums()` calculates the sum of each column, displaying how many NAs there are:
+
+```{r colsum, exercise=TRUE, exercise.setup="sapply-solution"}
+colSums(is.na(num_measurements))
+```
+
+Now that we know how many NAs we have, we can move on to removing them. Let's start by removing all NAs using the `drop_na()` function:
+
+```{r drop-na, exercise=TRUE, exercise.setup="sapply-solution"}
+drop_na(num_measurements)
+```
+
+Wait, what happened? How did we lose all but two of our data points? As it turns out, when `drop_na()` finds one NA in the row, it removes the entire row. To preserve data, we can opt to only remove NAs with rows in specified columns. For example, if we only wanted to remove rows with NAs in the circumference column:
+
+```{r drop-na2, exercise=TRUE, exercise.setup="sapply-solution"}
+drop_na(num_measurements, circumference)
+```
+
+
