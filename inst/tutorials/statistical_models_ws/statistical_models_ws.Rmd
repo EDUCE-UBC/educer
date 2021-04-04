@@ -640,7 +640,7 @@ question("In rejecting the null hypothesis, one can conclude that all the popula
 ```
 
 #### **Exercise 3: ANOVA cont.**
-![](images/rstudio_logo.png){width=0.4in} Exercise.
+![](inst/resources/images/rstudio_logo.png){width=0.4in} Exercise.
 Complete the following multiple choice questions. 
 
 ```{r aov_mc_1, echo=FALSE}
@@ -666,6 +666,34 @@ question("Which of the following is an assumption of 0ne-way ANOVA comparing sam
 ```
 
 ## Linear regression
+Now, we will work with a data frame that Jenny Bryan (UBC and RStudio) put together in the [`gapminder` package](https://www.gapminder.org/data/). 
 
+Unlike the fruit fly data set, no pre-manipulation is needed so let's view the data as is. First, load the gapminder package and use the `head()` function to explore the data: 
 
+```{r gapminder-package, exercise = TRUE}
+# load and check the data
+library(<package>)
+<function>(gapminder)
+```
 
+```{r gapminder-package-solution}
+library(gapminder)
+head(gapminder)
+```
+
+We see that the data contain infomation on life expectancy (lifeExp), population (pop), and gross domestic product per capita (gdpPercap, a rough measure for economical richness) for many coutries across many years. 
+
+A very naive working hypothesis that you may come to is that our life expectancy grew with time. This would be represent in r with `lifeExp ~ year`. 
+
+Let's explore this hypothesis graphically. Using the `gapminder` data set, create a scatterplot with `year` on the x-axis and `lifeExp` on the y-axis. Remember to create human readable labels!
+
+```{r gapminder-package, exercise = TRUE}
+# load and check the data
+library(<package>)
+<function>(gapminder)
+```
+
+```{r gapminder-package-solution}
+library(gapminder)
+head(gapminder)
+```
