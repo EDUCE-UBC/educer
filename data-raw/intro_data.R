@@ -1,5 +1,5 @@
 # Work in progress, trying to replicate this data set:
-# https://raw.githubusercontent.com/EDUCE-UBC/workshops_access/master/intro_R_2hr/data.csv
+# https://raw.githubusercontent.com/EDUCE-UBC/educer/main/data-raw/data_intro_ws.csv
 
 source("data-raw/geochemicals.R")
 

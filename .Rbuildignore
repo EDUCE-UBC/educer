@@ -1,3 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^data-raw$
+^\.github$
+CODEOWNERS
+CONTRIBUTING.md

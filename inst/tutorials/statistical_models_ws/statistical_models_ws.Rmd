@@ -24,13 +24,13 @@ library(educer) # A Collection of Tutorials on Using R in Data Science
 # Helper function to set path to images to "/images" etc.
 setup_resources()
 
-library(tidyverse) # Easily Install and Load the 'Tidyverse' # Easily Install and Load the 'Tidyverse'
+library(tidyverse) # Easily Install and Load the 'Tidyverse' 
 library(broom) # Convert Statistical Objects into Tidy Tibbles
 ```
 
 ## Introduction
 
-In this tutorial, we introduce various types of regression models and how they are implemented in R. We cover linear regression, ANOVA, ANCOVA, and mixed effects models for continuous response data, logistic regression binary response data, as well as Poisson and Negative Binomial regression for count response data.
+In this tutorial, we will learn about a number of common statistical models. They all employ a family of techniques called *regression analysis*, where we estimate the relationship between an *independent variable* (also called a *predictor*) and a *dependent variable* (also called a *response* or *outcome*). We will introduce linear regression, ANOVA, ANCOVA, and mixed effects models for continuous response data, logistic regression binary response data, as well as Poisson and Negative Binomial regression for count response data.
 
 You will learn:
 
@@ -55,26 +55,12 @@ The [tidyverse](https://www.tidyverse.org/) is a collection of R packages. Packa
 When you work in a script that makes heavy use of functions from a particular package, we recommend loading it at the top of your script. You can use the code below to load all of the tidyverse packages:
 
 ```{r echo = TRUE, message = FALSE}
-library(tidyverse) # Easily Install and Load the 'Tidyverse' # Easily Install and Load the 'Tidyverse'
+library(tidyverse) # Easily install and load the tidyverse packages
 ```
 
 In this tutorial, we will also occasionally use functions from the following packages: gapminder, datasets, lme4, car, lsmeans, HSAUR. Because we will only make light use of each of these packages, there is no need to load all of the packages up-front at the top of our script. Instead of loading the entire package, we will access only the specific functions we need using the double colon operator, `::`. You will learn more about this operator later in the tutorial.
 
 Keep in mind that to use packages in a script, these packages *must already be installed* on your computer (see the "Introduction to R and RStudio" tutorial for more details about installing packages and working with scripts). By installing the educer package, all of the packages we will use in this tutorial were automatically installed as well.
-
-### What is a statistical model?
-
-Scientists typically have questions about a *population* of interest. To address those questions, they often collect a *sample* (which consists of several *observations*, or measurements). These observations are ideally drawn at random from the larger population. While the researcher wants to make statements about the properties of the population (i.e., the population's *parameters*, such as the population mean), they only have information about the properties of the sample (which we call *estimates*). In order to make *inferences* about the population, the researcher must resort to a statistical model.
-
-A statistical model can be thought of as the set of assumptions we make about how our data were generated, as well as the mathematical consequences of those assumptions. Common assumptions (which are often considerably idealized) include:
-
--   Observations in the sample are independent from each other,
--   Observations are drawn from a normally distributed population,
--   The number of observations in each treatment group is approximately equal.
-
-Different models make different assumptions. Given a set of assumptions (i.e., a model) we can make formal inferences about a population from a sample. As such, a statistical model is "a formal representation of a theory" (according to sociologist Kenneth Bollen).
-
-In the rest of this tutorial, we will learn about a number of common statistical models. They all employ a family of techniques called *regression analysis*, where we estimate the relationship between an *independent variable* (also called a *predictor*) and a *dependent variable* (also called a *response* or *outcome*). We will start with a common type of regression used to analyse the differences among group means in a sample.
 
 ## Analysis of variance (ANOVA)
 
@@ -92,11 +78,11 @@ ANOVA is used when you have data with:
 For example, you would use ANOVA to address questions like:
 
 -   Does diet has an effect on weight gain?
-  -   response variable: weight gain (e.g. kg)
-  -   explanatory variable: type of diet (e.g. low vs. medium vs. high sugar)
+  -   response variable: weight gain (e.g., kg)
+  -   explanatory variable: type of diet (e.g., low vs. medium vs. high sugar)
 -   Does the type sexual relationship practiced influence the fitness of male Red-winged Blackbirds?
-  -   response variable: fitness of male bird (e.g. number of eggs laid)
-  -   explanatory variable: sexual relationship (e.g. monagamy vs. polygamy)
+  -   response variable: fitness of male bird (e.g., number of eggs laid)
+  -   explanatory variable: sexual relationship (e.g., monagamy vs. polygamy)
 
 ### Key assumptions
 
@@ -109,15 +95,13 @@ For example, you would use ANOVA to address questions like:
 When we run an ANOVA, we calculate a test statistic (*F*-statistic) that compares the **between** group variation with the **within** group variation:
 
 $$F=MSB/MSW$$
-where $MSB =$ Mean Square Between (i.e. the mean squared distance from each observation to the sample mean) and $MSW =$ Mean Square Within (i.e. the mean squared distance from each observation to the group mean).
-
-Essentially, if there is greater variation between the groups than within the groups we will get a large test statistic value (and correspondingly, a small *p*-value) and reject that null hypothesis ($H_0$: population means of all groups are equal).
+where $MSB =$ Mean Square Between (i.e., the mean squared distance from each observation to the sample mean) and $MSW =$ Mean Square Within (i.e., the mean squared distance from each observation to the group mean). Essentially, if there is greater variation between the groups than within the groups we will get a large test statistic value (and correspondingly, a small *p*-value) and reject that null hypothesis ($H_0$: population means of all groups are equal).
 
 If you want to delve into ANOVA in more depth, check out [this video tutorial](https://www.khanacademy.org/math/statistics-probability/analysis-of-variance-anova-library).
 
 ### One-way ANOVA with two groups
 
-Now let’s run some ANOVAs on real data! We will start simple, by comparing the mean of two-groups. We will focus first on the case of a single explanatory variable (which is called the *one-way* ANOVA).
+Now let's run some ANOVAs on real data! We will start simple, by comparing the mean of two-groups. We will focus first on the case of a single explanatory variable (which is called the *one-way* ANOVA).
 
 There are two perfectly acceptable statistical tests in R that we could apply to compare data between two groups. The first, which you may be very familiar with, is the *t*-test. The second is the ANOVA. Interestingly, the *t*-test is really a special case of ANOVA that can be used when only comparing only two groups. ANOVA is a more general test that we will later see can be used with more than two groups as well as more than one explanatory variable. 
 
@@ -130,11 +114,11 @@ Our hypotheses for this experiment are as follows:
 Null hypothesis, $H_0$: Sexual activity has no effect on the population mean longevity of male fruit flies.
 Alternative hypothesis, $H_A$: Sexual activity has an effect on population mean longevity of male fruit flies.
 
-Let's now **load** the `fruitfly` dataset from the faraway package and assign it to a variable called `df_fly`. We haven't loaded this package, so we have to explicitly write the name of the package in front of the dataset's name (separated by a double colon operator `::`), so that R knows where to find it. Run the code box below to load and inspect the data. You will have to replace the `<placeholder>` by the name of the variable you have created:
+Let's now load the `fruitfly` dataset from the faraway package and assign it to a variable called `df_fly`. We haven't loaded this package, so we have to explicitly write the name of the package in front of the dataset's name (separated by a double colon operator: `faraway::fruitfly`), so that R knows where to find it. Run the code box below to load and inspect the first few rows of the data. You will have to replace the `<placeholder>` by the name of the variable you have created:
 
 ```{r load-faraway, exercise = TRUE}
 df_fly <- faraway::fruitfly
-head(FILL_THIS_IN)
+head(<variable_name>)
 ```
 
 ```{r load-faraway-solution}
@@ -148,7 +132,7 @@ df_fly <- faraway::fruitfly
 
 The first two columns are continuous variables representing the fruit fly's thorax length and longevity. The final column, `activity`, is a categorical variable that encodes the fly's sexual activity. If the male was kept solitary (`isolated`) or with pregnant females (either `one` or `many`), he was not sexually active. On the other hand, the male may have been kept with virgin females, in which case he was sexually active (`low` = one virgin female; `high` = eight virgin females).
 
-The next step is to create two-level categorical groups from the numerical variables. We will also subset the data set to equal group sizes (by randomly selecting twenty observations from each group) *If you are unfamiliar with the functions below, see our "Introduction to the R tidyverse" tutorial.*
+The next step is to create two-level categorical groups from the numerical variables. We will also subset the data set to equal group sizes (by randomly selecting twenty observations from each group) If you are unfamiliar with the functions below, see our "Introduction to the R tidyverse" tutorial. Use the code box below to create the modified data frame and examine its first few rows:
  
 ```{r fly-2-groups, exercise = TRUE}
 fly_2_groups <- df_fly %>% 
@@ -160,6 +144,24 @@ fly_2_groups <- df_fly %>%
 	# Subset to equal group sizes
 	group_by(activity, thorax) %>% 
 	sample_n(20)
+
+# Examine first few rows of the new data frame
+head(<variable_name>)
+``` 
+
+```{r fly-2-groups-solution}
+fly_2_groups <- df_fly %>% 
+	# Change "activity" to a 2-level variable
+	mutate(activity = ifelse(activity %in% c("isolated", "one", "many"),
+														"no", "yes")) %>%
+	# Change size to a 2-level variable (for later)
+	mutate(thorax = ifelse(thorax <= 0.8, "short", "long")) %>% 
+	# Subset to equal group sizes
+	group_by(activity, thorax) %>% 
+	sample_n(20)
+
+# Examine first few rows of the new data frame
+head(fly_2_groups)
 ``` 
  
 ```{r setup-groups, include = FALSE}
@@ -174,35 +176,32 @@ fly_2_groups <- df_fly %>%
 	sample_n(20)
 ```
  
-Now, we can **explore** our new data set. Here are some common and useful functions to preview the data and its structure:
-
-* Use the `dim()` function to get the number of rows and columns.
-* Use the `head()` function to view the first 6 rows of the data (use `tail()` for the last 6).
-* Use the `summary()` function to get a summary of the data. 
+To further explore our new data set, use the `dim()` function (to get the number of rows and columns) and the `summary()` function (to get a summary of the data). 
 
 ```{r fly-2-explore, exercise = TRUE, exercise.setup = "setup-groups"}
 # get number of rows and columns
-dim(fly_2_groups)
-# view first 6 records of data
-head(fly_2_groups)
+dim(<variable_name>)
+
 # see summary of data
-summary(fly_2_groups)
+summary(<variable_name>)
 ``` 
 
-Now, we should **visualize** the data to understand the basic properties of the data, find patterns, and explore modeling strategies. Exploratory graphs are usually made really quickly. We simply want to get a better understanding of the data at this point. 
+Now, we should visualize the data to understand its basic properties, find patterns, and explore modeling strategies. Exploratory graphs are usually made really quickly. We simply want to get a better understanding of the data at this point.
+
+Modify the code box below to explore the effect of the explanatory variable, `longevity` on the response variable, `activity`:
 
 ```{r fly-2-eda, exercise = TRUE, excercise.setup = "setup-eda"}
-# plot raw data points for each group as a transparent grey/black point
-# overlay the mean as a red diamond
+# create a box plot for exploratory data analysis
+<variable_name> %>%
+  ggplot(aes(x = <explanatory_column>, y = <response_column>)) +
+  geom_boxplot() +
+  labs(x = "Sexually Active", y = "Longevity (days)")
+```
+
+```{r fly-2-eda-solution}
 fly_2_groups %>%
-  ggplot(aes(x = activity, y = longevity)) +
-  geom_jitter(position = position_jitter(0.15),
-              alpha = 0.7) +
-  stat_summary(fun = mean,
-               geom = "point",
-               shape = 18,
-               size = 4,
-               color = "red") +
+  ggplot(aes(x = longevity, y = activity)) +
+  geom_boxplot() +
   labs(x = "Sexually Active", y = "Longevity (days)")
 ```
 
@@ -215,93 +214,92 @@ fly_2_groups <- df_fly %>%
 	sample_n(20)
 ```
 
-#### Formula notaion in R
-To perform an ANOVA in R, we need to understand R's formula notation, as this is the first argument we give to the ANOVA function (`aov`). The formula notation stars with providing the response variable, then a special character, `~` which can be read as "modeled as", and then the explanatory/independent variable(s). Thus, the formula notation for this experiment is:
+#### Formula notation in R
+To perform an ANOVA in R, we need to understand R's formula notation, as this is the first argument we give to the ANOVA function (`aov()`). The formula notation stars with providing the response variable, then a special character, `~` which can be read as "as a function of", and then the explanatory/independent variable(s). Thus, the formula notation for this experiment is:
 ```
 longevity ~ activity
 ```
-The formula notation can get more complex such as including additional explanatory/independent variables or interaction terms. we will introduce these as we attempt more complex analyses later on.
+The formula notation can get more complex, such as including additional explanatory/independent variables or interaction terms. We will introduce these as we attempt more complex analyses later on.
 
 #### ANOVA in R
-We want to know if sexual activity has an effect on population mean longevity of male fruit flies. The `aov()` function can be used to answer this question. as stated above, the first argument to this formula or the experiment/model, and the second argument we must provide is the name od the variable that is holding our data, in our case it is `fruitfly_2groups.
+We want to know if sexual activity has an effect on population mean longevity of male fruit flies. 
+The `aov()` function can be used to create a model that answers this question. 
+As stated above, the first argument to this function is the formula. 
+The second argument is the name of the data frame variable, in our case  `fly_2_groups`.
 
-Create an ANOVA model object called `fruitfly_2groups_model`
+Create an ANOVA model object called `fly_2_groups_model`:
 
 ```{r two-group, exercise = TRUE}
-# The DV is on the left and IV on the right
-fruitfly_2groups_model <- aov(FILL_THIS_IN ~ FILL_THIS_IN,
-                              data = FILL_THIS_IN)
+# The response variable is on the left and explanatory variable on the right
+fly_2_groups_model <- aov(<response_column> ~ <explanatory_column>,
+                          data = <variable_name>)
 ```
 
 ```{r two-group-solution}
-fruitfly_2groups_model <- aov(longevity ~ activity,
-                              data = fly_2_groups)
+fly_2_groups_model <- aov(longevity ~ activity, data = fly_2_groups)
 ```
 
-the `aov` function returns us a "model" object, and we need to use another function to see the results of the analysis. I suggest using the `tidy` function from the [broom](ftp://cran.r-project.org/pub/R/web/packages/broom/vignettes/broom.html) package as it returns a the results in a nice data frame that is easy to do further work with. Another, more traditional function to access these data is the `summary` function. I do not recommend this as accessing the individual numbers from the output o the `aov` from the model is a bit trickier.
+The `aov()` function returns a "model" object. You can examine the results of the model with the `summary()` function:
 
-Now, use the `tidy` function to get an output of `fruitfly_2groups_model` analysis of variance model.
 ```{r two-group-sum, exercise = TRUE}
-# Try the summary() function for this as well
-tidy(FILL_THIS_IN)
-# summary(fruitfly_2groups_model)
+summary(<model_object>)
 ```
 
 ```{r two-group-sum-solution, excercise.setup = "setup-two-group-sum"}
-tidy(fruitfly_2groups_model)
+summary(<fly_2_groups_model>)
 ```
 
 ```{r setup-two-group-sum, include = FALSE}
-fruitfly_2groups_model <- aov(longevity ~ activity,
-                              data = fly_2_groups)
+fly_2_groups_model <- aov(longevity ~ activity, data = fly_2_groups)
 ```
 
-So, what does this output mean? The most important result in regards to rejecting 9or failing to reject our null hypothesis is the p-value. In this simple one-way ANOVA, we have a single p-value which has a very small value of 0.000423. given that this is much smaller then the commonly used threshold for rejecting the null hypothesis, p < 0.05, we can reject our null hypothesis that sexual activity has no effect on the population mean longevity of male fruit flies, and accept the alternative hypothesis that sexual activity **does** have an effect on population mean longevity of male fruit flies. 
+So, what does this output mean? The most important result in regards to rejecting or failing to reject our null hypothesis is the right-most number, the p-value (`Pr(>F)`). In this simple one-way ANOVA, we have a single p-value which has a very small value. Given that this is much smaller then the commonly used threshold for rejecting the null hypothesis, p < 0.05, we can reject our null hypothesis that sexual activity has no effect on the population mean longevity of male fruit flies, and accept the alternative hypothesis that sexual activity **does** have an effect on population mean longevity of male fruit flies. 
 
 #### **Exercise 1: 1-way ANOVA**
 ![](images/rstudio_logo.png){width=0.4in} Exercise.
-Using ANOVA, test if fruit fly longevity is effected by size (as measured by thorax length).
+Using ANOVA, test if fruit fly longevity is affected by size (as measured by thorax length).
 
   * What are your null and alternate hypotheses?
   * What can you conclude from these results?
 
-Create a variable called `exercise1` and use the `tidy()` or the `summary()` function for the output.
+Create a model variable called `exercise1` and use the `summary()` function to examine the output.
 
 **Note: Hints will be provided for exercises but no solution. Try to figure it out!**
 ```{r ex1, exercise = TRUE}
-# The DV is on the left and IV on the right
-FILL_THIS_IN <- aov(FILL_THIS_IN ~ FILL_THIS_IN,
-                              data = FILL_THIS_IN)
-FILL_THIS_IN(FILL_THIS_IN)
+<model_object> <- aov(<response_column> ~ <explanatory_column>,
+                      data = <variable_name>)
+<function_for_examining_output>(<model_object>)
 ```
 
 ```{r ex1-hint-1}
-#The DV is longevity and the IV is thorax
+# The response column is thorax and the dependent variable is thorax
 ```
 
 ```{r ex1-hint-2}
-#Remember to name the variable accordingly!
+# Name the model object exercise1!
 ```
 
 ```{r ex1-hint-3}
-#Remember to get the output of your model!
+# To examine the output of your model, use the summary() function!
 ```
 
-### One-way ANOVA with > two groups 
+### One-way ANOVA with more than two groups 
 
-As mentioned at the start of this section, an ANOVA can be used when there are more then 2 levels in your categorical explanatory/independent variable (unlike a t-test). For example, we ill consider the following case: 
+As mentioned at the start of this section, an ANOVA can be used when there are more then 2 levels in your categorical explanatory/independent variable (unlike a t-test). For example, we will consider the following case: 
 
-We are still interested in whether sexual activity affects the longevity of male fruit flies but we want to understand this at a finer level (*e.g.* does the amount of sexual activity matter?). Thus, in this experiment, there are 3 categories for sexual`activity`. Specifically, males were kept:
+We are still interested in whether sexual activity affects the longevity of male fruit flies but we want to understand this at a finer level (i.e., does the amount of sexual activity matter?). Thus, in this experiment, there are 3 categories for sexual`activity`. Specifically, males were kept:
 
 1. `none` - alone
 2. `low` - with a new virgin fruit fly everyday
 3. `high` - with a new set of virgin fruit flies everyday
 
 So for this case, our hypotheses are as follows:
-**Null Hypothesis, $H_{0}$**: $\mu_{isolated} = \mu_{low} = \mu_{high}$  
-**Alternative Hypothesis, $H_{A}$**: at least one group's population mean differs from that of the other groups
 
-#### Reload and explore the data
+Null hypothesis, $H_0$: Mean sexual activity does not vary from group to group. $\mu_{isolated} = \mu_{low} = \mu_{high}$ 
+Alternative hypothesis, $H_A$: At least one group's mean sexual activity differs from that of the other groups.
+
+#### Explore and analyse the data
+
 Using the same original fruit fly data, now we create our 3-level activity group and call it `fly_3_groups`:
 
 ```{r fly-3-groups, exercise = TRUE}
@@ -314,6 +312,22 @@ fly_3_groups <- df_fly %>%
 	# Subset to equal group sizes
 	group_by(activity) %>% 
 	sample_n(25)
+
+head(<variable_name>)
+``` 
+
+```{r fly-3-groups-solution}
+fly_3_groups <- df_fly %>% 
+  # convert factors to character variables
+  mutate_if(is.factor, as.character) %>%
+	# Change "activity" to a 3-level variable
+	mutate(activity = ifelse(activity %in% c("isolated", "one", "many"),
+														"none", activity)) %>%
+	# Subset to equal group sizes
+	group_by(activity) %>% 
+	sample_n(25)
+
+head(fly_3_groups)
 ``` 
  
 ```{r setup-3groups, include = FALSE}
@@ -326,35 +340,37 @@ fly_3_groups <- df_fly %>%
 	sample_n(25)
 ```
 
-Now, let's **explore** these data again using the `dim` and `head` function:
+Now, let's **explore** these data again using the `dim` and `summary` function:
 
 ```{r fly-3-explore, exercise = TRUE, exercise.setup = "setup-groups"}
 # get number of rows and columns
+dim(<variable_name>)
+# view first 6 rows of data
+head(<variable_name>)
+``` 
+
+```{r fly-3-explore-solution}
+# get number of rows and columns
 dim(fly_3_groups)
-# view first 6 records of data
+# view first 6 rows of data
 head(fly_3_groups)
 ``` 
 
-Again, it is good practice to **visualize** the the data before we perform our statistical analysis.
+Again, it is good practice to **visualize** the the data before we perform our statistical analysis. Modify the code below to make a boxplot showing the relationship between the explanatory variable, `activity`, and the response variable, `longevity`:
 
 ```{r fly-3-eda, exercise = TRUE, excercise.setup = "setup-eda"}
-# Firstly, we will reorder the factors to make them show up how we would like them to show up on the plot
-# instead of the default alphabetical ordering, we want it to be ascending order
-fly_3_groups <- fly_3_groups %>%
-  mutate(activity = factor(activity)) %>%
-  mutate(activity = fct_relevel(activity, c("none", "low", "high")))
+# Create a box plot for exploratory data analysis
+<variable_name> %>%
+  ggplot(aes(x = <explanatory_column>, y = <response_column>)) +
+  geom_boxplot() +
+  labs(x = "Sexually Active", y = "Longevity (days)")
+```
 
-# plot raw data points for each group as a transparent grey/black point
-# overlay the mean as a red diamond
+```{r fly-3-eda-solution}
+# Create a box plot for exploratory data analysis
 fly_3_groups %>%
   ggplot(aes(x = activity, y = longevity)) +
-  geom_jitter(position = position_jitter(0.15),
-              alpha = 0.7) +
-  stat_summary(fun = mean,
-               geom = "point",
-               shape = 18,
-               size = 4,
-               color = "red") +
+  geom_boxplot() +
   labs(x = "Sexually Active", y = "Longevity (days)")
 ```
 
@@ -367,58 +383,56 @@ fly_3_groups <- df_fly %>%
 	sample_n(25)
 ```
 
-So, it looks like the sample means of the longevity for both low and high activity are lower than the sample means of the isolated male fruit fly. Are these differences in the sample means indicating that there are differences in the true population means between any of these groups? again, we turn to ANOVA to answer this: 
+So, it looks like the longevity for both low and high activity is lower than the longevity of the isolated male fruit fly. Can we conclude that there are differences in the true population means between any of these groups? Again, we turn to ANOVA to answer this.
 
 Create an ANOVA model and call it `fly_3_model`.
 
 ```{r three-group, exercise = TRUE}
-# The DV is on the left and IV on the right
-FILL_THIS_IN <- aov(FILL_THIS_IN ~ FILL_THIS_IN,
-                              data = fly_3_groups)
+<model_object> <- aov(<response_column> ~ <explanatory_column>,
+                      data = fly_3_groups)
 ```
 
 ```{r three-group-solution}
-fly_3_model <- aov(longevity ~ activity,
-                               data = fly_3_groups)
+fly_3_model <- aov(longevity ~ activity, data = fly_3_groups)
 ```
 
-Now, use the `tidy` function to get a nice data frame output of `fly_3_model` analysis of variance model.
+Now, use the `summary()` function to examine the output of `fly_3_model` model object:
+
 ```{r three-group-sum, exercise = TRUE}
-# Try the summary() function for this as well
-FILL_THIS_IN(FILL_THIS_IN)
+<function_for_examining_output>(<model_object>)
 ```
 
 ```{r three-group-sum-solution, excercise.setup = "setup-three-group-sum"}
-tidy(fly_3__model)
+summary(fly_3__model)
 ```
 
 ```{r setup-three-group-sum, include = FALSE}
-fly_3_model <- aov(longevity ~ activity,
-                               data = fly_3_groups)
+fly_3_model <- aov(longevity ~ activity, data = fly_3_groups)
 ```
 
-So what does this output mean? Semilar to a 1-wayy, 2 group ANOVA, we look at the p-value to determine if we reject (or fail to reject) our null hypothesis. In this case, we have a single p-value which has a very small value of 0.00000000162. Given that this is much smaller that the commonly used threshold for rejecting the null hypothesis, p <0.05, we can reject our null hypothesis that all the population mean for longevity of male fruit flies are equal between all groups, and accept the alternative hypothesis that **at least** one group's population mean differs from that of the other groups. 
+So what does this output mean? Similar to a two-group ANOVA, we look at the p-value to determine if we reject (or fail to reject) our null hypothesis. In this case, we have a single p-value which has a very small value, much smaller that the commonly used threshold for rejecting the null hypothesis, p <0.05. We can reject our null hypothesis that the population means for longevity of male fruit flies are equal across all groups, and accept the alternative hypothesis that **at least** one group's population mean differs from that of the other groups. 
 
 But which one(s) differ? 
 
-### Assess which groups differ
-This is something that ANOVA cannot tell us. To answer this, we need to either perform pair-wise t-tests (followed by an adjustment or correction for multiple comparisons, such as a Bonferroni correction, or False Discovery Rate) OR follow the ANOVA with a contrast-test, as as Tukey's honestly significant difference (HSD) test. We'll do both here and show that we get similar results:
+#### Assess which groups differ
 
-Run the cell code below for the pairwise.t.test to observe group differences:
+This is something that ANOVA cannot tell us. To answer this, we need to either perform pairwise t-tests (followed by an adjustment or correction for multiple comparisons, such as a Bonferroni correction) **or** perform a contrast test (such as Tukey's honestly significant difference test, HSD). We'll do both here and show that we get similar results:
+
+Modify the cell code below to perform a Bonferroni-corrected pairwise t-test to observe group differences:
+
 ```{r fly-3-pairs, exercise = TRUE}
-tidy(pairwise.t.test(fly_3_groups$longevity,
-                     fly_3_groups$activity,
-                     p.adjust.method = "bonferroni",
-                     pool.sd = TRUE,
-                     paired = FALSE))
+pairwise.t.test(fly_3_groups$<response_column>,
+                fly_3_groups$<explanatory_activity>,
+                p.adjust.method = "bonferroni")
 ``` 
  
-Run the code below for Tukey's HSD test to observe group differences:
+Run the code below to perform Tukey's HSD test to observe group differences:
+
 ```{r fly-3-tuckey, exercise = TRUE}
-tidy(TukeyHSD(fly_3_model, "activity"))
+TukeyHSD(<model_object>)
 ``` 
 
-From both of these multiple comparison tests, we see that there is no significant difference between the population mean longevity of male fruit flies who had no or little sexual activity. However, high ssexual activity does appear to matter as the population mean longevity of male fruit flies who had high sexual activities significantly different from that of male flies who had either no or low sexual activity.
+From both of these tests, we see that there is no significant difference between the population mean longevity of male fruit flies who had no or little sexual activity. However, high sexual activity does appear to matter, since the population mean longevity of male fruit flies who had high sexual activity is significantly different from that of male flies who had either no or low sexual activity.
 
 ### Two-way ANOVA with two groups
 Let's continue to add complexity to our ANOVA model. In this experiment, we are not only interested in how sexual activity might affect longevity; we are also interested in body size (assessed via thorax length). We do this because the literature indicates that body size affects fruit fly longevity. Thus we now have two categorical/explanatory variables to look at sexual activity. 
@@ -438,13 +452,12 @@ For this experiment, we have two sets of null and alternative hypotheses:
 **Null Hypothesis, $H_{0}$**: $\mu_{short} = \mu_{long}$  
 **Alternative Hypothesis, $H_{A}$**: $\mu_{short} \ne \mu_{long}$
 
-Now that we have our case setup, let's re-look at our 2 level data but now notice the thorax information.
+Now that we have our case setup, let's re-look at our two-level data but now notice the thorax information.
 
-Use the `dim` and `head` function to explore the `fly_2_groups` data. 
+Fill in the blank code box below. Use the `dim()` and `head()` function to explore the `fly_2_groups` data:
 
 ```{r two-way_group, exercise = TRUE}
-dim(FILL_THIS_IN)
-FILL_THIS_IN(fly_2_groups)
+
 ```
 
 ```{r two-way_group-solution, excercise.setup = "setup-two-group-sum"}
@@ -453,93 +466,65 @@ dim(fly_2_groups)
 head(fly_2_groups)
 ```
 
-Now, **visualize** the data set. Have x = `activity`, y = `longevity`, and color = `thorax` on the aesthetics mapping.
+Now, **visualize** the data set. Recall that `activity` and `thorax` are the explanatory variables, whereas `longevity` is the response variable. We will represent the two thorax length groups (long and short) with different colors:
 
 ```{r two-way_group_viz, exercise = TRUE}
-# re-order factors to make them show up how we want them to show up 
-# instead of the default alphabetical behaviour
-fly_2_groups <- fly_2_groups %>%
-  mutate(thorax = factor(thorax)) %>%
-  mutate(thorax = fct_relevel(thorax, c("short", "long")))
-
-# create the plot: 
 fly_2_groups %>%
-  ggplot(aes(x = FILL_THIS_IN, y = FILL_THIS_IN, color = FILL_THIS_IN)) +
-  stat_summary(fun = mean,
-               geom = "point",
-               shape = 5,
-               size = 4,
-               position = position_dodge(0.5)) +
-  geom_jitter(position = position_dodge(0.5), alpha = 0.3) +
-  scale_color_manual(values = c("black", "dodgerblue3")) +
+  ggplot(aes(x = <first_explanatory_column>, y = <response_column>, color = <second_explanatory_column>)) +
+  geom_boxplot() +
   labs(x = "Sexual Activity",
        y = "Longevity (days)")
 ```
 
 ```{r two-way_group_viz-solution, excercise.setup = "setup-two-group-sum"}
-# Explore the data, this time pay attention to the thorax column as well
 fly_2_groups %>%
   ggplot(aes(x = activity, y = longevity, color = thorax)) +
-  stat_summary(fun = mean,
-               geom = "point",
-               shape = 5,
-               size = 4,
-               position = position_dodge(0.5)) +
-  geom_jitter(position = position_dodge(0.5), alpha = 0.3) +
-  scale_color_manual(values = c("black", "dodgerblue3")) +
+  geom_boxplot() +
   labs(x = "Sexual Activity",
        y = "Longevity (days)")
 ```
 
-This data visualization suggests that both sexual activity and body size/thorax length may affect longevity. Let's confirm (or disprove) this intuition by performing a two-way (or two-factor) ANOVA.
+This data visualization suggests that both sexual activity and thorax length may affect longevity. Let's confirm (or disprove) this intuition by performing a two-way (or two-factor) ANOVA.
 
-To perform a two-way ANOVA, we modify the formula notation that we pass into `aov` function by adding an additional factor/category/explanatory variable through the use of the `+` sign and the name of the new variable. Thus, our new formula for this case is: 
+To perform a two-way ANOVA, we modify the formula notation that we pass into `aov()` function by adding an additional explanatory variable through the use of the `+` sign and the name of the new variable. Thus, our new formula for this case is: 
 
 ```
 longevity ~ activity + thorax 
 ```
 
-Create a new variable called `fly_2var_model` using the `fly_2_groups` data. Then use the `tidy` function to view the output of your ANOVA model. 
+Create a new model object called `fly_2_vars_model` using the `fly_2_groups` data. Then use the `summary()` function to view the output of your ANOVA model: 
 
 ```{r two-way_aov, exercise = TRUE}
 # create an ANOVA "model" object
-FILL_THIS_IN <- aov(FILL_THIS_IN ~ FILL_THIS_IN + FILL_THIS_IN,
-                    data = FILL_THIS_IN)
+fly_2_vars_model <- aov(<response_variable> ~ <first_explanatory_variable> + <second_explanatory_variable>, data = <data_frame_name>)
 
-# # view output of aov() as a nice dataframe using tidy() from the broom package
-FILL_THIS_IN(FILL_THIS_IN)
+# examine output of aov()
+summary(<model_object>)
 ```
 
 ```{r two-way_aov-solution, excercise.setup = "setup-two-group-sum"}
-fly_2var_model <- aov(longevity ~ activity + thorax,
-                                data = fly_2_groups)
+fly_2_vars_model <- aov(longevity ~ activity + thorax, data = fly_2_groups)
 
-tidy(fly_2var_model)
+summary(fly_2_vars_model)
 ```
 
-Now, we see that we get back an additional line in our results summary that corresponds to the hypotheses regarding the effect of the body size/thorax length on longevity. The p-values for both  sexual activity (0.00000446) and size (1.24e-11) are very, very small. Thus we can reject both of our null hypotheses and infer that both sexual activity and size have statistically significant effect on longevity.
+Now, we see that we get back an additional line in our results summary. The new line corresponds to the effect of thorax length on longevity. The p-values for both  sexual activity and size are very, very small. Thus we can reject both of our null hypotheses and infer that both sexual activity and size have statistically significant effect on longevity.
 
 ### Two-way ANOVA with two groups including an interaction term
-Oftentimes when we are dealing with experiments/cases where we have two or more factor/category/explanatory variables, we first want to ask if there is an interaction between them and their influences/effects on the reponse variable.
-
-What do we mean by interaction effect? Essentially, an interaction effect is observed when the effect of two explanatory variables on the response variable is not additive (*e.g.* their effect could instead be synergistic). 
+Oftentimes when we are dealing with cases where we have two or more explanatory variables, we want to know if there is an interaction between them. What do we mean by interaction? An interaction is observed when the effect of two explanatory variables on the response variable is not additive (e.g., their effect could instead be synergistic). 
 
 Our hypotheses for whether or not there is an interaction are:
 
 **Null Hypothesis, $H_{0}$**: There is **no** interaction effect between sexual activity and thorax length on the mean longevity of the population.  
 **Alternative Hypothesis, $H_{A}$**: There is an interaction effect between sexual activity and thorax length on the mean longevity of the population.
 
-In a simple case, as presented in this experiment, we first assess the hypotheses in regards to the presence or absence of interaction. If we reject the interaction effect null hypothesis, then we interpret the data only in regards to this null hypothesis. If we fail to reject the interaction effect null hypothesis, then we can proceed and investigate/test the hypotheses for each individual factor/category/explanatory variable (often referred to as "main effects").
+We can get an intuitive sense for this via visualization by making an interaction plot (see example below). In an interaction plot, we look at the slope of the lines that connect the group means. If the slopes of the lines are parallel, then there is no interaction between the explanatory variables. On the other hand, if they are not parallel, we can infer that there is an interaction effect.
 
-Can we get an intuitive sense for this via visualization? Yes we can by making an interaction plot (see example below). Here, we are looking at the slope of the lines that connects the means. If the slopes of the interaction lines are parallel, then the ANOVA results will very likely tell us that we will fail to reject the interaction effect null hypothesis. On the other hand, if they are not parallel, the ANOVA results will very likely tell us to reject the interaction effect null hypothesis, and we can infer that there is an interaction effect on the response variable between the two factor/category/explanatory variables.
-
-Let's create the interaction plot for our case. Use the `fly_2_groups` data. Have x = `activity`, y = `longevity`, and color = `thorax` on the aesthetics mapping. Finally make sure you have human readable axis: have x be *Sexual Activity* and y be *Longevity (days)*.
+Let's create the interaction plot for our case. Use the `fly_2_groups` data. Again, the response variable is `longevity` and the explanatory variables are `activity` (mapped to the x-axis) and `thorax` (mapped to color). Instead of boxplots, we will just plot points representing the mean of each category, and connect those means with lines.
 
 ```{r two-way_two_group_viz, exercise = TRUE}
-# plot to investigate possible interaction effect of sexual
-# activity and thorax length on longevity
-FILL_THIS_IN %>%
-  ggplot(aes(x = FILL_THIS_IN, y = FILL_THIS_IN, color = FILL_THIS_IN)) +
+<variable_name> %>%
+    ggplot(aes(x = <first_explanatory_column>, y = <response_column>, color = <second_explanatory_column>)) +
   stat_summary(fun = mean,
                geom = "point",
                shape = 18,
@@ -547,9 +532,8 @@ FILL_THIS_IN %>%
   stat_summary(fun = mean,
                geom = "line",
                aes(group = thorax)) +
-  scale_color_manual(values = c("black", "dodgerblue3")) +
-  labs(x = FILL_THIS_IN,
-       y = FILL_THIS_IN)
+  labs(x = "Sexual Activity",
+       y = "Longevity (days)")
 ```
 
 ```{r two-way_two_group_viz-solution, excercise.setup = "setup-two-group-sum"}
@@ -562,50 +546,47 @@ fly_2_groups %>%
   stat_summary(fun = mean,
                geom = "line",
                aes(group = thorax)) +
-  scale_color_manual(values = c("black", "dodgerblue3")) +
   labs(x = "Sexual Activity",
        y = "Longevity (days)")
 ```
 
 Although not perfectly parallel, the lines on the interaction plot are pretty close to parallel. So, the ANOVA results will very likely tell us that we will fail to reject the interaction effect null hypothesis. Let's proceed with the analysis to be sure.
 
-One way to include an interaction term in your ANOVA model is to use the `*` symbol between two factor/category/explanatory variables. This causes R to test the null hypotheses for the effect of each individual factor/category/explanatory variables as well as the combined effect of these two explanatory variables. Thus, for us, our formula notation is now:
+One way to include an interaction term in your ANOVA model is to use the `*` symbol between two explanatory variables. This causes R to test the null hypotheses for the effect of each individual explanatory variable as well as the combined effect of these two explanatory variables. Thus, for us, our formula notation is now:
 
 ```
 longevity ~ activity * thorax
 ```
 
-Importantly, using `*` causes R to test all possible interactions. So if we had a formula `A * B * C`, it would test all combinations of the 3 variables. If instead, you want to specify specific interaction term(s), you can use `:`. In the case of our formula, this is the same as `*` but serves as an example of the other notation type.
+Importantly, using `*` causes R to test all possible interactions. So if we had a formula `A * B * C`, it would test all three variables as well as all of their combinations. If instead, you want to identify specific interaction term(s), you can use `:`. In the case of our formula, this is the same as `*` but serves as an example:
 
 ```
 longevity ~ activity + thorax + activity:thorax
 ```
 
-Create a new variable called `fly_2var_model2` using the `fly_2_groups` data. Then use the `tidy` function to view the output of your ANOVA model. 
+Create a new model object called `fly_2_vars_model2` using the `fly_2_groups` data. Then use the `summary()` function to view the output of your ANOVA model. 
 
 ```{r two-way_two_group_aov, exercise = TRUE}
-# create an ANOVA "model" object
-FILL_THIS_IN <- aov(FILL_THIS_IN ~ FILL_THIS_IN * FILL_THIS_IN,
-                    data = FILL_THIS_IN)
+# create an ANOVA model object
+<model_object> <- aov(<anova_formula>,
+                    data = <data_frame>)
 
-# # view output of aov() as a nice dataframe using tidy() from the broom package
-FILL_THIS_IN(FILL_THIS_IN)
+# view output of aov() 
+<function_to_examine_model_output>(<model_object>)
 ```
 
 ```{r two-way_two_group_aov-solution, excercise.setup = "setup-two-group-sum"}
-fly_2var_model2 <- aov(longevity ~ activity * thorax,
-                                data = fly_2_groups)
+fly_2_vars_model2 <- aov(longevity ~ activity * thorax,
+                          data = fly_2_groups)
 
-tidy(fly_2var_model2)
+summary(fly_2_vars_model2)
 ```
 
-As stated above, as a rule of thumb for cases such as these, the first hypotheses we should attend to are those regarding the interaction effect (or lack thereof). We can see our output from ANOVA now has an additional line that refers to the testing of the interaction effect hypothesis.
+As a rule of thumb for cases such as these, we should always start by examining the output regarding the interaction effect (or lack thereof). We can see our output from ANOVA now has an additional line that refers interaction effect hypothesis, `activity:thorax`.
 
-$activity:thorax, 1, 112.8125, 112.8125, 0.841434, 3.618888e-01$
+We observe that the p-value from this line is not less than the standard p-value threshold for rejecting null hypotheses (p > 0.05). Thus, as our interaction plot suggested, we fail to reject the null hypotheses and conclude that there is **no** interaction effect between sexual activity and thorax length on the mean longevity of the population).
 
-We observe that the p-value from this line is not very small, 0.362, and not less than the standard p-value threshold for rejecting null hypotheses (0.05). Thus, as our interaction plot suggested, we fail to reject the null hypotheses and conclude that there is **no** interaction effect between sexual activity and thorax length on the mean longevity of the population).
-
-We would then proceed to investigate the hypotheses of each main effect independently. This could be done by either interpreting the relevant p-values from our current ANOVA results table, or re-running the analysis without the interaction term (as done in the previous case).
+We then proceed to investigate the hypotheses for each main effect independently, by interpreting the relevant p-values from our current ANOVA results table.
 
 #### **Exercise 2: ANOVA**
 ![](images/rstudio_logo.png){width=0.4in} Exercise.
@@ -614,14 +595,16 @@ Determine whether the following statements are *true* or *false*
 ```{r aov_tf_1, echo=FALSE}
 question("ANOVA tests the null hypothesis that the sample means are all equal?",
   answer("True"),
-  answer("False", correct = TRUE)
+  answer("False", correct = TRUE),
+  incorrect = "The null hypothesis says that the population (not sample) means are all equal."
 )
 ```
 
 ```{r aov_tf_2, echo=FALSE}
 question("We use ANOVA to compare the variances of the population?",
   answer("True"),
-  answer("False", correct = TRUE)
+  answer("False", correct = TRUE),
+  incorrect = "We use ANOVA to compare the population means for different groups"
 )
 ```
 
@@ -635,7 +618,8 @@ question("A one-way ANOVA is equivalent to a t-test when there are 2 groups to b
 ```{r aov_tf_4, echo=FALSE}
 question("In rejecting the null hypothesis, one can conclude that all the population means are different from one another?",
   answer("True"),
-  answer("False", correct = TRUE)
+  answer("False", correct = TRUE),
+  incorrect = "One can conclude that at least one population mean is different from the others."
 )
 ```
 
@@ -645,22 +629,23 @@ Complete the following multiple choice questions.
 
 ```{r aov_mc_1, echo=FALSE}
 question("Analysis of variance is a statistical method comparing the _________ of several populations.",
-  answer("Standard deviations"),
+  answer("standard deviations"),
   answer("proportions"),
-  answer("mean", correct = TRUE),
-  answer("t-score"),
+  answer("means", correct = TRUE),
+  answer("t-scores"),
   answer("none of the above"),
   allow_retry = TRUE
 )
 ```
 
 ```{r aov_mc_2, echo=FALSE}
-question("Which of the following is an assumption of 0ne-way ANOVA comparing samples from three ot more experimental treatments? Select all that apply.",
-  answer("All the response variables within the k populations follow a normal distributions", correct = TRUE),
-  answer("The samples associated with each populations are roandomly selected and are independent from all other samples", correct  = TRUE),
-  answer("The dependent variable within each of the k populations have equal variances", correct = TRUE),
-  answer("The dependent variable is an interval or ratio variable"),
-  answer("none of the above"),
+question("Which of the following is an assumption of one-way ANOVA comparing samples from three or more experimental treatments? Select all that apply.",
+  answer("All the response variables within each population follow a normal distribution", correct = TRUE),
+  answer("The sample sizes are approximately equal across groups"),
+  answer("The samples associated with each population are randomly selected and are independent from all other samples", correct  = TRUE),
+  answer("The response variables within each of the populations have equal variances", correct = TRUE),
+  answer("The response variable is an interval or ratio variable"),
+  answer("None of the above"),
   allow_retry = TRUE
 )
 ```
