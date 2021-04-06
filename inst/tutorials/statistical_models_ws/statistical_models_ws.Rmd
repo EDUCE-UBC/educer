@@ -256,8 +256,6 @@ fly_2_groups_model <- aov(longevity ~ activity, data = fly_2_groups)
 So, what does this output mean? The most important result in regards to rejecting or failing to reject our null hypothesis is the right-most number, the p-value (`Pr(>F)`). In this simple one-way ANOVA, we have a single p-value which has a very small value. Given that this is much smaller then the commonly used threshold for rejecting the null hypothesis, p < 0.05, we can reject our null hypothesis that sexual activity has no effect on the population mean longevity of male fruit flies, and accept the alternative hypothesis that sexual activity **does** have an effect on population mean longevity of male fruit flies. 
 
 #### **Exercise 1: 1-way ANOVA**
-![](images/rstudio_logo.png){width=0.4in} Exercise.
-
 Using ANOVA, test if fruit fly longevity is affected by size (as measured by thorax length).
 
   * What are your null and alternate hypotheses?
@@ -590,7 +588,6 @@ We observe that the p-value from this line is not less than the standard p-value
 We then proceed to investigate the hypotheses for each main effect independently, by interpreting the relevant p-values from our current ANOVA results table.
 
 #### **Exercise 2: ANOVA**
-![](images/rstudio_logo.png){width=0.4in} Exercise.
 Determine whether the following statements are *true* or *false*
 
 ```{r aov_tf_1, echo=FALSE}
@@ -625,7 +622,6 @@ question("In rejecting the null hypothesis, one can conclude that all the popula
 ```
 
 #### **Exercise 3: ANOVA cont.**
-![](images/rstudio_logo.png){width=0.4in} Exercise.
 Complete the following multiple choice questions. 
 
 ```{r aov_mc_1, echo=FALSE}
@@ -652,7 +648,7 @@ question("Which of the following is an assumption of one-way ANOVA comparing sam
 ```
 
 ## Linear regression
-Now, we will work with a data frame that Jenny Bryan (UBC and RStudio) put together in the [`gapminder` package](https://www.gapminder.org/data/). 
+Now, we will work with a data frame that Jenny Bryan (UBC and RStudio) put together in the [gapminder package](https://www.gapminder.org/data/). The data frame is also called `gapminder`, just like the package.
 
 Unlike the fruit fly data set, no pre-manipulation is needed so let's view the data as is. First, load the gapminder package and use the `head()` function to explore the data: 
 
@@ -667,31 +663,31 @@ library(gapminder)
 head(gapminder)
 ```
 
-We see that the data contain infomation on life expectancy (lifeExp), population (pop), and gross domestic product per capita (gdpPercap, a rough measure for economical richness) for many countries across many years. A very naive working hypothesis that you may come to is that our life expectancy grew with time. This would be represent in r with `lifeExp ~ year`. 
+We see that the data contain information on life expectancy (`lifeExp`), population (`pop`), and gross domestic product per capita (`gdpPercap`, a rough measure for economic richness) for many countries across many years. 
 
-Let's explore this hypothesis graphically. Using the `gapminder` data set, create a scatterplot with `year` on the x-axis and `lifeExp` on the y-axis. Remember to create human readable labels!
+A very naive working hypothesis that you may come to is that our life expectancy grew with time. This would be represent in R with the formula `lifeExp ~ year`. Let's explore this hypothesis graphically. Using the gapminder data set, create a scatterplot with `year` on the x-axis and `lifeExp` on the y-axis.
 
 ```{r gapminder-plot, exercise = TRUE}
-# uncomment the last line to customize 
 <dataset> %>%
   ggplot(aes(x = <x-axis>, y = <y-axis>)) +
-  geom_point() 
-#labs(x = "x-axis", y = "y-axis")
+  geom_point() +
+  labs(x = "Year", y = "Life expectancy (years)")
 ```
 
 ```{r gapminder-plot-solution}
 gapminder %>%
   ggplot(aes(x = year, y = lifeExp)) +
-  geom_point() 
+  geom_point() +
+  labs(x = "Year", y = "Life expectancy (years)")
 ```
 
 ```{r setup-gapminder-plot, include = FALSE}
 library(gapminder)
 ```
 
-Although there is very high variance, we do see a certain trend with mean life expectancy increasing over time. Similarly, we can naively hypothesize that life expectancy is higher where the per-capita gdp is higher. In R, this is `lifeExp ~ gdpPercap`.
+Although there is very high variance, we do see a certain trend with mean life expectancy increasing over time. Similarly, we can naively hypothesize that life expectancy is higher where the per-capita GDP is higher. In R, this is represented with the formula: `lifeExp ~ gdpPercap`.
 
-Again, let's explore this hypothesis graphically. Using the `gapminder` data set, create a scatterplot with `gdpPercap` on the x-axis and `lifeExp` on the y-axis. Have the x-axis be "Life expectancy (yrs)" and the y-axis label be "Per-capita GDP". 
+Again, let's explore this hypothesis graphically. Using the `gapminder` data set, create a scatterplot with `gdpPercap` on the x-axis and `lifeExp` on the y-axis. Title the x-axis "Life expectancy (years)" and the y-axis "Per-capita GDP". 
 
 ```{r gapminder-plot2, exercise = TRUE}
 # uncomment the last line to customize 
@@ -705,56 +701,38 @@ Again, let's explore this hypothesis graphically. Using the `gapminder` data set
 gapminder %>%
   ggplot(aes(x = gdpPercap, y = lifeExp)) +
   geom_point() +
-  labs(x = "Life expectancy (yrs)", y = "Per-capita GDP")
+  labs(x = "Life expectancy (years)", y = "Per-capita GDP")
 ```
 
 ```{r setup-gapminder-plot2, include = FALSE}
 library(gapminder)
 ```
 
-### Linear models
-A **linear regression** model describes the change of a *dependent variable*, say `lifeExp`, as a *linear* function of one or more *explanatory* variables, say *yaer*. This means tat increasing by $x$ the variable `year` will have an effect $\beta \cdot x$ on the *dependent* variable `lifeExp`, whatever the value $x$ is, in mathematical terms:
+In the cases above, we plotted a relationship between a continuous *dependent variable* and a continuous *explanatory* variable. 
+
+A **linear regression** describes the change of a continuous dependent variable, say `lifeExp`, as a *linear* function of one or more continuous explanatory variables, say `year`. Mathematically:
 \[
-\mbox{lifeExp} = \alpha + \beta \cdot \mbox{year}
+\mbox{lifeExp} = \beta_0 + \beta_1 \cdot \mbox{year}
 \]
 
-We call $\alpha$ the intercept of the model, or the value of `lifeExp` when `year` is equal to zero. When we go forward in time, increasing `year`, `lifeExp` increases (if $\beta$ is positive, otherwise it decreases):
-\[
-\alpha + \beta \cdot \left(\mbox{year} + x \right) = \alpha + \beta \cdot \mbox{year} + \beta \cdot x = \mbox{lifeExp} + \beta \cdot x
-\]
+This means that increasing the variable `year` by an amount $x$ will change the dependent variable `lifeExp` by $\beta_1 \cdot x$. 
+
+We call $\beta_0$ the intercept of the model, or the value of `lifeExp` when `year` is equal to zero. 
 
 ### Key assumptions 
-A number of assumptions must be satisfied for a linear model to be relaiable: These are: 
+A number of assumptions must be satisfied for a linear model to be reliable: These are: 
 
 * the predictor variables should be measured with not too much error (**weak exogeneity**)
 * the variance of the response variable should be roughly the same across the range of its predictors (**homoscedasticity**, a fancy pants word for "constant variance")
-* the discrepancies between observed and predicted values should be **independent**
-* the predictors themselves should be **non-colinear** (a rather technical issues, given by the way we solve the model, that may happen when two predictors are perfectly correlated or we try to estimate the effect of too many predictors with too little data).
-
-Here, we only mention these assumptions, but for more details, take a look at [wiki](https://en.wikipedia.org/wiki/Linear_regression#Assumptions).
-
-When we have only one predictive variable (what is called a _simple_ linear regression model), the formula we just introduced describes a straight line. The task of a linear regression method is identifying the _best fitting_ slope and intercept of that straight line. But what does _best fitting_ means in this context? We will first adopt a heuristic definition of it but will rigorously define it later on.
-
-Let's consider a bunch of straight lines in our first plot:
-
-```{r}
-#Run this code chunk
-gapminder %>%
-  ggplot(aes(x = year, y = lifeExp)) +
-  geom_point() +
-  geom_abline(intercept = 0, slope = 0.033, colour = "green") +
-  geom_abline(intercept = -575, slope = 0.32, colour = "purple") +
-  geom_hline(aes(yintercept = mean(lifeExp)), colour = "red") +
-  geom_vline(aes(xintercept = mean(year)), colour = "blue") +
-  labs(y="Life expectancy (yrs)")
-```
-
-**So, which line best describes the data? To determine this, we must fit a linear model to the data.**
+* the discrepancies between observed and predicted values (residuals) should be **independent**
+* the predictors themselves should be **non-collinear** (i.e., they should not be strongly correlated).
 
 ### Simple linear regression
-To obtain the slope and intercept of the green line, we can use the built-in R function `lm()`. This function works very similarly to the `aov()` function we used earlier for our Anova model. 
+When we have only one predictor variable (what is called a *simple* linear regression model), the formula we just introduced describes a straight line. The task of a linear regression method is identifying the *best fitting* slope and intercept of that straight line (we will define what we mean by "best fitting" later on). 
 
-Let's explore our earlier hypothesis that life expectancy is higher where the per-capita gdp is higher. Create a lm "model" object called `lifeExp_model1` using the `gapminder` data set. 
+To obtain the slope and intercept of the regression line, we can use the built-in R function `lm()`. This function works very similarly to the `aov()` function we used earlier for our ANOVA model. 
+
+Let's explore our earlier hypothesis that life expectancy is higher where the per-capita GDP is higher. Create an `lm` model object called `lifeExp_model1` using the `gapminder` data set. 
 
 ```{r gapminder-model1, exercise = TRUE}
 <object_name> <- lm(lifeExp ~ year,
@@ -770,7 +748,8 @@ lifeExp_model1 <- lm(lifeExp ~ year,
 library(gapminder)
 ```
 
-Now, use the function `summary()` to see all the relevant results. 
+Now, use the function `summary()` to see all the relevant results.
+
 ```{r gapminder-model1-sum, exercise = TRUE}
 summary(<object_name>)
 ```
@@ -780,107 +759,102 @@ summary(lifeExp_model1)
 ```
 
 ```{r setup-gapminder-model1-sum, include = FALSE}
+library(gapminder)
 lifeExp_model1 <- lm(lifeExp ~ year,
                      data = gapminder)
 ```
 
-Now, however, we are more interested in more then just the p-values.
+The `Estimate` values are the best fit values for the intercept, $\beta_0$, and the slope, $\beta_1$. 
 
-The `Estimate` values are the best foot for the intercept, $\alpha$, and the slope, $\beta$. The slope, the parameter that links `year` to `lifeExp`, is a positive value: every 1 year, the life expectancy increases of $`r summary(lifeExp_model1)$coefficients[2]`$ years. This is in line with our hypothesis. Moorever, its p-value, the probability of finding a correlation at least as strong between predictive and response variable, is rather low at $`r summary(lifeExp_model1)$coefficients[8]`$ (but see [this](https://backyardbrains.com/experiments/p-value) for a cautionary tale about p-values!).
+The slope, represented as `year` in the table, is a positive value: every year, the life expectancy increases by ~0.326 years. This is in line with our hypothesis. Moreover, its P-value is rather low (meaning that we are quite certain that the real slope is not equal to zero; in other words, it is likely that there is a relationship between year and life expectancy). Note that the P-value is not always the most relevant thing in a regression. Even relationships where the points don't match the line at all may have very small P-values, if you have enough data points. 
 
-Now, using the slope and intercept, we can plot the best fit line on our data. We can use the `geom_smooth()` function to do this. 
+The intercept is given as approximately -585.65. This makes no biological sense, as it would mean that, when `year = 0` (which was in 1 BC), people lived on average negative six centuries. This is a good lesson that we should be very cautious about extrapolating the values of a regression line beyond the range of the data.
 
-Here are the key arguments:
+Another important bit of information in our results is the R-squared value. This tells us what proportion of the *variance* in the life expectancy data is explained by the year. If the R-squared value is close to one, then the data points fall close to the line. The smaller the R-squared, the more dispersed the points will be about the line. In our case, R-squared is about 19%, which is a relatively low value: there is a lot of variation around the line.
 
-* `method` is the smoothing method to be used. Possible values include lm, glm, gam, loess, rlm. 
-  * `lm` fits a linear model (this is the one we will be using for this example)
-* `se` is a boolean value. If set to TRUE, the confidence interval will be displayed. 
-* `color`, `size`, `linetype` changes the line color, size and type
-* `fill` changes the fill color of the confidence region 
+Now, using the slope and intercept, we can plot the best fit line on our data. We can use the `geom_smooth()` function to do this. Here are the key arguments:
 
-For this example, we will be adding a best fit line to our previous plot that looks at mean life expectancy increasing over time. Use the `geom_smooth()` function to create the line. Set method to `lm`, with no confidence intervals, and make the line green. 
+* `method` is the smoothing method to be used. When we are using a linear regression, the method is `lm`. Other possible values include `glm`, `gam`, `loess`, `rlm`.  
+* `se` is a logical value: if set to `TRUE`, the confidence interval will be displayed; if set to `FALSE`, no confidence interval will be displayed. 
+
+For this example, we will be adding a best fit line to our previous plot showing mean life expectancy increasing over time. Use the `geom_smooth()` function to create the line. Set method to `lm`, with no confidence intervals: 
 
 ```{r gapminder-line1, exercise = TRUE}
 # play around with the key arguments!
 gapminder %>%
-  ggplot(aes(x = year, y = lifeExp)) +
+  ggplot(aes(x = <x-axis>, y = <y-axis>)) +
   geom_point() +
-  <add_geom>(method = <method>, se = <se>, color = <color>) 
+  <add_geom>(method = <method>, se = <se>) 
 ```
 
 ```{r gapminder-line1-solution}
 gapminder %>%
   ggplot(aes(x = year, y = lifeExp)) +
   geom_point() +
-  geom_smooth(method = "lm", se = FALSE, colour = "green")
+  geom_smooth(method = "lm", se = FALSE)
 ```
 
 ```{r setup-gapminder-line1, include = FALSE}
 library(gapminder)
 ```
 
-Another important bit of information in our results is the R-squared values, both are the _Multiple_ and _Adjusted R-squared_. These tell us how much of _variance_ in the life expectancy data is explained by the year. In this case, not much (`r summary(lifeExp_model1)$r.squared`, `r summary(lifeExp_model1)$adj.r.squared`, respectively)
-
 ### Residuals
 We can further explore our linear model by plotting some diagnostic plots. Base R provides a quick and easy way to view all of these plots at once with `plot()`. 
 
 ```{r gapminder-res, exercise = TRUE}
-# Set plot frame to 2 by 2
-par(mfrow=c(2,2))
+# Set frame to show 2 by 2 plots
+par(mfrow = c(2,2))
 # Create diagnostic plots
 plot(<model_object>)
 ```
 
 ```{r gapminder-res-solution}
-par(mfrow=c(2,2))
+par(mfrow = c(2,2))
 plot(lifeExp_model1)
 ```
 
 ```{r setup-gapminder-res, include = FALSE}
+library(gapminder)
 lifeExp_model1 <- lm(lifeExp ~ year,
                      data = gapminder)
 ```
 
-Whoa right!? Let's break it down. Overall, these diagnostic plots are useful for understanding the model *residuals*. The residuals are the discrepancies between the life expectancy we should have guessed by the model and the observed values in the available data. In other words, the distance between the straight line and actual data points. In a linear regression model, these residuals are the values we are trying to minimize when we fit a straight line. 
+Whoa, right!? Let's break it down. Overall, these diagnostic plots are useful for understanding the model *residuals*, also known as the model *error*. The residuals are the discrepancies between the life expectancy predicted by the model and the observed values. In other words, the distance between the straight line and actual data points. In a linear regression model, the "best-fitting" line is the line that minimizes these residuals. 
 
-There is a lot of information contained in these 4 plots, and you can find in-depth explanations [here](https://data.library.virginia.edu/diagnostic-plots/). For our purposes today, let's focus on just the **Residuals vs Fitted** and **Normal Q-Q plots**.
+There is a lot of information contained in these four plots. In this tutorial, we will focus on just the **Residuals vs Fitted** and **Normal Q-Q plot**.
 
-The **Residuals vs Fitted** plot shows the differences between the best fit line and all the available data points. When the mmodel is a good fit for the data, this plot should have no discernable pattern. That is, the red line should *not* form a shape like an 'S' or a parabola. Another way to look at it is that the points should look like 'stars in the sky', *e.g.* random. This second description is not great for these data since year is an integer (whole number) but we do see that the red line is relatively straight and without pattern. 
+The **Residuals vs Fitted** plot shows the differences between the best-fit line and all the available data points. When the model is a good fit to the data, this plot should have no discernible pattern. That is, the red line should *not* form a shape like an 'S' or a parabola. Another way to look at it is that the points should look like 'stars in the sky', *i.e.,* random. This second description is not great for these data since year is an integer (whole number), but we do see that the red line is relatively straight and without pattern. 
 
-The **Normal Q-Q plot** directly compares the best fit and actual data values. A good model closely adheres to the dotted line and points that fall off the line should not portray any pattern. In our case, this plot indicates that this simple linear model may not be the best fit for these data. Notice how either end deviates more and more from the line and the plot forms somewhat of an 'S' pattern.
-
-These ends are particularly important in a linear model. Because we have chosen to use a simple linear model, *outliers* (observed values that are very far away from the best fit line), are very important. They have a high *leverage* (see the forth dignostic plot). This is especially true if the outliers are at the edge of the preddicting variable ranges such as we see in our Q-Q plot. 
+The **Normal Q-Q plot** directly compares the best-fit and actual data values. A good model closely adheres to the dotted line and points that fall off the line should not have any particular pattern. In our case, the plot indicates that this simple linear model may not be the best fit for these data. Notice how either end deviates more and more from the line and the plot forms somewhat of an 'S' pattern. These ends are particularly important in a linear model. Because we have chosen to use a simple linear model, *outliers* (observed values that are very far away from the best fit line), are very important. They have a high *leverage* (the forth diagnostic plot examines leverage in depth).
 
 #### **Exercise 1: Linear models**
-![](images/rstudio_logo.png){width=0.4in} Exercise.
 Determine whether the following statements are *true* or *false*
 
 ```{r lm_tf1, echo=FALSE}
-question("In simple linear regression, residuals will be larger as observations are further from the mean of X.",
-  answer("True"),
-  answer("False", correct = TRUE),
-  incorrect = "When observations are further from the mean of X, residuals get smaller."
+question("In a simple linear regression, residuals will be larger when observations are further away from the line.",
+  answer("True", correct = TRUE),
+  answer("False"),
+  incorrect = "A residual is the distance between a data point and its predicted value (i.e., the line)."
 )
 ```
 
 ```{r lm_tf2, echo=FALSE}
-question("In simple linear regression, it is possible to obtain a slope estimate greater than 1.0.",
+question("In a simple linear regression, it is possible to obtain a slope estimate greater than 1.0.",
   answer("True", correct = TRUE),
   answer("False"),
-  incorrect = "In simple linear regression, it is possible to obtain a slope estimate greater than 1.0."
+  incorrect = "A slope ranges from zero (horizontal line) to infinity (vertical line). The R-squared, in contrast, is a percentage, so it cannot be bigger than 1.0"
 )
 ```
 
 #### **Exercise 2: Linear models cont.**
-![](images/rstudio_logo.png){width=0.4in} Exercise.
 Complete the following multiple choice questions. 
 
 ```{r lm_mmc1, echo=FALSE}
-question("What does the Y intercept represent?",
-  answer("The predicticed value of Y when x = 0", correct = TRUE),
-  answer("The estimated change in average Y per unit change in X"),
-  answer("The predicted value of Y"),
-  answer("The variation around the line regression"),
+question("What does the intercept represent?",
+  answer("The predicticed value of *y* when *x* = 0", correct = TRUE),
+  answer("The estimated change in average *y* per unit change in *x*"),
+  answer("The predicted value of *y*"),
+  answer("The variation around the regression line"),
   answer("none of the above"),
   allow_retry = TRUE
 )
@@ -888,10 +862,10 @@ question("What does the Y intercept represent?",
 
 ```{r lm_mc2, echo=FALSE}
 question("What does the slope represent?",
-  answer("The predicticed value of Y when x = 0"),
-  answer("The estimated change in average Y per unit change in X", correct = TRUE),
-  answer("The predicted value of Y"),
-  answer("The variation around the line regression"),
+  answer("The predicticed value of *y* when *x* = 0"),
+  answer("The estimated change in average *y* per unit change in *x*", correct = TRUE),
+  answer("The predicted value of *y*"),
+  answer("The variation around the regression line"),
   answer("None of the above"),
   allow_retry = TRUE
 )
@@ -909,29 +883,31 @@ question("Which one of the following is NOT appropriate for studying the relatio
 ```
 
 #### **Exercise 3: Linear models cont.**
-![](images/rstudio_logo.png){width=0.4in} Exercise.
-
-Fit a linear model of life expectancy as a function of per-capita GDP from the gapminder data set. Use the plot you previously created to help you out.  
+Fit a linear model of life expectancy (`lifeExp`) as a function of per-capita GDP (`gdpPercap`) from the gapminder data set. Use the plot you created previously to help you out.  
 
   * Create a model variable called `lm_exercise`
   * Use the `summary()` function to examine the output.
   * Use the `plot()` function to create the diagnostic plots
   
-Do you think this is a good fit for these data?
+Based on the R-squared and on the diagnostic plots, do you think this is a good fit for these data?
 
 **Note: Hints will be provided for exercises but no solution. Try to figure it out!**
 ```{r ex2, exercise = TRUE}
 # Fit a linear model
 <model_object> <- lm(<response_column> ~ <explanatory_column>,
-                      data = <variable_name>)
+                      data = <dataframe_name>)
 
 # Check output of model 
 <function_for_examining_output>(<model_object>)
 
-# Set plot frame to 2 by 2
+# Set frame to show 2 by 2 plots
 par(mfrow=c(2,2))
 # Create diagnostic plots
 <function_for_creating_diagnostic_plots>(<model_object>)
+```
+
+```{r setup-ex2, include = FALSE}
+library(gapminder)
 ```
 
 ```{r ex2-hint-1}
@@ -950,33 +926,32 @@ par(mfrow=c(2,2))
 # To examine the diagnostic plots, use the plot() function!
 ```
 
-## Cautions when using linear models
-R (and most other statistical software) will fit, plot, summarize, etc a linear model regardless of whether that model is a good fit for the data. 
+### Cautions when using linear models
+R (and most other statistical software) will fit, plot and summarize, a linear model regardless of whether that model is a good fit for the data. This is why it is always important to visually inspect your data before creating a model.
 
-For example, the `Anscombe` data sets are very different data that give the *same* slope, intercept, and mean in a linear model. 
-
-We can access these data in R and format them with:
+To illustrate this point, consider the following data sets (called Anscombe's quartet). We can access these data in R and format them with the following code:
 
 ```{r echo = TRUE, message = FALSE}
 absc <- with(datasets::anscombe,
-             tibble(X=c(x1,x2,x3,x4),
-                        Y=c(y1,y2,y3,y4),
-        anscombe_quartet=gl(4,nrow(datasets::anscombe))
-                   )
-             )
+             tibble(X = c(x1, x2, x3, x4),
+                    Y = c(y1, y2, y3, y4),
+        anscombe_quartet = gl(4, nrow(datasets::anscombe))
+        )
+        )
 ```
 
-Plotting these data reveals the problem. 
+We can plot these data (and the corresponding linear regressions):
+
 ```{r echo = TRUE, message = FALSE}
 absc %>%
-  ggplot(aes(x=X,y=Y,group=anscombe_quartet)) +
+  ggplot(aes(x = X,y = Y, group = anscombe_quartet)) +
   geom_point() +
-  geom_smooth(method = "lm", se = FALSE) +
+  geom_smooth(method = "lm", se = FALSE, fullrange = TRUE) +
   scale_x_continuous(limits = c(0,20)) +
   facet_wrap(~anscombe_quartet)
 ```
 
-**This is why you should always, always, always plot your data before attempting regression!**
+As you see, these are very different data that give the *same* slope, intercept, and mean in a linear model. **This is why you should always, always, always plot your data before attempting regression!**
 
-## Multiple linear regression
+### Multiple linear regression
 So far, we have dealt with simple regression models, where we had only one predictor value. However, `lm()` handles much more complex models. 
