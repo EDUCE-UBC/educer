@@ -134,7 +134,7 @@ The first two columns are continuous variables representing the fruit fly's thor
 
 The next step is to create two-level categorical groups from the numerical variables. We will also subset the data set to equal group sizes (by randomly selecting twenty observations from each group) If you are unfamiliar with the functions below, see our "Introduction to the R tidyverse" tutorial. Use the code box below to create the modified data frame and examine its first few rows:
  
-```{r fly-2-groups, exercise = TRUE}
+```{r fly-2-groups, exercise = TRUE, exercise.setup = "setup-fly"}
 fly_2_groups <- df_fly %>% 
 	# Change "activity" to a 2-level variable
 	mutate(activity = ifelse(activity %in% c("isolated", "one", "many"),
@@ -190,7 +190,7 @@ Now, we should visualize the data to understand its basic properties, find patte
 
 Modify the code box below to explore the effect of the explanatory variable, `longevity` on the response variable, `activity`:
 
-```{r fly-2-eda, exercise = TRUE, excercise.setup = "setup-eda"}
+```{r fly-2-eda, exercise = TRUE, excercise.setup = "setup-groups"}
 # create a box plot for exploratory data analysis
 <variable_name> %>%
   ggplot(aes(x = <explanatory_column>, y = <response_column>)) +
