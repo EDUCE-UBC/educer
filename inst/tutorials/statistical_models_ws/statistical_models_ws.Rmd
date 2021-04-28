@@ -622,12 +622,12 @@ Unlike the fruit fly data set, no pre-manipulation is needed so let's view the d
 
 ```{r gapminder-package, exercise = TRUE}
 # load and check the data
-library(<package>) # not installed on this machine
+library(<package>) 
 <function>(gapminder)
 ```
 
 ```{r gapminder-package-solution}
-library(gapminder) # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder
+library(gapminder) # Data from Gapminder 
 head(gapminder)
 ```
 
@@ -650,7 +650,7 @@ gapminder %>%
 ```
 
 ```{r setup-gapminder-plot, include = FALSE}
-library(gapminder) # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder
+library(gapminder) # Data from Gapminder 
 ```
 
 Although there is very high variance, we do see a certain trend with mean life expectancy increasing over time. Similarly, we can naively hypothesize that life expectancy is higher where the per-capita GDP is higher. In R, this is represented with the formula: `lifeExp ~ gdpPercap`.
@@ -673,7 +673,7 @@ gapminder %>%
 ```
 
 ```{r setup-gapminder-plot2, include = FALSE}
-library(gapminder) # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder
+library(gapminder) # Data from Gapminder 
 ```
 
 In the cases above, we plotted a relationship between a continuous *dependent variable* and a continuous *explanatory* variable. 
@@ -713,7 +713,7 @@ lifeExp_model1 <- lm(lifeExp ~ year,
 ```
 
 ```{r setup-gapminder-model1, include = FALSE}
-library(gapminder) # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder
+library(gapminder) # Data from Gapminder 
 ```
 
 Now, use the function `summary()` to see all the relevant results.
@@ -727,7 +727,7 @@ summary(lifeExp_model1)
 ```
 
 ```{r setup-gapminder-model1-sum, include = FALSE}
-library(gapminder) # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder
+library(gapminder) # Data from Gapminder 
 lifeExp_model1 <- lm(lifeExp ~ year,
                      data = gapminder)
 ```
@@ -763,7 +763,7 @@ gapminder %>%
 ```
 
 ```{r setup-gapminder-line1, include = FALSE}
-library(gapminder) # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder
+library(gapminder) # Data from Gapminder 
 ```
 
 ### Residuals
@@ -782,7 +782,7 @@ plot(lifeExp_model1)
 ```
 
 ```{r setup-gapminder-res, include = FALSE}
-library(gapminder) # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder
+library(gapminder) # Data from Gapminder 
 lifeExp_model1 <- lm(lifeExp ~ year,
                      data = gapminder)
 ```
@@ -875,7 +875,7 @@ par(mfrow=c(2,2))
 ```
 
 ```{r setup-ex2, include = FALSE}
-library(gapminder) # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder
+library(gapminder) # Data from Gapminder 
 ```
 
 ```{r ex2-hint-1}
@@ -963,7 +963,7 @@ plot(lifeExp_model2)
 ```
 
 ```{r setup-mlr-one-res, include = FALSE}
-library(gapminder) # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder
+library(gapminder) # Data from Gapminder 
 lifeExp_model2 <- lm(lifeExp ~ year + gdpPercap, 
                      data = gapminder)
 ```
