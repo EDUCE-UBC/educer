@@ -26,6 +26,7 @@ setup_resources()
 
 library(tidyverse) # Easily Install and Load the 'Tidyverse' 
 library(broom) # Convert Statistical Objects into Tidy Tibbles
+library(lme4) # Linear Mixed-Effects Models using 'Eigen' and S4
 ```
 
 ## Introduction
@@ -205,14 +206,6 @@ fly_2_groups %>%
   labs(x = "Sexually Active", y = "Longevity (days)")
 ```
 
-```{r setup-eda, include = FALSE}
-fly_2_groups <- df_fly %>% 
-	mutate(activity = ifelse(activity %in% c("isolated", "one", "many"),
-														"no", "yes")) %>%
-	mutate(thorax = ifelse(thorax <= 0.8, "short", "long")) %>% 
-	group_by(activity, thorax) %>% 
-	sample_n(20)
-```
 
 #### Formula notation in R
 To perform an ANOVA in R, we need to understand R's formula notation, as this is the first argument we give to the ANOVA function (`aov()`). The formula notation stars with providing the response variable, then a special character, `~` which can be read as "as a function of", and then the explanatory/independent variable(s). Thus, the formula notation for this experiment is:
@@ -249,9 +242,6 @@ summary(<model_object>)
 summary(<fly_2_groups_model>)
 ```
 
-```{r setup-two-group-sum, include = FALSE}
-fly_2_groups_model <- aov(longevity ~ activity, data = fly_2_groups)
-```
 
 So, what does this output mean? The most important result in regards to rejecting or failing to reject our null hypothesis is the right-most number, the p-value (`Pr(>F)`). In this simple one-way ANOVA, we have a single p-value which has a very small value. Given that this is much smaller then the commonly used threshold for rejecting the null hypothesis, p < 0.05, we can reject our null hypothesis that sexual activity has no effect on the population mean longevity of male fruit flies, and accept the alternative hypothesis that sexual activity **does** have an effect on population mean longevity of male fruit flies. 
 
@@ -329,15 +319,6 @@ fly_3_groups <- df_fly %>%
 head(fly_3_groups)
 ``` 
  
-```{r setup-3groups, include = FALSE}
-fly_3_groups <- df_fly %>% 
-	# Change "activity" to a 3-level variable
-	mutate(activity = ifelse(activity %in% c("isolated", "one", "many"),
-														"none", activity)) %>%
-	# Subset to equal group sizes
-	group_by(activity) %>% 
-	sample_n(25)
-```
 
 Now, let's **explore** these data again using the `dim` and `summary` function:
 
@@ -373,15 +354,6 @@ fly_3_groups %>%
   labs(x = "Sexually Active", y = "Longevity (days)")
 ```
 
-```{r setup-3-eda, include = FALSE}
-fly_3_groups <- df_fly %>% 
-  mutate_if(is.factor, as.character) %>%
-	mutate(activity = ifelse(activity %in% c("isolated", "one", "many"),
-														"none", activity)) %>%
-	group_by(activity) %>% 
-	sample_n(25)
-```
-
 So, it looks like the longevity for both low and high activity is lower than the longevity of the isolated male fruit fly. Can we conclude that there are differences in the true population means between any of these groups? Again, we turn to ANOVA to answer this.
 
 Create an ANOVA model and call it `fly_3_model`.
@@ -403,10 +375,6 @@ Now, use the `summary()` function to examine the output of `fly_3_model` model o
 
 ```{r three-group-sum-solution, excercise.setup = "setup-three-group-sum"}
 summary(fly_3__model)
-```
-
-```{r setup-three-group-sum, include = FALSE}
-fly_3_model <- aov(longevity ~ activity, data = fly_3_groups)
 ```
 
 So what does this output mean? Similar to a two-group ANOVA, we look at the p-value to determine if we reject (or fail to reject) our null hypothesis. In this case, we have a single p-value which has a very small value, much smaller that the commonly used threshold for rejecting the null hypothesis, p <0.05. We can reject our null hypothesis that the population means for longevity of male fruit flies are equal across all groups, and accept the alternative hypothesis that **at least** one group's population mean differs from that of the other groups. 
@@ -654,12 +622,12 @@ Unlike the fruit fly data set, no pre-manipulation is needed so let's view the d
 
 ```{r gapminder-package, exercise = TRUE}
 # load and check the data
-library(<package>)
+library(<package>) # not installed on this machine
 <function>(gapminder)
 ```
 
 ```{r gapminder-package-solution}
-library(gapminder)
+library(gapminder) # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder
 head(gapminder)
 ```
 
@@ -682,7 +650,7 @@ gapminder %>%
 ```
 
 ```{r setup-gapminder-plot, include = FALSE}
-library(gapminder)
+library(gapminder) # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder
 ```
 
 Although there is very high variance, we do see a certain trend with mean life expectancy increasing over time. Similarly, we can naively hypothesize that life expectancy is higher where the per-capita GDP is higher. In R, this is represented with the formula: `lifeExp ~ gdpPercap`.
@@ -705,7 +673,7 @@ gapminder %>%
 ```
 
 ```{r setup-gapminder-plot2, include = FALSE}
-library(gapminder)
+library(gapminder) # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder
 ```
 
 In the cases above, we plotted a relationship between a continuous *dependent variable* and a continuous *explanatory* variable. 
@@ -745,7 +713,7 @@ lifeExp_model1 <- lm(lifeExp ~ year,
 ```
 
 ```{r setup-gapminder-model1, include = FALSE}
-library(gapminder)
+library(gapminder) # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder
 ```
 
 Now, use the function `summary()` to see all the relevant results.
@@ -759,7 +727,7 @@ summary(lifeExp_model1)
 ```
 
 ```{r setup-gapminder-model1-sum, include = FALSE}
-library(gapminder)
+library(gapminder) # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder
 lifeExp_model1 <- lm(lifeExp ~ year,
                      data = gapminder)
 ```
@@ -795,7 +763,7 @@ gapminder %>%
 ```
 
 ```{r setup-gapminder-line1, include = FALSE}
-library(gapminder)
+library(gapminder) # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder
 ```
 
 ### Residuals
@@ -814,7 +782,7 @@ plot(lifeExp_model1)
 ```
 
 ```{r setup-gapminder-res, include = FALSE}
-library(gapminder)
+library(gapminder) # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder
 lifeExp_model1 <- lm(lifeExp ~ year,
                      data = gapminder)
 ```
@@ -907,7 +875,7 @@ par(mfrow=c(2,2))
 ```
 
 ```{r setup-ex2, include = FALSE}
-library(gapminder)
+library(gapminder) # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder
 ```
 
 ```{r ex2-hint-1}
@@ -954,4 +922,769 @@ absc %>%
 As you see, these are very different data that give the *same* slope, intercept, and mean in a linear model. **This is why you should always, always, always plot your data before attempting regression!**
 
 ### Multiple linear regression
-So far, we have dealt with simple regression models, where we had only one predictor value. However, `lm()` handles much more complex models. 
+So far, we have dealt with simple regression models, where we had only one predictor value. However, `lm()` handles much more complex models. Consider for example a model of life expectancy as a function of **both** the year and the per-capita gdp. 
+
+```
+lifeExp ~ year + gdpPercap
+```
+
+This formula does not describe a straight line anymore, but a plane in a 3D space. Still a very flat thingy.
+
+Now, using the formula above, create a multiple linear model object called `lifeExp_model2`. Then check the output of the model via the `summary()` function. 
+
+```{r mlr-one, exercise = TRUE}
+# create a lm "model" object
+<model_object> <- lm(<respones_variable> ~ <explanatory_variable_one> + <explanatory_variable_two>,
+                     data = gapminder)
+
+# view output of lm() via the summary() function
+summary(<model_object>)
+```
+
+```{r mlr-one-solution}
+lifeExp_model2 <- lm(lifeExp ~ year + gdpPercap, 
+                     data = gapminder)
+
+summary(lifeExp_model2)
+```
+
+We can access this model with plots similar to our simple linear regression. 
+
+```{r mlr-one-res, exercise = TRUE}
+# Set frame to show 2 by 2 plots
+par(mfrow = c(2,2))
+# Create diagnostic plots
+plot(<model_object>)
+```
+
+```{r mlr-one-res-solution}
+par(mfrow = c(2,2))
+plot(lifeExp_model2)
+```
+
+```{r setup-mlr-one-res, include = FALSE}
+library(gapminder) # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder # Data from Gapminder
+lifeExp_model2 <- lm(lifeExp ~ year + gdpPercap, 
+                     data = gapminder)
+```
+
+### Linear is the formula, not the predictor
+
+The linearity of a model is in how predictive variables are put together, not necessarily in the predictors themselves. In the last exercise, you saw that `gdpPercap` is not the best predictor of `lifeExp` because it does not seem to fit linearly. This carries forward into out multiple linear regression as is apparent in the last plot. 
+
+One way to improve our model is to use a transformed `gdpPercap` predictor. But transformed how? 
+
+Let's pick a (silly) function to start. Here. we take the sine of the `gdpPercap`.
+
+```{r echo = TRUE, message = FALSE}
+gapminder %>%
+  ggplot(aes(x = sin(gdpPercap), y = lifeExp)) +
+  geom_point()
+```
+
+Doesn't look much better. 
+
+#### **Exercise: Transforming predictors**
+Find a function that makes the plot more "linear" and fit a model of life expectancy as a function of the transformed per-capita gdp. Play around with these functions to see how it transforms the data. 
+
+  * Go back to your original `gdpPercap` vs. `lifeExp` plot and think about what function creates a similar trend. 
+
+```{r log, exercise = TRUE}
+gapminder %>%
+  ggplot(aes(x = <new_function>(gdpPercap), y = lifeExp)) +
+  geom_point()
+```
+
+```{r log-hint-1}
+# Try tan()
+```
+
+```{r log-hint-2}
+# Try poly()
+```
+
+```{r log-hint-3}
+# Try log()
+```
+
+### Transforming predictors: log
+Let's use a transformed predictor for creating a new (and hopefully better) model. There are two ways. We can include the function directly into the formula (similar to the last plot) and fit the models. 
+
+Create a model called `lifeExp_model_log_a`. Use the `log()` fucntion to transform the `gdpPercap` variable. 
+```{r log_ex, exercise = TRUE}
+<object_name> <- lm(lifeExp ~ year + <transform_function>(gdpPercap),
+                     data = gapminder)
+
+summary(<object_name>)
+```
+
+```{r log_ex-solution}
+lifeExp_model_log_a <- lm(lifeExp ~ year + log(gdpPercap),
+                     data = gapminder)
+
+summary(lifeExp_model_log_a)
+```
+
+Alternatively, we can create a new variable in the data frame and use that variable in the model. Use the `mutate()` function to log the `gedpPercap` column and call it `log_gdp`. Use this new column to create the new mode. Call this new model `lifeExp_model_log_b`.
+
+```{r log2_ex, exercise = TRUE}
+# create a new column via the mutate function
+gapminder <- gapminder %>%
+  <mutate_function>(<new_col_name> = log(gdpPercap))
+
+# use the new data set to create the model
+<object_name> <- lm(lifeExp ~ year + <new_col_name>,
+                     data = gapminder)
+
+summary(<object_name>)
+```
+
+```{r log2_ex-solution}
+gapminder <- gapminder %>%
+  mutate(log_gdp = log(gdpPercap))
+
+lifeExp_model_log_b<- lm(lifeExp ~ year + log_gdp,
+                     data = gapminder)
+
+summary(lifeExp_model_log_b)
+```
+
+Notice that they both yield the same results!
+
+### Transforming predictors: polynomial
+Another option is using a *polynomial* transformation of our model. 
+
+Create a model called `lifeExp_model_poly_a` with the predictor variable transformed via the `poly()` function. 
+
+```{r poly_ex, exercise = TRUE}
+<object_name> <- lm(lifeExp ~ year + <transform_function>(gdpPercap),
+                     data = gapminder)
+
+summary(<object_name>)
+```
+
+```{r poly_ex-solution}
+lifeExp_model_poly_a <- lm(lifeExp ~ year + poly(gdpPercap),
+                     data = gapminder)
+
+summary(lifeExp_model_poly_a)
+```
+
+Or explicitly write a polynomial equation for one of our predictor.
+
+```{r echo = TRUE, message = FALSE}
+lifeExp_model_poly_b <- lm(lifeExp ~ year + gdpPercap + I(gdpPercap^2),
+                     data = gapminder)
+
+summary(lifeExp_model_poly_b)
+```
+
+**Note:** We must use `I(gdpPercap^2)` instread of `(gdpPercap^2)` because the symbols `^`, `*`, and `:` have a particular meaning in a linear model. As we saw in ANOVA, these symbols are used to specify *interactions* between predicting variables. 
+
+#### **Exercise: Multiple linear regression**
+So far, we have worked with `lifeExp` as our independent variable. Now, try to reproduce a model of population (`pop`) using one or more of the variables available in `gapminder`
+
+Create a model variable called `exercise_mlr` and use the `summary()` function to examine the output.
+
+**Note: Hints will be provided for exercises but no solution. Try to figure it out!**
+```{r mlr_ex1, exercise = TRUE}
+<model_object> <- aov(<respones_variable> ~ <explanatory_variable_one> + <explanatory_variable_two>,
+                      data = <variable_name>)
+
+# summary of the new model
+<function_for_examining_output>(<model_object>)
+```
+
+```{r mlr_ex1-hint-1}
+# Use the head() function to see the columns that gapminder has
+head(gapminder)
+```
+
+```{r mlr_ex1-hint-2}
+# Name the model object exercise_mlr!
+```
+
+```{r mlr_ex1-hint-3}
+# To examine the output of your model, use the summary() function!
+```
+
+### Interactions and ANalysis of COVAriance (ANCOVA)
+So far, our models for life expectancy have built upon continuous (or discrete but incremental) variables variables. However, we may wonder if being in one continent rather than another has a differential effect on the correlation between `year` and `lifeExp`. 
+
+Let's visualize the data set now with continent in mind. Set the color aesthetic to be continent. 
+
+```{r ancova_viz, exercise = TRUE}
+gapminder %>%
+  ggplot(aes(x = year, y = lifeExp, colour = <color_aes>)) +
+  geom_point() +
+  geom_smooth(method = "lm", se= FALSE) +
+  labs(y="Life expectancy (yrs)") +
+  theme_classic()
+```
+
+```{r ancova_viz-solution}
+gapminder %>%
+  ggplot(aes(x = year, y = lifeExp, colour = continent)) +
+  geom_point() +
+  geom_smooth(method = "lm", se= FALSE) +
+  labs(y="Life expectancy (yrs)") +
+  theme_classic()
+```
+
+The slopes for each continent seem different, but how can we tell if the difference is significant? Here's where we can combine our linear model with the ANOVA function we learned earlier!
+
+Create a new model called `lifeExp_ancoca`. Use the special character `*` to model the effects of year, continent, and their interaction on life expectancy. Then, use the ANOVA function `aov()` ont he model. 
+
+```{r ancova_mod, exercise = TRUE}
+# create the ancova model object
+<object_name> <- lm(<respones_variable> ~ <explanatory_variable_one>*<explanatory_variable_two>,
+               data = <data>)
+
+# view the newly created model summary
+summary(aov(<object_name>))
+```
+
+```{r ancova_mod-solution}
+lifeExp_ancoca <- lm(lifeExp ~ year*continent,
+               data = gapminder)
+
+summary(aov(lifeExp_ancoca))
+```
+
+Based on these results, it really seems that continent should have a role in the model. However, it is not always like this. Let's take a closer loot at Europe and Oceania. 
+
+**Note:** This is an example of how the tidyverse can be used to link together a bunch of functions instead of creating many new R objects as we've been doing thus far. 
+
+```{r ancova_mod2, exercise = TRUE}
+gapminder %>%
+  filter(continent %in% c(<continent1>,<continent2>)) %>%
+  lm(lifeExp ~ year*continent, data = .) %>% 
+  aov() %>% 
+  summary()
+```
+
+```{r ancova_mod2-solution}
+gapminder %>%
+  filter(continent %in% c("Oceania","Europe")) %>%
+  lm(lifeExp ~ year*continent, data = .) %>% 
+  aov() %>% 
+  summary()
+```
+
+When just looking at Oceania and Europe, continent has a significant effect on the *intercept* of the model, but not the *slope*. This makes sense in our plot, these lines (blue and purple) appear parallel but with different y-intercepts. 
+
+## Linear Mixed Effects Models 
+
+### Motivation for LME
+Let's take a look at the `esoph` data set, which comes pre-downloaded in R. these data contain information on smoking, alcoholism, and (o)esophageal cancer. Specifically, we are interested in if the number of controls `ncontrols` affects the number of cases `ncases` of cancer for each group `agepg`. 
+
+Let's take a look at what the data looks like (with a tad bit of vertical jitter).Using the `esoph` data set, create a scatter plot with the following aesthetics: 
+
+* x = `ncontrols`
+* y = `ncases`
+* group = `agegp`
+* color = `agegp`
+
+```{r lme_viz1, exercise = TRUE}
+p <- <data_set> %>%
+     ggplot(aes(<x_aes>, <y_aes>, group = <group_aes>, colour = <color_aes>)) +
+     geom_jitter(height=0.25) +
+     scale_colour_discrete("Age Group") +
+     # human readable labels
+     ylab("Number of Cases") + xlab("Number of Controls")
+p
+```
+
+```{r lme_viz1-solution}
+p <- ggplot(esoph, aes(ncontrols, ncases, group=agegp, colour=agegp)) +
+    geom_jitter(height=0.25) +
+    scale_colour_discrete("Age Group") +
+    ylab("Number of Cases") + xlab("Number of Controls")
+p
+```
+
+It seems like each age group has a different relationship. We should then fit regression lines for each group separately. Using the `p` object we just created, fit a best fit line in the plot vai the`geom_smooth` function. 
+
+```{r lme_viz2, exercise = TRUE, exercise.setup = "setup-lmeviz"}
+# Fit the best fit lines
+p + <best_fit_line_function>(method="lm", se=FALSE, size=0.5)
+```
+
+```{r lme_viz2-solution}
+p + geom_smooth(method="lm", se=FALSE, size=0.5)
+```
+
+```{r setup-lmeviz, include = FALSE}
+p <- ggplot(esoph, aes(ncontrols, ncases, group=agegp, colour=agegp)) +
+    geom_jitter(height=0.25) +
+    scale_colour_discrete("Age Group") +
+    ylab("Number of Cases") + xlab("Number of Controls")
+```
+
+Each group has very few observations which make the regression less powerful. 
+
+```{r echo = TRUE, message = FALSE}
+esoph %>%
+  group_by(agegp) %>%
+  summarise(n = length(ncases)) %>%
+  tibble()
+```
+
+**Question:** Can we borrow information across groups to strengthen regression, while still allowing each group to have it's own regression line?
+
+Yes - we can use *Linear Mixed Effects* (LME) models. LME model is just a linear regression model for each group, with different slopes and intercepts, but the collection of slopes and intercepts *is assumed to come from some normal distribution*. 
+
+### Definition
+With one predictor ($X$), we can write an LME as follows: 
+
+$$
+Y = \left(\beta_0 + b_0\right) + \left(\beta_1 + b_1\right) X + \varepsilon,
+$$
+
+where the error term $\varepsilon$ has mean zero, and the $b_0$ and $b_1$ terms are normally distributed having a mean of zero, and some unknown variances and correlation. The $b_0$ and $b_1$ terms indicate group-to-group differences from average. 
+
+The $\beta$ terms are called the *fixed effects*, and the $b$ terms are called the *random effects*. Since the model has both types of effects, it's said to to be a *mixed* model - hence the nameof "LME".
+
+Note that we don't have to make _both_ the slope and intercept random. For example, we can remove the $b_0$ term, which would mean that each group is forced to have the same (fixed) intercept $\beta_0$. Also, we can add more predictors ($X$ variables).
+
+### Fitting LME
+Two R packages exist for working with mixed effects models: `lme4` and `nlme`. We'll be using the `lme4` package (check out [this](http://stats.stackexchange.com/questions/5344/how-to-choose-nlme-or-lme4-r-library-for-mixed-effects-models) discussion on Cross Validated for a comparison of the two packages).
+
+Let's fit the model. Just like our other models we need to give a formula and data.
+
+```{r lme_form, exercise = TRUE}
+# download the lme4 package if you need to
+if (!require("lme4")) install.packages("lme4")
+
+# create the lme model
+esoph_model <- lmer(ncases ~ ncontrols + (ncontrols | agegp),
+                data =e soph)
+```
+
+```{r lme_form-solution}
+esoph_model <- lmer(ncases ~ ncontrols + (ncontrols | agegp),
+                data=esoph)
+```
+
+Let's take a closer look at the _formula_, which in this case is `ncases ~ ncontrols + (ncontrols | agegp)`.
+
+On the left of the `~` is the response variable, as usual (just like for `lm`). On the right, we need to specify both the fixed and random effects. The **fixed effects** part is the same as usual: `ncontrols` indicates the explanatory variables that get a fixed effect. Then, we need to indicate which explanatory variables get a **random effect**. The random effects can be indicated in parentheses, separated by `+`, followed by a `|`, after which the variable(s) that you wish to group by are indicated. So `|` can be interpreted as "grouped by".
+
+Now, looking at the model output, the random and fixed effects are indicated here. 
+
+```{r lme_sum, exercise = TRUE, exercise.setup = "setup-lme_sum"}
+# get the model summary
+summary(esoph_model)
+```
+
+```{r lme_sum-solution}
+summary(esoph_model)
+```
+
+```{r setup-lme_sum, include = FALSE}
+esoph_model <- lmer(ncases ~ ncontrols + (ncontrols | agegp),
+                data=esoph)
+```
+
+- Under the "Random effects:" section, we have the variance of each random effect, and the lower part of the correlation matrix of these random effects.
+- Under the "Fixed effects:" section, we have the estimates of the fixed effects, as well as the uncertainty in the estimate (indicated by the Std. Error).
+
+We can extract the collection of slopes and intercepts for each group with the handy `coef()` function. 
+
+```{r lme_tidy, exercise = TRUE, exercise.setup = "setup-lme_sum"}
+# extract the slopes and intercepts for each group of the model
+<extraction_function>(esoph_model)
+```
+
+```{r lme_tidy-solution}
+coef(esoph_model)
+```
+
+Let's put these regression lines on the plot. First, we must extract the relevant slopes and intercepts. 
+
+```{r lme_wrang, exercise = TRUE, exercise.setup = "setup-lme_sum"}
+# extract the slopes and intercepts for each group of the model
+# Put the slopes and intercepts with original data
+# Extract slopes and intercepts
+par_coll <- coef(esoph_model)$agegp %>% 
+            tibble::rownames_to_column()
+
+# Bind to orig data
+esoph <- plyr::ddply(esoph, ~ agegp, function(df){
+    pars <- subset(par_coll, rowname==unique(df$agegp))
+    int <- pars$`(Intercept)`
+    slp <- pars$ncontrols
+    cbind(df, intercept=int, slope=slp)
+})
+
+head(esoph)
+```
+
+```{r lme_wrang-solution}
+# Put the slopes and intercepts with orignal data
+## Extact slopes and intercepts
+par_coll <- coef(esoph_model)$agegp %>% 
+            tibble::rownames_to_column()
+# Bind to orig data
+esoph <- plyr::ddply(esoph, ~ agegp, function(df){
+    pars <- subset(par_coll, rowname==unique(df$agegp))
+    int <- pars$`(Intercept)`
+    slp <- pars$ncontrols
+    cbind(df, intercept=int, slope=slp)
+})
+
+head(esoph)
+```
+
+Then, we we can use the new data set `esoph` to add the lines to our plot. Again, create a scatter plot with the following aesthetics:
+
+* x = `ncontrols`
+* y = `ncases`
+* group = `agegp`
+* color = `agegp`
+
+```{r lme_viz_2, exercise = TRUE, exercise.setup = "setup-lme_wrang"}
+<data_set> %>%
+    ggplot(aes(<x_aes>, <y_aes>, group = <group_aes>, colour = <color_aes>)) +
+    geom_jitter(height=0.25) +
+    geom_abline(aes(intercept=intercept, slope=slope, colour=agegp)) +
+    scale_colour_discrete("Age Group") +
+    ylab("Number of Cases") + xlab("Number of Controls")
+```
+
+```{r lme_viz_2-solution}
+ggplot(esoph, aes(ncontrols, ncases, group=agegp, colour=agegp)) +
+    geom_jitter(height=0.25) +
+    geom_abline(aes(intercept=intercept, slope=slope, colour=agegp)) +
+    scale_colour_discrete("Age Group") +
+    ylab("Number of Cases") + xlab("Number of Controls")
+```
+
+```{r setup-lme_wrang, include = FALSE}
+esoph_model <- lmer(ncases ~ ncontrols + (ncontrols | agegp),
+                data=esoph)
+
+par_coll <- coef(esoph_model)$agegp %>% 
+            tibble::rownames_to_column()
+
+esoph <- plyr::ddply(esoph, ~ agegp, function(df){
+    pars <- subset(par_coll, rowname==unique(df$agegp))
+    int <- pars$`(Intercept)`
+    slp <- pars$ncontrols
+    cbind(df, intercept=int, slope=slp)
+})
+```
+
+So now, each group still gets its own regression line, but tying the parameters together with a normal distribution gives us a more powerful regression. 
+
+#### **Exercise: LME**
+Using the `sleepstudy` data set, fit an LME on the Reaction against Days, grouped by Subject. Name it `lme_sleep`
+
+*Note: Hints will be provided for exercises but no solution. Try to figure it out!*
+```{r lme_ex1, exercise = TRUE}
+# Fit a LME model
+<model_object> <- lmer(<response_var> ~ <fixed_explanatory_var> + 
+                         (<random_explanatory_var> | <grouped_by_var>), 
+                       data = <data_set>)
+
+# summary of the new model
+<function_for_examining_output>(<model_object>)
+```
+
+```{r lme_ex1-hint-1}
+# Use the head() function to see the columns that sleepstudy has
+head(sleepstudy)
+```
+
+```{r lme_ex1-hint-2}
+# The response variable should be `Reaction`
+<model_object> <- lmer(Reaction)
+```
+
+```{r lme_ex1-hint-3}
+# The explanatory variable is `Days`. This is the fixed effects. 
+<model_object> <- lmer(Reaction ~ Days)
+```
+
+```{r lme_ex1-hint-4}
+# The explanatory variable is `Days`. Now add this to the random effects. 
+<model_object> <- lmer(Reaction ~ Days + (Days))
+```
+
+```{r lme_ex1-hint-5}
+# We want to group the variables by Subjects
+<model_object> <- lmer(Reaction ~ Days + (Days | Subject))
+```
+
+```{r lme_ex1-hint-6}
+# We are using the `sleepstudy` data set
+<model_object> <- lmer(Reaction ~ Days + (Days | Subject), data = sleepstudy)
+```
+
+```{r lme_ex1-hint-7}
+# Now get the summary of the model!
+summary(<model_object>)
+```
+
+#### **Exercise: LME cont.**
+What is the intercept and slope of subject #310 from question 1? 
+
+```{r lme_coeff, exercise = TRUE}
+# extract the slope and intercept from the model and make it a data frame
+<model_object> <- data.frame(coef(<model_object>)[[1]])
+
+# Give a column name to the missing column header
+<model_object> <- <model_object> %>% 
+  rownames_to_column(var = "Subject")
+
+# We are interested in subject # 310
+<model_object> %>%
+filter(Subject == <participant_number>)
+```
+
+```{r lme_coeff-solution}
+# extract the slope and intercept from the model and make it a data frame
+lme_sleep <- data.frame(coef(lme_sleep)[[1]])
+
+# Give a column name to the missing column header
+lme_sleep <- lme_sleep %>% 
+  rownames_to_column(var = "Subject")
+
+# We are interested in subject # 310
+lme_sleep %>%
+filter(Subject == 310)
+```
+
+```{r setup-lme_sleep, include = FALSE}
+lme_sleep <- lmer(Reaction ~ Days + (Days | Subject), data = sleepstudy)
+```
+
+
+#### **Exercise: LME cont.**
+Using the `Teams` data set from the `Lahman` package, fit a model on runs (`R`) from the variables walks (`BB`) and hits (`H`), grouped by team (`teamID`). 
+
+  * *Hint: wrap the scale function around each predictor variable. This standardizes the data (aka z-score).*
+
+Run the following code chunk to get access to the `Lahman` package. 
+```{r lme_setup, exercise = TRUE}
+# download the Lahman package if you need to
+if (!require("Lahman")) install.packages("Lahman")
+
+# load the package 
+suppressMessages(library(Lahman))
+```
+
+```{r lme_setup-solution}
+# download the Lahman package if you need to
+if (!require("Lahman")) install.packages("Lahman")
+
+# load the package 
+suppressMessages(library(Lahman))
+```
+
+## Generalized Linear Models
+In the linear models discussed so far, we always assumed that
+the response can take any numeric value or at least any numeric
+value in a large range.
+
+However, we often have response data that does not quite fit this assumption. This includes, for instance, count data that can only take non-negative integer values (*i.e.* 0, 1, 2, 3, …). Another example is binary data, where the response can take only one of
+two values (*e.g.* yes/no, low/high, 0/1, etc.).
+
+### Definition
+Generalized Linear Models (GLMs) are exactly what their name suggests, a generalization of linear models introduced to different kinds of data. With GLMs, we want to model the _mean_ $\mu$ (or rather a function called _link_) of the assumed distribution as a linear function of some covariates.
+
+The model can be written as
+$$
+g(\mu) = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_p x_p
+$$
+and we want to estimate the parameters $\beta_0$ to $\beta_p$ for the $p$ covariates from the available data.
+
+The choice of the distribution is guided by the type of the response
+data (and the limited set of distributions for GLMs). The link function $g()$ is needed to convert the mean of the assumed distribution into a linear function of the model parameters, but it also makes it more difficult to interpret the parameters. The distributions usually have a "natural" link function, but other choices would be available too.
+
+Before we discuss this in more detail, let's see how we can actually fit a GLM in R.
+
+### Fitting GLMs
+To fit a generalized linear model in R, we use the function `glm` which works very similarly to the already known `lm` function. However, it allows us to specify the distribution we want to use via the argument `family`. Each family comes with a default link function. The help page for `?family` lists all supported types of GLMs. We explore some of them below.
+
+### Logistic regression (`family = binomial`)
+We will first discuss the case of binary response data (*e.g.* no/yes, 0/1, failure/success, ...). Oftentimes, we are interested in the probability of a _success_ under certain circumstances, *i.e.*
+we want to model the success probability given a set of covariates.
+
+The natural choice for this kind of data is to use the Binomial distribution. This distribution corresponds to the number of successes in $m$ trials, if each trial is independent and has the same success probability. Binary data can be thought of as a single trial (*i.e.* $m = 1$). The mean of the Binomial distribution is
+the success probability $p$ and the usual link function is the log of the odds.
+
+This gives us the logistic regression model:
+$$
+\log \left( \frac{p}{1 - p} \right) = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_p x_p
+$$
+
+**Importantly, each trial needs to be independent and must have the same success probability!**
+
+As a first example, we will try logistic regression on the UC Berkeley Admission data (`UCBAdmissions`, pre-installed in R). 
+
+
+
+Firstly, fill in and run the following code chunk. Call this tidy data `ucb`.
+
+```{r log_reg_setup, exercise = TRUE}
+# load and format the data
+<data_set> <- as.data.frame(UCBAdmissions) %>%
+  rename(sex = Gender)
+
+# check put the data set
+head(<data_set>)
+```
+
+```{r log_reg_setup-solution}
+# load and format the data
+ucb <- as.data.frame(UCBAdmissions) %>%
+  rename(sex = Gender)
+
+# check put the data set
+head(ucb)
+```
+
+Now, using our new data set, take a look at the odds of being admitted via a logistic regression. Create a new model called `ucb_model`. Use the the biological sex (incorrectly attributed as gender in the data set) of the applicant and the department as covariates. 
+
+_Note_: The data set does not contain one row per applicant, but rather has the _number of applications_ that fall in each of the possible combinations. This can be easily used in R via the `weights` argument to `glm`. 
+
+```{r log_reg_mod, exercise = TRUE, exercise.setup = "setup-log_reg_mod"}
+# Fit GLM binomial
+<model_object> <- glm(<response_var> ~ <explanatory_var> * <explanatory_var>, 
+                 data = <data_set>, 
+                 family = <distribution>, 
+                 weights = Freq)
+
+# Get summary of model
+summary(<model_object>)
+```
+
+```{r log_reg_mod-solution}
+ucb_model <- glm(Admit ~ sex * Dept, 
+                 data = ucb, 
+                 family = binomial, 
+                 weights = Freq)
+
+summary(ucb_model)
+```
+
+```{r setup-log_reg_mod, include = FALSE}
+ucb <- as.data.frame(UCBAdmissions) %>%
+  rename(sex = Gender)
+
+ucb_model <- glm(Admit ~ sex * Dept, 
+                 data = ucb, 
+                 family = binomial, 
+                 weights = Freq)
+```
+
+The summary of the `glm` output shows us the value of each of the parameters as well as whether they are significantly different from 0. However, since our covariates are _categorical_, each of the two are reflected by multiple parameters (one for each "level" and combination of levels).
+
+With the `Anova` function from the package `car`, we can check the significance of each of the two covariates as a whole.
+
+```{r log_reg_aov, exercise = TRUE, exercise.setup = "setup-log_reg_mod"}
+# download the car package if you need to
+if (!require("car")) install.packages("car")
+
+car::Anova(<model_object>)
+```
+
+```{r log_reg_aov-solution}
+car::Anova(ucb_model)
+```
+
+This tells us that `sex` by itself has no significant effect on the log-odds of being admitted, but the interaction effect with the department seems to be important. Hence, we can not remove any of the covariates without significantly degrading the fit.
+
+```{r log_reg_drop, exercise = TRUE, exercise.setup = "setup-log_reg_mod"}
+# The drop1() function compares all possible models that can be constructed by dropping a single model term
+drop1(<model_object>, test = "Chisq")
+```
+
+```{r log_reg_drop-solution}
+drop1(ucb_model, test = "Chisq")
+```
+
+In GLMs with a link function (as in logistic regression), the interpretation of the parameters can be tricky. The sign of the parameter (*i.e.* is it positive or negative) can be interpreted as whether the covariate increases ("+") or decreases ("-") the odds,
+and hence, the probability of success. Also, the relative magnitudes tell you which covariate increases/decreases the probability more. However, the magnitude itself is not directly interpretable, *i.e.* you can not say "the probability of being admitted is 1.05 less for females than for males".
+
+We can make statements about the probabilities themselves. The `lsmeans` function provides a nice overview of the fitted "success" (in our case "being admitted") probabilities for the different combinations of the predictors, including a confidence interval.
+
+```{r log_reg_sum, exercise = TRUE, exercise.setup = "setup-log_reg_mod"}
+# download the lsmeans package if you need to
+if (!require("lsmeans")) install.packages("lsmeans")
+
+ucb_model_sum <- lsmeans::lsmeans(<model_object>, ~ sex + Dept, type = "response")
+
+ucb_model_sum
+```
+
+```{r log_reg_sum-solution}
+ucb_model_sum <- lsmeans::lsmeans(ucb_model, ~ sex + Dept, type = "response")
+ucb_model_sum
+```
+
+```{r setup-log_reg_sum, include = FALSE}
+ucb <- as.data.frame(UCBAdmissions) %>%
+  rename(sex = Gender)
+
+ucb_model <- glm(Admit ~ sex * Dept, 
+                 data = ucb, 
+                 family = binomial, 
+                 weights = Freq)
+
+ucb_model_sum <- lsmeans::lsmeans(ucb_model, ~ sex + Dept, type = "response")
+```
+
+The summary can also be grouped by one of the predictors, *e.g.* by the department.
+
+```{r log_reg_summary, exercise = TRUE, exercise.setup = "setup-log_reg_sum"}
+ucb_summary <- summary(<model_object>, by = "Dept")
+
+ucb_summary
+```
+
+```{r log_reg_summary-solution}
+ucb_summary <- summary(ucb_model_sum, by = "Dept")
+
+ucb_summary
+```
+
+Similarly, we can get the _odds ratio_ between males and females in  each department. This basically tells us how different the odds are between male and female applicants in each department.
+
+```{r log_reg_con, exercise = TRUE, exercise.setup = "setup-log_reg_sum"}
+# download the contrast package if you need to
+if (!require("contrast")) install.packages("contrast")
+
+ucb_contrast <- contrast::contrast(ucb_model_sum, "pairwise", by = "Dept")
+
+ucb_contrast
+```
+
+```{r log_reg_con-solution}
+ucb_contrast <- contrast::contrast(ucb_model_sum, "pairwise", by = "Dept")
+
+ucb_contrast
+```
+
+This tells us that sex seems to make a significant difference in Department $A$ but not so in the other departments. This, in turn,
+causes the significant interaction effect we saw before.
+
+#### **Exercise: Logistic GLM**
+In the plasma data (from the `HSAUR3` package), use logistic regression to estimate the probabilities of ESR > 20, given the level of fibrinogen in the blood.
+
+#### **Exercise: Logistic GLM cont.**
+Using the `womensrole` data set from the `HSAUR3` package, try to fit a logistic regression to the agreement with the statement, given the years of education and the respondent's sex (also attributed as `gender` in these data).
+
+### Count Data (`family = poisson`)
+When we are dealing with count data, the Poisson distribution is often used as a model. The Poisson distribution models the number of events during a fixed period of time (or space, etc.). It is completely characterized by the _rate_ parameter $\mu$. Both the mean and the variance of the Poisson distribution are equal to the _rate_ parameter. In other words, a larger _rate_ also implies a larger spread of the data. This is a rather strong assumption and we will learn how to check if this assumption is reasonable for a given data set. The usual link function for Poisson GLMs is the log, so
+our GLM for the rate $\mu$ is:
+$$
+    \log (\mu) = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_p x_p.
+$$
+
+Let's use this model on the `polyps` data set (pre-installed). We want to explain the number of colonic polyps at 12 months by means of the age of the patient and whether they are in the treatment group.
+
+
+## Survey 
+Please provide us with feedback through this [short survey](https://ubc.ca1.qualtrics.com/jfe/form/SV_2tOcP5OKnCNyauV).
