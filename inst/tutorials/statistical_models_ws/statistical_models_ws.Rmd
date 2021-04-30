@@ -1010,7 +1010,7 @@ gapminder %>%
 ### Transforming predictors: log
 Let's use a transformed predictor for creating a new (and hopefully better) model. There are two ways. We can include the function directly into the formula (similar to the last plot) and fit the models. 
 
-Create a model called `lifeExp_model_log_a`. Use the `log()` fucntion to transform the `gdpPercap` variable. 
+Create a model called `lifeExp_model_log_a`. Use the `log()` function to transform the `gdpPercap` variable. 
 ```{r log_ex, exercise = TRUE}
 <object_name> <- lm(lifeExp ~ year + <transform_function>(gdpPercap),
                      data = gapminder)
@@ -1049,7 +1049,35 @@ lifeExp_model_log_b<- lm(lifeExp ~ year + log_gdp,
 summary(lifeExp_model_log_b)
 ```
 
-Notice that they both yield the same results!
+Notice that they both yield the same results! 
+
+Now compare the new model we created `lifeExp_model_log_a` and a model without the log transformation `no_log`. Let's take a look at the model comparison. 
+
+```{r compare_log, exercise = TRUE, exercise.setup = "compare_log"}
+# summary of model with log transformation
+summary(lifeExp_model_log_a)
+
+# summary of model without log transformation
+summary(no_log)
+```
+
+```{r compare_log-solution}
+# summary of model with log transformation
+summary(lifeExp_model_log_a)
+
+# summary of model without log transformation
+summary(no_log)
+```
+
+```{r setup-compare_log, include = FALSE}
+lifeExp_model_log_a <- lm(lifeExp ~ year + log(gdpPercap),
+                     data = gapminder)
+
+no_log<- lm(lifeExp ~ year + gdpPercap,
+                     data = gapminder)
+```
+
+Notice that **R-squared** values are much greater after the log transformation (~70% vs ~40%). With the new log transformed data, we are able to explain ~70% of the variance compared to ~40%. 
 
 ### Transforming predictors: polynomial
 Another option is using a *polynomial* transformation of our model. 
@@ -1151,7 +1179,7 @@ lifeExp_ancoca <- lm(lifeExp ~ year*continent,
 summary(aov(lifeExp_ancoca))
 ```
 
-Based on these results, it really seems that continent should have a role in the model. However, it is not always like this. Let's take a closer loot at Europe and Oceania. 
+Based on these results, it really seems that continent should have a role in the model. However, it is not always like this. Let's take a closer look at Europe and Oceania. 
 
 **Note:** This is an example of how the tidyverse can be used to link together a bunch of functions instead of creating many new R objects as we've been doing thus far. 
 
@@ -1178,7 +1206,7 @@ When just looking at Oceania and Europe, continent has a significant effect on t
 ### Motivation for LME
 Let's take a look at the `esoph` data set, which comes pre-downloaded in R. these data contain information on smoking, alcoholism, and (o)esophageal cancer. Specifically, we are interested in if the number of controls `ncontrols` affects the number of cases `ncases` of cancer for each group `agepg`. 
 
-Let's take a look at what the data looks like (with a tad bit of vertical jitter).Using the `esoph` data set, create a scatter plot with the following aesthetics: 
+Let's take a look at what the data looks like (with a tad bit of vertical jitter). Using the `esoph` data set, create a scatter plot with the following aesthetics: 
 
 * x = `ncontrols`
 * y = `ncases`
@@ -1196,18 +1224,18 @@ p
 ```
 
 ```{r lme_viz1-solution}
-p <- ggplot(esoph, aes(ncontrols, ncases, group=agegp, colour=agegp)) +
+p <- ggplot(esoph, aes(ncontrols, ncases, group = agegp, colour = agegp)) +
     geom_jitter(height=0.25) +
     scale_colour_discrete("Age Group") +
     ylab("Number of Cases") + xlab("Number of Controls")
 p
 ```
 
-It seems like each age group has a different relationship. We should then fit regression lines for each group separately. Using the `p` object we just created, fit a best fit line in the plot vai the`geom_smooth` function. 
+It seems like each age group has a different relationship. We should then fit regression lines for each group separately. Using the `p` object we just created, fit a best fit line in the plot via the`geom_smooth` function. 
 
 ```{r lme_viz2, exercise = TRUE, exercise.setup = "setup-lmeviz"}
 # Fit the best fit lines
-p + <best_fit_line_function>(method="lm", se=FALSE, size=0.5)
+p + <best_fit_line_function>(method = "lm", se = FALSE, size = 0.5)
 ```
 
 ```{r lme_viz2-solution}
@@ -1221,7 +1249,7 @@ p <- ggplot(esoph, aes(ncontrols, ncases, group=agegp, colour=agegp)) +
     ylab("Number of Cases") + xlab("Number of Controls")
 ```
 
-Each group has very few observations which make the regression less powerful. 
+Each group has very few observations which make the regression less powerful. To visualize this, set `se = TRUE` in the previous plot. The confidence bands are huge because it is underpowered as we have very little information (data points) in each of our groups. 
 
 ```{r echo = TRUE, message = FALSE}
 esoph %>%
@@ -1253,12 +1281,12 @@ Two R packages exist for working with mixed effects models: `lme4` and `nlme`. W
 Let's fit the model. Just like our other models we need to give a formula and data.
 
 ```{r lme_form, exercise = TRUE}
-# download the lme4 package if you need to
-if (!require("lme4")) install.packages("lme4")
+# Uncomment and download the lme4 package if you need to
+#if (!require("lme4")) install.packages("lme4")
 
 # create the lme model
 esoph_model <- lmer(ncases ~ ncontrols + (ncontrols | agegp),
-                data =e soph)
+                data = esoph)
 ```
 
 ```{r lme_form-solution}
@@ -1347,7 +1375,7 @@ Then, we we can use the new data set `esoph` to add the lines to our plot. Again
 <data_set> %>%
     ggplot(aes(<x_aes>, <y_aes>, group = <group_aes>, colour = <color_aes>)) +
     geom_jitter(height=0.25) +
-    geom_abline(aes(intercept=intercept, slope=slope, colour=agegp)) +
+    geom_abline(aes(intercept = intercept, slope = slope, colour = agegp)) +
     scale_colour_discrete("Age Group") +
     ylab("Number of Cases") + xlab("Number of Controls")
 ```
@@ -1378,9 +1406,27 @@ esoph <- plyr::ddply(esoph, ~ agegp, function(df){
 So now, each group still gets its own regression line, but tying the parameters together with a normal distribution gives us a more powerful regression. 
 
 #### **Exercise: LME**
-Using the `sleepstudy` data set, fit an LME on the Reaction against Days, grouped by Subject. Name it `lme_sleep`
+Using the `sleepstudy` data set, fit an LME on the Reaction against Days, grouped by Subject. Name it `lme_sleep`.
 
 *Note: Hints will be provided for exercises but no solution. Try to figure it out!*
+
+First. let's visualize the data set. 
+
+```{r sleep_viz, exercise = TRUE}
+# visualize the data set
+<data_set> %>%
+  ggplot(aes(x = Days, y = Reaction, color = Subject)) +
+  geom_point(show.legend = FALSE)
+```
+
+```{r sleep_viz-solution}
+sleepstudy %>%
+  ggplot(aes(x = Days, y = Reaction, color = Subject)) +
+  geom_point(show.legend = FALSE)
+```
+
+Now, create the model object. 
+
 ```{r lme_ex1, exercise = TRUE}
 # Fit a LME model
 <model_object> <- lmer(<response_var> ~ <fixed_explanatory_var> + 
@@ -1427,7 +1473,7 @@ summary(<model_object>)
 ```
 
 #### **Exercise: LME cont.**
-What is the intercept and slope of subject #310 from question 1? 
+What is the intercept and slope of subject #310 from question 1? (Use the `coef()` function.)
 
 ```{r lme_coeff, exercise = TRUE}
 # extract the slope and intercept from the model and make it a data frame
@@ -1455,6 +1501,7 @@ lme_sleep %>%
 filter(Subject == 310)
 ```
 
+<!--
 ```{r setup-lme_sleep, include = FALSE}
 lme_sleep <- lmer(Reaction ~ Days + (Days | Subject), data = sleepstudy)
 ```
@@ -1481,11 +1528,10 @@ if (!require("Lahman")) install.packages("Lahman")
 # load the package 
 suppressMessages(library(Lahman))
 ```
+-->
 
 ## Generalized Linear Models
-In the linear models discussed so far, we always assumed that
-the response can take any numeric value or at least any numeric
-value in a large range.
+In the linear models discussed so far, we always assumed that the response can take any numeric value or at least any numeric value in a large range.
 
 However, we often have response data that does not quite fit this assumption. This includes, for instance, count data that can only take non-negative integer values (*i.e.* 0, 1, 2, 3, …). Another example is binary data, where the response can take only one of
 two values (*e.g.* yes/no, low/high, 0/1, etc.).
@@ -1522,8 +1568,6 @@ $$
 **Importantly, each trial needs to be independent and must have the same success probability!**
 
 As a first example, we will try logistic regression on the UC Berkeley Admission data (`UCBAdmissions`, pre-installed in R). 
-
-
 
 Firstly, fill in and run the following code chunk. Call this tidy data `ucb`.
 
@@ -1584,8 +1628,8 @@ The summary of the `glm` output shows us the value of each of the parameters as 
 With the `Anova` function from the package `car`, we can check the significance of each of the two covariates as a whole.
 
 ```{r log_reg_aov, exercise = TRUE, exercise.setup = "setup-log_reg_mod"}
-# download the car package if you need to
-if (!require("car")) install.packages("car")
+# Uncomment and download the car package if you need to
+#if (!require("car")) install.packages("car")
 
 car::Anova(<model_object>)
 ```
@@ -1594,7 +1638,9 @@ car::Anova(<model_object>)
 car::Anova(ucb_model)
 ```
 
-This tells us that `sex` by itself has no significant effect on the log-odds of being admitted, but the interaction effect with the department seems to be important. Hence, we can not remove any of the covariates without significantly degrading the fit.
+This tells us that `sex` by itself has no significant effect on the log-odds of being admitted, but the interaction effect with the department seems to be important. Hence, we can not remove any of the covariates without significantly degrading the fit. 
+
+The `drop1()` tests if we can drop covariates from the model without degrading the fit.
 
 ```{r log_reg_drop, exercise = TRUE, exercise.setup = "setup-log_reg_mod"}
 # The drop1() function compares all possible models that can be constructed by dropping a single model term
@@ -1611,8 +1657,8 @@ and hence, the probability of success. Also, the relative magnitudes tell you wh
 We can make statements about the probabilities themselves. The `lsmeans` function provides a nice overview of the fitted "success" (in our case "being admitted") probabilities for the different combinations of the predictors, including a confidence interval.
 
 ```{r log_reg_sum, exercise = TRUE, exercise.setup = "setup-log_reg_mod"}
-# download the lsmeans package if you need to
-if (!require("lsmeans")) install.packages("lsmeans")
+# Uncomment and download the lsmeans package if you need to
+#if (!require("lsmeans")) install.packages("lsmeans")
 
 ucb_model_sum <- lsmeans::lsmeans(<model_object>, ~ sex + Dept, type = "response")
 
@@ -1639,7 +1685,7 @@ ucb_model_sum <- lsmeans::lsmeans(ucb_model, ~ sex + Dept, type = "response")
 The summary can also be grouped by one of the predictors, *e.g.* by the department.
 
 ```{r log_reg_summary, exercise = TRUE, exercise.setup = "setup-log_reg_sum"}
-ucb_summary <- summary(<model_object>, by = "Dept")
+ucb_summary <- summary(<model_object>, by = <department_predictor>)
 
 ucb_summary
 ```
@@ -1653,16 +1699,13 @@ ucb_summary
 Similarly, we can get the _odds ratio_ between males and females in  each department. This basically tells us how different the odds are between male and female applicants in each department.
 
 ```{r log_reg_con, exercise = TRUE, exercise.setup = "setup-log_reg_sum"}
-# download the contrast package if you need to
-if (!require("contrast")) install.packages("contrast")
-
-ucb_contrast <- contrast::contrast(ucb_model_sum, "pairwise", by = "Dept")
+ucb_contrast <- lsmeans::contrast(ucb_model_sum, "pairwise", by = "Dept")
 
 ucb_contrast
 ```
 
 ```{r log_reg_con-solution}
-ucb_contrast <- contrast::contrast(ucb_model_sum, "pairwise", by = "Dept")
+ucb_contrast <- lsmeans::contrast(ucb_model_sum, "pairwise", by = "Dept")
 
 ucb_contrast
 ```
@@ -1673,8 +1716,120 @@ causes the significant interaction effect we saw before.
 #### **Exercise: Logistic GLM**
 In the plasma data (from the `HSAUR3` package), use logistic regression to estimate the probabilities of ESR > 20, given the level of fibrinogen in the blood.
 
+As always, it is good practice to view the data before we do anything else. 
+```{r log_plasma_view, exercise = TRUE}
+# Uncomment and download the lsmeans package if you need to
+# if (!require("HSAUR3")) install.packages("HSAUR3")
+
+# Use the head() function to take a peek at the plasma data set.
+# Feel free to use other exploratory functions as well!
+```
+
+```{r log_plasma_view-hint-1}
+# Remember that you need to either load the package or call upon it to get access to the plasma data set
+```
+
+Now, let's plot the data. First, let's mutate the `ESR` column so that values that are `ESR < 20` will be denoted as 0 and values that are `ESR > 20` will be 1. Create a scatter plot to visualize the continuous variable on the x-axis and the binary values on the y-axis.
+```{r log_plasma_plot, exercise = TRUE}
+# Create a scatter plot to visualize the relationship between the continuous and binary values.
+```
+
+```{r log_plasma_plot-hint-1}
+# We are using the plasma data set from the HSAUR3 package. 
+
+HSAUR::plasma %>%
+```
+
+```{r log_plasma_plot-hint-2}
+# Mutate the ESR column so that if ESR < 20 equals to 0 and ESR > 20 equals to 1. Make sure the new column class is numeric.
+
+HSAUR3::plasma %>% 
+  mutate(ESR = ifelse(ESR == "ESR < 20", 0, 1)) %>% 
+  mutate(ESR = as.numeric(ESR))
+```
+
+```{r log_plasma_plot-hint-3}
+# Have fibrinogen be on the x-axis 
+# Have ESR be on the y-axis
+# Use geom_point for scatter plots
+HSAUR3::plasma %>% 
+  mutate(ESR = ifelse(ESR == "ESR < 20", 0, 1)) %>% 
+  mutate(ESR = as.numeric(ESR)) %>%
+  ggplot(aes(x = fibrinogen, y = ESR)) +
+  geom_point()
+```
+
+Now, create a GLM model. Call the model object `esr_model`. 
+```{r log_plasma_mod, exercise = TRUE}
+# Create a GLM model that looks at the probability of ESR > 20 given the level of fibrinogen in the blood. 
+# Call the model object esr_model
+
+```
+
+```{r log_plasma_mod-hint-1}
+# Use the glm function
+
+esr_model <- glm()
+```
+
+```{r log_plasma_mod-hint-2}
+# Have ESR be the response variable
+
+esr_model <- glm(ESR)
+```
+
+```{r log_plasma_mod-hint-3}
+# Have fibrinogen be the predictor variable
+
+esr_model <- glm(ESR ~ fibrinogen)
+```
+
+```{r log_plasma_mod-hint-4}
+# Don't forget to specify what data set you will be using!
+
+esr_model <- glm(ESR ~ fibrinogen, data = HSAUR3::plasma)
+```
+
+```{r log_plasma_mod-hint-5}
+# Logistic regression will need binomial for the family 
+
+esr_model <- glm(ESR ~ fibrinogen, data = HSAUR3::plasma, family = binomial)
+```
+
+```{r log_plasma_mod-hint-6}
+# See the contents of the model via the summary() function
+
+esr_model <- glm(ESR ~ fibrinogen, data = HSAUR3::plasma, family = binomial)
+
+summary(esr_model)
+```
+
+We can also visualize the line in our plot. Run the following code chuck for the new plot. 
+
+```{r log_line, exercise = TRUE}
+HSAUR3::plasma %>% 
+  mutate(ESR = ifelse(ESR == "ESR < 20", 0, 1)) %>% 
+  mutate(ESR = as.numeric(ESR)) %>%
+  ggplot(aes(x = fibrinogen, y = ESR)) +
+  geom_point() + 
+  stat_smooth(method = "glm",
+              method.args = list(family = <binomial_distribution>))
+```
+
+```{r log_line-solution}
+HSAUR3::plasma %>% 
+  mutate(ESR = ifelse(ESR == "ESR < 20", 0, 1)) %>% 
+  mutate(ESR = as.numeric(ESR)) %>%
+  ggplot(aes(x = fibrinogen, y = ESR)) +
+  geom_point() + 
+  stat_smooth(method = "glm",
+              method.args = list(family = "binomial"))
+```
+
+<!--
 #### **Exercise: Logistic GLM cont.**
 Using the `womensrole` data set from the `HSAUR3` package, try to fit a logistic regression to the agreement with the statement, given the years of education and the respondent's sex (also attributed as `gender` in these data).
+-->
 
 ### Count Data (`family = poisson`)
 When we are dealing with count data, the Poisson distribution is often used as a model. The Poisson distribution models the number of events during a fixed period of time (or space, etc.). It is completely characterized by the _rate_ parameter $\mu$. Both the mean and the variance of the Poisson distribution are equal to the _rate_ parameter. In other words, a larger _rate_ also implies a larger spread of the data. This is a rather strong assumption and we will learn how to check if this assumption is reasonable for a given data set. The usual link function for Poisson GLMs is the log, so
@@ -1683,8 +1838,71 @@ $$
     \log (\mu) = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_p x_p.
 $$
 
-Let's use this model on the `polyps` data set (pre-installed). We want to explain the number of colonic polyps at 12 months by means of the age of the patient and whether they are in the treatment group.
+Let's use this model on the `polyps` data set also from the `HSAUR3` package. We want to explain the number of colonic polyps at 12 months by means of the age of the patient and whether they are in the treatment group. Take a peek at the data:
 
+```{r count_eda, exercise = TRUE}
+# Take a look at the data before continuing
+```
+
+```{r count_eda-solution}
+head(HSAUR3::polyps)
+```
+
+Now, let's create the model and call it `polyps_mod`.
+
+```{r count_mod, exercise = TRUE}
+<model_object> <- glm(<response_variable> ~ <predictor> + <predictor>,
+                  data = <data_set>,
+                  family = <distribution>)
+
+summary(<model_object>)
+```
+
+```{r count_mod-solution}
+polyps_mod <- glm(number ~ treat + age,
+                  data = HSAUR3::polyps,
+                  family = poisson)
+
+summary(polyps_mod)
+```
+
+We assumed that the mean and the variance are equal (an assumption of poisson distribution). But how close is this assumption to the truth? R supports the “quasi-” (`quasipoisson`) family which allows for the variance to be different. 
+
+Create a new model called `polyps_mod2` whereby the assumptions are false.
+
+```{r count_quasimod, exercise = TRUE}
+<model_object> <- glm(<response_variable> ~ <predictor> + <predictor>,
+                  data = <data_set>,
+                  family = <quasi_family>)
+
+summary(<model_object>)
+```
+
+```{r count_quasimod-solution}
+polyps_mod2 <- glm(number ~ treat + age,
+                  data = HSAUR3::polyps,
+                  family = quasipoisson)
+
+summary(polyps_mod2)
+```
+
+The fitted quasi-Poisson model results in dispersion parameter different from 1, which makes the assumption of equal mean and variance highly questionable. If the assumption of equal mean and variance is wrong, the standard errors of the parameters are grossly underestimated. The uncoupling of the mean and the variance does not change the parameter estimates, but the significance of the parameters in the model will be different.
+
+Similarly to logistic regression, we can investigate the difference in the rate between two levels of a categorical covariate. Using the `lsmeans()` function and the `polyps_mod2` model we created, we can look at the rate polyps acquisition. Create a new object called `polyps_model2_sum`. 
+
+```{r count_ls, exercise = TRUE}
+polyps_model2_sum <- lsmeans::lsmeans(<model_object>, ~ treat, 
+                             type = "response")
+
+lsmeans::contrast(polyps_model2_sum, "pairwise")
+```
+
+```{r count_ls-solution}
+polyps_model2_sum <- lsmeans::lsmeans(polyps_mod2, ~ treat, 
+                             type = "response")
+
+lsmeans::contrast(polyps_model2_sum, "pairwise")
+```
 
 ## Survey 
 Please provide us with feedback through this [short survey](https://ubc.ca1.qualtrics.com/jfe/form/SV_2tOcP5OKnCNyauV).
