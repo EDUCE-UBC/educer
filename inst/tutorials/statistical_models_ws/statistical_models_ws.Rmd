@@ -208,6 +208,7 @@ fly_2_groups %>%
 
 
 #### Formula notation in R
+
 To perform an ANOVA in R, we need to understand R's formula notation, as this is the first argument we give to the ANOVA function (`aov()`). The formula notation stars with providing the response variable, then a special character, `~` which can be read as "as a function of", and then the explanatory/independent variable(s). Thus, the formula notation for this experiment is:
 ```
 longevity ~ activity
@@ -895,6 +896,7 @@ library(gapminder) # Data from Gapminder
 ```
 
 ### Cautions when using linear models
+
 R (and most other statistical software) will fit, plot and summarize, a linear model regardless of whether that model is a good fit for the data. This is why it is always important to visually inspect your data before creating a model.
 
 To illustrate this point, consider the following data sets (called Anscombe's quartet). We can access these data in R and format them with the following code:
@@ -922,7 +924,7 @@ absc %>%
 As you see, these are very different data that give the *same* slope, intercept, and mean in a linear model. **This is why you should always, always, always plot your data before attempting regression!**
 
 ### Multiple linear regression
-So far, we have dealt with simple regression models, where we had only one predictor value. However, `lm()` handles much more complex models. Consider for example a model of life expectancy as a function of **both** the year and the per-capita gdp. 
+So far, we have dealt with simple regression models, where we had only one predictor value. However, `lm()` handles much more complex models. Consider for example a model of life expectancy as a function of **both** the year and the per-capita GDP. 
 
 ```
 lifeExp ~ year + gdpPercap
@@ -970,11 +972,11 @@ lifeExp_model2 <- lm(lifeExp ~ year + gdpPercap,
 
 ### Linear is the formula, not the predictor
 
-The linearity of a model is in how predictive variables are put together, not necessarily in the predictors themselves. In the last exercise, you saw that `gdpPercap` is not the best predictor of `lifeExp` because it does not seem to fit linearly. This carries forward into out multiple linear regression as is apparent in the last plot. 
+The linearity of a model is in how predictor variables are put together, not necessarily in the predictors themselves. In the last exercise, you saw that `gdpPercap` is not the best predictor of `lifeExp` because it does not seem to fit linearly. This carries forward into out multiple linear regression as is apparent in the last plot. 
 
 One way to improve our model is to use a transformed `gdpPercap` predictor. But transformed how? 
 
-Let's pick a (silly) function to start. Here. we take the sine of the `gdpPercap`.
+Let's pick a (silly) function to start. Here, we take the sine of `gdpPercap`.
 
 ```{r echo = TRUE, message = FALSE}
 gapminder %>%
@@ -985,9 +987,7 @@ gapminder %>%
 Doesn't look much better. 
 
 #### **Exercise: Transforming predictors**
-Find a function that makes the plot more "linear" and fit a model of life expectancy as a function of the transformed per-capita gdp. Play around with these functions to see how it transforms the data. 
-
-  * Go back to your original `gdpPercap` vs. `lifeExp` plot and think about what function creates a similar trend. 
+Find a function that makes the plot more "linear" and fit a model of life expectancy as a function of the transformed per-capita GDP. Play around with these functions to see how it transforms the data. 
 
 ```{r log, exercise = TRUE}
 gapminder %>%
@@ -996,23 +996,22 @@ gapminder %>%
 ```
 
 ```{r log-hint-1}
-# Try tan()
-```
-
-```{r log-hint-2}
-# Try poly()
-```
-
-```{r log-hint-3}
 # Try log()
 ```
 
-### Transforming predictors: log
-Let's use a transformed predictor for creating a new (and hopefully better) model. There are two ways. We can include the function directly into the formula (similar to the last plot) and fit the models. 
+```{r log-hint-2}
+gapminder %>%
+  ggplot(aes(x = log(gdpPercap), y = lifeExp)) +
+  geom_point()
+```
 
-Create a model called `lifeExp_model_log_a`. Use the `log()` function to transform the `gdpPercap` variable. 
+### Transforming predictors: log
+Let's use a transformed predictor for creating a new (and hopefully better) model. There are two ways to do this. The first approach is to include the function directly into the formula (similar to the last plot) and fit the model. 
+
+Create a model called `lifeExp_model_log_a`. Use the `log()` function to transform the `gdpPercap` variable:
+
 ```{r log_ex, exercise = TRUE}
-<object_name> <- lm(lifeExp ~ year + <transform_function>(gdpPercap),
+<object_name> <- lm(lifeExp ~ year + formula = <transform_function>(gdpPercap),
                      data = gapminder)
 
 summary(<object_name>)
@@ -1055,10 +1054,10 @@ Now compare the new model we created `lifeExp_model_log_a` and a model without t
 
 ```{r compare_log, exercise = TRUE, exercise.setup = "compare_log"}
 # summary of model with log transformation
-summary(lifeExp_model_log_a)
+summary(<model_object>)
 
 # summary of model without log transformation
-summary(no_log)
+summary(<model_object>)
 ```
 
 ```{r compare_log-solution}
@@ -1080,25 +1079,25 @@ no_log<- lm(lifeExp ~ year + gdpPercap,
 Notice that **R-squared** values are much greater after the log transformation (~70% vs ~40%). With the new log transformed data, we are able to explain ~70% of the variance compared to ~40%. 
 
 ### Transforming predictors: polynomial
-Another option is using a *polynomial* transformation of our model. 
+Another option is using a *polynomial* transformation of our model. To understand this, note that the equation for ordinary linear regression (without any transformations) is a polynomial expression of degree 1: $y = \beta_0 + \beta_1 x$. Visually, this corresponds to a straight line. We can expand our polynomial expression to degree 2, by adding the square of $x$ as a second predictor: $y = \beta_0 + \beta_1 x + \beta_2 x^2$. Visually, this is no longer a straight line but rather a parabola. We can get even more curvy relationships by increasing the degree of this polynomial, e.g., to the third degree ($y = \beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3$) or higher.
 
-Create a model called `lifeExp_model_poly_a` with the predictor variable transformed via the `poly()` function. 
+Let's create a polynomial model of second degree, called `lifeExp_model_poly_a`, with the predictor variable transformed via the `poly()` function. 
 
 ```{r poly_ex, exercise = TRUE}
-<object_name> <- lm(lifeExp ~ year + <transform_function>(gdpPercap),
+<object_name> <- lm(lifeExp ~ year + <transform_function>(gdpPercap, degree = 2),
                      data = gapminder)
 
 summary(<object_name>)
 ```
 
 ```{r poly_ex-solution}
-lifeExp_model_poly_a <- lm(lifeExp ~ year + poly(gdpPercap),
+lifeExp_model_poly_a <- lm(lifeExp ~ year + poly(gdpPercap, degree = 2),
                      data = gapminder)
 
 summary(lifeExp_model_poly_a)
 ```
 
-Or explicitly write a polynomial equation for one of our predictor.
+Another way to do this is to explicitly write a polynomial equation for one of our predictor.
 
 ```{r echo = TRUE, message = FALSE}
 lifeExp_model_poly_b <- lm(lifeExp ~ year + gdpPercap + I(gdpPercap^2),
@@ -1107,7 +1106,16 @@ lifeExp_model_poly_b <- lm(lifeExp ~ year + gdpPercap + I(gdpPercap^2),
 summary(lifeExp_model_poly_b)
 ```
 
-**Note:** We must use `I(gdpPercap^2)` instread of `(gdpPercap^2)` because the symbols `^`, `*`, and `:` have a particular meaning in a linear model. As we saw in ANOVA, these symbols are used to specify *interactions* between predicting variables. 
+**Note:** We must use `I(gdpPercap^2)` instead of `(gdpPercap^2)` because the symbols `^`, `*`, and `:` have a particular meaning in a linear model. As we saw in ANOVA, these symbols are used to specify *interactions* between predicting variables. Enclosing an expression in `I()` means, simply, that these symbols should be interpreted literally, as mathematical operators.
+
+We can visualize our polynomial regression using the `geom_smooth()` function:
+
+```{r}
+gapminder %>%
+  ggplot(aes(x = gdpPercap, y = lifeExp)) +
+  geom_point() +
+  geom_smooth(formula = y ~ poly(x, 2))
+```
 
 #### **Exercise: Multiple linear regression**
 So far, we have worked with `lifeExp` as our independent variable. Now, try to reproduce a model of population (`pop`) using one or more of the variables available in `gapminder`
@@ -1137,7 +1145,7 @@ head(gapminder)
 ```
 
 ### Interactions and ANalysis of COVAriance (ANCOVA)
-So far, our models for life expectancy have built upon continuous (or discrete but incremental) variables variables. However, we may wonder if being in one continent rather than another has a differential effect on the correlation between `year` and `lifeExp`. 
+So far, our models for life expectancy have built upon continuous (or discrete but incremental) variables. However, we may wonder if being in one continent rather than another has a differential effect on the correlation between `year` and `lifeExp`. 
 
 Let's visualize the data set now with continent in mind. Set the color aesthetic to be continent. 
 
@@ -1145,8 +1153,8 @@ Let's visualize the data set now with continent in mind. Set the color aesthetic
 gapminder %>%
   ggplot(aes(x = year, y = lifeExp, colour = <color_aes>)) +
   geom_point() +
-  geom_smooth(method = "lm", se= FALSE) +
-  labs(y="Life expectancy (yrs)") +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(y = "Life expectancy (yrs)") +
   theme_classic()
 ```
 
@@ -1161,7 +1169,7 @@ gapminder %>%
 
 The slopes for each continent seem different, but how can we tell if the difference is significant? Here's where we can combine our linear model with the ANOVA function we learned earlier!
 
-Create a new model called `lifeExp_ancoca`. Use the special character `*` to model the effects of year, continent, and their interaction on life expectancy. Then, use the ANOVA function `aov()` ont he model. 
+Create a new model called `lifeExp_ancova`. Use the special character `*` to model the effects of year, continent, and their interaction on life expectancy. Then, use the ANOVA function `aov()` ont he model. 
 
 ```{r ancova_mod, exercise = TRUE}
 # create the ancova model object
@@ -1173,10 +1181,10 @@ summary(aov(<object_name>))
 ```
 
 ```{r ancova_mod-solution}
-lifeExp_ancoca <- lm(lifeExp ~ year*continent,
+lifeExp_ancova <- lm(lifeExp ~ year*continent,
                data = gapminder)
 
-summary(aov(lifeExp_ancoca))
+summary(aov(lifeExp_ancova))
 ```
 
 Based on these results, it really seems that continent should have a role in the model. However, it is not always like this. Let's take a closer look at Europe and Oceania. 
@@ -1206,7 +1214,7 @@ When just looking at Oceania and Europe, continent has a significant effect on t
 ### Motivation for LME
 Let's take a look at the `esoph` data set, which comes pre-downloaded in R. these data contain information on smoking, alcoholism, and (o)esophageal cancer. Specifically, we are interested in if the number of controls `ncontrols` affects the number of cases `ncases` of cancer for each group `agepg`. 
 
-Let's take a look at what the data looks like (with a tad bit of vertical jitter). Using the `esoph` data set, create a scatter plot with the following aesthetics: 
+Let's take a look at what the data looks like. Using the `esoph` data set, create a scatter plot with the following aesthetics: 
 
 * x = `ncontrols`
 * y = `ncases`
@@ -1215,17 +1223,19 @@ Let's take a look at what the data looks like (with a tad bit of vertical jitter
 
 ```{r lme_viz1, exercise = TRUE}
 p <- <data_set> %>%
-     ggplot(aes(<x_aes>, <y_aes>, group = <group_aes>, colour = <color_aes>)) +
-     geom_jitter(height=0.25) +
-     scale_colour_discrete("Age Group") +
-     # human readable labels
-     ylab("Number of Cases") + xlab("Number of Controls")
+    ggplot(aes(<x_aes>, <y_aes>, group = <group_aes>, colour = <color_aes>)) +
+    # geom_jitter just adds a small amount of random variation to the
+    # position of each point. Useful to avoid overplotting
+    geom_jitter(height = 0.25) +
+    scale_colour_discrete("Age Group") +
+    # human readable labels
+    ylab("Number of Cases") + xlab("Number of Controls")
 p
 ```
 
 ```{r lme_viz1-solution}
 p <- ggplot(esoph, aes(ncontrols, ncases, group = agegp, colour = agegp)) +
-    geom_jitter(height=0.25) +
+    geom_jitter(height = 0.25) +
     scale_colour_discrete("Age Group") +
     ylab("Number of Cases") + xlab("Number of Controls")
 p
@@ -1239,7 +1249,7 @@ p + <best_fit_line_function>(method = "lm", se = FALSE, size = 0.5)
 ```
 
 ```{r lme_viz2-solution}
-p + geom_smooth(method="lm", se=FALSE, size=0.5)
+p + geom_smooth(method = "lm", se = FALSE, size = 0.5)
 ```
 
 ```{r setup-lmeviz, include = FALSE}
@@ -1271,7 +1281,7 @@ $$
 
 where the error term $\varepsilon$ has mean zero, and the $b_0$ and $b_1$ terms are normally distributed having a mean of zero, and some unknown variances and correlation. The $b_0$ and $b_1$ terms indicate group-to-group differences from average. 
 
-The $\beta$ terms are called the *fixed effects*, and the $b$ terms are called the *random effects*. Since the model has both types of effects, it's said to to be a *mixed* model - hence the nameof "LME".
+The $\beta$ terms are called the *fixed effects*, and the $b$ terms are called the *random effects*. Since the model has both types of effects, it's said to to be a *mixed* model - hence the name "LME".
 
 Note that we don't have to make _both_ the slope and intercept random. For example, we can remove the $b_0$ term, which would mean that each group is forced to have the same (fixed) intercept $\beta_0$. Also, we can add more predictors ($X$ variables).
 
@@ -1291,7 +1301,7 @@ esoph_model <- lmer(ncases ~ ncontrols + (ncontrols | agegp),
 
 ```{r lme_form-solution}
 esoph_model <- lmer(ncases ~ ncontrols + (ncontrols | agegp),
-                data=esoph)
+                data = esoph)
 ```
 
 Let's take a closer look at the _formula_, which in this case is `ncases ~ ncontrols + (ncontrols | agegp)`.
@@ -1311,7 +1321,7 @@ summary(esoph_model)
 
 ```{r setup-lme_sum, include = FALSE}
 esoph_model <- lmer(ncases ~ ncontrols + (ncontrols | agegp),
-                data=esoph)
+                data = esoph)
 ```
 
 - Under the "Random effects:" section, we have the variance of each random effect, and the lower part of the correlation matrix of these random effects.
