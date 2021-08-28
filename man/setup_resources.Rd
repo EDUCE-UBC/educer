@@ -4,17 +4,13 @@
 \alias{setup_resources}
 \title{Setup paths to resources used in learnr tutorials}
 \usage{
-setup_resources(
-  css = "resources/css",
-  images = "resources/images",
-  scripts = "resources/scripts"
-)
+setup_resources()
 }
 \arguments{
-\item{css}{A string giving the css location relative to installed package.}
-
 \item{images}{A string giving the images location relative to installed
 package.}
+
+\item{css}{A string giving the css location relative to installed package.}
 
 \item{scripts}{A string giving the scripts location relative to installed
 package.}
