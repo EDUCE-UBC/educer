@@ -46,12 +46,12 @@ You will learn how to:
 
 This comprehensive introduction to the tidyverse is ideal for beginners but assumes some prior experience with R (e.g. as provided in our "Introduction to R and RStudio" tutorial).
 
-```{r child = system.file("resources/markdown", "how_to_follow_tutorials.Rmd", package = "educer")}
+```{r child = system.file("resources", "child_Rmds", "how_to_follow_tutorials.Rmd", package = "educer")}
 ```
 
 ### Data description
 
-```{r child = system.file("resources/markdown", "data_description.Rmd", package = "educer")}
+```{r child = system.file("resources", "child_Rmds", "data_description.Rmd", package = "educer")}
 ```
 
 During this tutorial, the data are accessible as a data frame called `geochemicals`. In the interactive code box below, use the function `head()` to peak at the first five rows of this data frame:

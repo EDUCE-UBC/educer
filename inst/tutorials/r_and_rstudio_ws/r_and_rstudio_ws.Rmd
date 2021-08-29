@@ -51,7 +51,7 @@ Why use a language like R instead of point-and-click alternatives like Excel? Fo
 
 ![](/images/what_is_r_step_1.png){width=100%}
 
-```{r child = system.file("resources/markdown", "how_to_follow_tutorials.Rmd", package = "educer")}
+```{r child = system.file("resources", "child_Rmds", "how_to_follow_tutorials.Rmd", package = "educer")}
 ```
 
 ## Let's get started!
@@ -323,7 +323,7 @@ Whereas a vector is a one-dimensional structure, *data frames* are two-dimension
 
 If you have some data from an experiment or study, you will typically save it as a table in a format such as `.csv`, `.txt`, or `.xlsx`. When you load those files into R, you will create a data frame object. At the end of this tutorial (section *Using R in your own computer*) you will learn how to load a data file stored in your computer into R. Instead of loading data from your computer, you can also use an online data set.
 
-```{r child = system.file("resources/markdown", "data_description.Rmd", package = "educer")}
+```{r child = system.file("resources", "child_Rmds", "data_description.Rmd", package = "educer")}
 ```
 
 The [data file](https://raw.githubusercontent.com/EDUCE-UBC/educer/main/data-raw/data_intro_ws.csv) is a `.csv` file hosted on our [GitHub](https://github.com/EDUCE-UBC/workshops_access). Click on the link and examine the format of the data. Notice that the first row consists of column names, that each column corresponds to a data variable, and that each row corresponds to one observation.

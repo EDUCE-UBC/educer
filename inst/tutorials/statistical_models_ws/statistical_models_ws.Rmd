@@ -42,7 +42,7 @@ You will learn:
 
 This is an intermediate tutorial that assumes some prior experience with base R (see our "Introduction to R and RStudio" tutorial) and with the tidyverse package collection (see our "Introduction to the R tidyverse" tutorial).
 
-```{r child = system.file("resources/markdown", "how_to_follow_tutorials.Rmd", package = "educer")}
+```{r child = system.file("resources", "child_Rmds", "how_to_follow_tutorials.Rmd", package = "educer")}
 ```
 
 ### Data description
