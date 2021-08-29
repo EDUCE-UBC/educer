@@ -1,35 +1,24 @@
-#' Setup paths to resources used in learnr tutorials
+#' Set up paths to resources used in learnr tutorials
 #'
 #' This helper function provides the paths for any resources used in learnr
 #' tutorials. During package development, each <tutorial> is located in
-#' \code{inst/tutorials/<tutorial>/} and resources in \code{inst/resources/}
+#' \code{inst/tutorials/<tutorial>} and resources in \code{inst/resources}
 #' (relative to the root of the package). After installation, <tutorial> is in
-#' \code{tutorials/<tutorial>/} and resources in \code{resources/} (relative to
+#' \code{tutorials/<tutorial>} and resources in \code{resources} (relative to
 #' the root of the installed package). \code{shiny::addResourcePath} creates a
-#' prefix to be used as filepath to the following resources: images
-#' (\code{/images}), css  files \code{/css}, and example script files
-#' \code{scripts}. The default parameters assume the installed package folder
-#' structure described above.
-#'
-#' @param images A string giving the images location relative to installed
-#'   package.
-#' @param css A string giving the css location relative to installed package.
-#'
-#' @param scripts A string giving the scripts location relative to installed
-#'   package.
+#' prefix consisting of the name of each directory in \code{resources} and the
+#' file path of that directory. For example, the prefix to \code{/images}) is
+#' connected to \code{resources/images}, etc.
 #'
 #' @keywords internal
 #'
 #' @seealso \code{\link[shiny]{addResourcePath}()}
 #'
 #' @export
-setup_resources <- function() {
-  shiny::addResourcePath("images",  system.file("resources", "images",
-                                                package = "educer"))
-  shiny::addResourcePath("css",     system.file("resources", "css",
-                                                package = "educer"))
-  shiny::addResourcePath("scripts", system.file("resources", "scripts",
-                                                package = "educer"))
+set_up_resources <- function() {
+  list.dirs(system.file("resources", package = "educer"),
+            recursive = FALSE) |>
+    purrr::walk(\(x) shiny::addResourcePath(basename(x), x))
 }
 
 #' List tutorials in the educer package

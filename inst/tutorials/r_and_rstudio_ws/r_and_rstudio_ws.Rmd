@@ -24,7 +24,7 @@ library(learnr)
 knitr::opts_chunk$set(echo = FALSE)
 library(educer)
 # Helper function to set path to images to "/images" etc.
-setup_resources()
+set_up_resources()
 
 # Tutorial specific setup
 library(ggplot2)

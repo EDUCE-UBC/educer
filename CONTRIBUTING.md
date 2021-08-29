@@ -14,7 +14,7 @@ Please see our general resources for EDUCE contributors on our [EDUCE-UBC.github
 
 ```
 library(educer)
-setup_resources()
+set_up_resources()
 ```
 
 - To add an image in the `.Rmd` file of the learnr tutorial, you can now give the path to an `image.ext` in `inst/resources/images/` like so (you MUST include the first `/`):
@@ -23,4 +23,4 @@ setup_resources()
 ![](/images/image.ext)
 ```
 
-- You can learn more about the helper function `setup_resources()` with `?setup_resources` and add other paths to resources (e.g. `resources/css/` is already established).
+- You can learn more about the helper function `set_up_resources()` with `?setup_resources` and add other paths to resources (e.g. `resources/css/` is already established).

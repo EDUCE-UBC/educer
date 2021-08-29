@@ -22,7 +22,7 @@ library(learnr) # Interactive Tutorials for R
 knitr::opts_chunk$set(echo = FALSE)
 library(educer) # A Collection of Tutorials on Using R in Data Science
 # Helper function to set path to images to "/images" etc.
-setup_resources()
+set_up_resources()
 
 library(tidyverse) # Easily Install and Load the 'Tidyverse' 
 library(broom) # Convert Statistical Objects into Tidy Tibbles
