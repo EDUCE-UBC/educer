@@ -1,18 +1,20 @@
 ---
 title: "Statistical models in R"
-author: >
+author: >-
   Gil J. B. Henriques and Andrew Li<br>
-  Based on notes by Yue Liu and Kim Dill-McFarland.<br>
+  Edited by Stephan Koenig<br>
+  Based on notes by Yue Liu and Kim Dill-McFarland<br>
   A tutorial by [ECOSCOPE](http://ecoscope.ubc.ca/) at UBC.
 date: "version `r format(Sys.time(), '%B %d, %Y')`"
-description:  >
+description:  >-
   Learn to perform statistical analyses with complex data sets.
   You will learn about linear regression, ANOVA, ANCOVA, 
-  mixed effects models, and generalized linear models.
+  mixed-effects models, and generalized linear models.
 output: 
   learnr::tutorial:
-      progressive: true
-      allow_skip: true
+    progressive: true
+    allow_skip: true
+    css: /css/style.css
 runtime: shiny_prerendered
 ---
 
@@ -31,7 +33,7 @@ library(lme4) # Linear Mixed-Effects Models using 'Eigen' and S4
 
 ## Introduction
 
-In this tutorial, we will learn about a number of common statistical models. They all employ a family of techniques called *regression analysis*, where we estimate the relationship between an *independent variable* (also called a *predictor*) and a *dependent variable* (also called a *response* or *outcome*). We will introduce linear regression, ANOVA, ANCOVA, and mixed effects models for continuous response data, logistic regression binary response data, as well as Poisson and Negative Binomial regression for count response data.
+In this tutorial, we will learn about several common statistical models. They all employ a family of techniques called *regression analysis*, where we estimate the relationship between an *independent variable* (also called a *predictor*) and a *dependent variable* (also called a *response* or *outcome*). We will introduce linear regression, ANOVA, ANCOVA, and mixed-effects models for continuous response data, logistic regression binary response data, as well as Poisson and Negative Binomial regression for count response data.
 
 You will learn:
 
@@ -47,11 +49,11 @@ This is an intermediate tutorial that assumes some prior experience with base R 
 
 ### Data description
 
-Unlike our other tutorials, "Statistical Models" utilizes several datasets in order to accurately demonstrate the use of statistical tests. These datasets are built into base R or into R packages. You will find more information on each of these datasets in its relevant section(s) in this tutorial.
+Unlike our other tutorials, "Statistical Models" utilizes several datasets to demonstrate the use of statistical tests accurately. These datasets are built into base R or R packages. In this tutorial, you will find more information on each of these datasets in its relevant section(s).
  
 ### Loading packages
 
-The [tidyverse](https://www.tidyverse.org/) is a collection of R packages. Packages expand R's capabilities by providing additional functions. In this tutorial we will use many functions from tidyverse packages such as dplyr (for data manipulation; pronounced *dee-plier*) and ggplot2 (for data visualization). You can learn more about the tidyverse in our "Introduction to the R tidyverse" tutorial.
+The [tidyverse](https://www.tidyverse.org/) is a collection of R packages. Packages expand R's capabilities by providing additional functions. This tutorial will use many functions from tidyverse packages such as dplyr (for data manipulation; pronounced *dee-plier*) and ggplot2 (for data visualization). You can learn more about the tidyverse in our "Introduction to the R tidyverse" tutorial.
 
 When you work in a script that makes heavy use of functions from a particular package, we recommend loading it at the top of your script. You can use the code below to load all of the tidyverse packages:
 
@@ -59,63 +61,63 @@ When you work in a script that makes heavy use of functions from a particular pa
 library(tidyverse) # Easily install and load the tidyverse packages
 ```
 
-In this tutorial, we will also occasionally use functions from the following packages: gapminder, datasets, lme4, car, lsmeans, HSAUR. Because we will only make light use of each of these packages, there is no need to load all of the packages up-front at the top of our script. Instead of loading the entire package, we will access only the specific functions we need using the double colon operator, `::`. You will learn more about this operator later in the tutorial.
+This tutorial will occasionally use functions from the following packages: gapminder, datasets, lme4, car, lsmeans, HSAUR. Because we will only make light use of each of these packages, there is no need to load all packages up-front at the top of our script. Instead of loading the entire package, we will access only the specific functions we need using the double colon operator, `::`. You will learn more about this operator later in the tutorial.
 
-Keep in mind that to use packages in a script, these packages *must already be installed* on your computer (see the "Introduction to R and RStudio" tutorial for more details about installing packages and working with scripts). By installing the educer package, all of the packages we will use in this tutorial were automatically installed as well.
+Remember that to use packages in a script, these packages *must already be installed* on your computer (see the "Introduction to R and RStudio" tutorial for more details about installing packages and working with scripts). By installing the educer package, all of the packages we will use in this tutorial were automatically installed.
 
 ## Analysis of variance (ANOVA)
 
 ANOVA is used when you have data with:
 
 -   a quantitative response/dependent variable ($Y$) such as:
-  -   height
-  -   salary
-  -   number of offspring
+    -   height
+    -   salary
+    -   number of offspring
 -   one or more categorical explanatory/independent variable(s) ($X$) such as:
-  -   eye color
-  -   sex
-  -   genotype at a given locus
+    -   eye colour
+    -   sex
+    -   genotype at a given locus
 
 For example, you would use ANOVA to address questions like:
 
--   Does diet has an effect on weight gain?
-  -   response variable: weight gain (e.g., kg)
-  -   explanatory variable: type of diet (e.g., low vs. medium vs. high sugar)
--   Does the type sexual relationship practiced influence the fitness of male Red-winged Blackbirds?
-  -   response variable: fitness of male bird (e.g., number of eggs laid)
-  -   explanatory variable: sexual relationship (e.g., monagamy vs. polygamy)
+-   Does diet affect weight gain?
+    -   response variable: weight gain (e.g., kg)
+    -   explanatory variable: type of diet (e.g., low vs. medium vs. high sugar)
+-   Does the type of sexual relationship practiced influence the fitness of male Red-winged Blackbirds?
+    -   response variable: fitness of male bird (e.g., number of eggs laid)
+    -   explanatory variable: sexual relationship (e.g., monogamy vs. polygamy)
 
 ### Key assumptions
 
--   Observations in the sample are independent from each other.
+-   Observations in the sample are independent of each other.
 -   ANOVA is robust to the non-normality of sample data
--   Homoscedasticity — the variance of data in groups should be the same. However, if the ANOVA is balanced (groups have equal sample size) the model is robust to unequal variance.
+-   Homoscedasticity — the variance of data in groups should be the same. However, if the ANOVA is balanced (groups have equal sample size), the model is robust to unequal variance.
 
 ### The gist of the math
 
 When we run an ANOVA, we calculate a test statistic (*F*-statistic) that compares the **between** group variation with the **within** group variation:
 
 $$F=MSB/MSW$$
-where $MSB =$ Mean Square Between (i.e., the mean squared distance from each observation to the sample mean) and $MSW =$ Mean Square Within (i.e., the mean squared distance from each observation to the group mean). Essentially, if there is greater variation between the groups than within the groups we will get a large test statistic value (and correspondingly, a small *p*-value) and reject that null hypothesis ($H_0$: population means of all groups are equal).
+
+where $MSB =$ Mean Square Between (i.e., the mean squared distance from each observation to the sample mean) and $MSW =$ Mean Square Within (i.e., the mean squared distance from each observation to the group mean). Essentially, if there is greater variation between the groups than within the groups, we will get a large test statistic value (and correspondingly, a small *p*-value) and reject that null hypothesis ($H_0$: population means of all groups are equal).
 
 If you want to delve into ANOVA in more depth, check out [this video tutorial](https://www.khanacademy.org/math/statistics-probability/analysis-of-variance-anova-library).
 
 ### One-way ANOVA with two groups
 
-Now let's run some ANOVAs on real data! We will start simple, by comparing the mean of two-groups. We will focus first on the case of a single explanatory variable (which is called the *one-way* ANOVA).
+Now let's run some ANOVAs on real data! We will start simple by comparing the mean of the two groups. We will focus first on the case of a single explanatory variable (which is called the *one-way* ANOVA).
 
-There are two perfectly acceptable statistical tests in R that we could apply to compare data between two groups. The first, which you may be very familiar with, is the *t*-test. The second is the ANOVA. Interestingly, the *t*-test is really a special case of ANOVA that can be used when only comparing only two groups. ANOVA is a more general test that we will later see can be used with more than two groups as well as more than one explanatory variable. 
+There are two perfectly acceptable statistical tests in R that we could apply to compare data between two groups. The first, which you may be very familiar with, is the *t*-test. The second is the ANOVA. Interestingly, the *t*-test is a special case of ANOVA that can be used when only comparing two groups. ANOVA is a more general test that we will later see can be used with more than two groups as well as more than one explanatory variable. 
 
 #### Load and explore the data
 
-The first experiment we are going to analyze was done to address the question of whether sexual activity effects the longevity of male fruit flies. To assess this, we are going to use a modified version of the fruitfly data from the [faraway R package](https://cran.r-project.org/web/packages/faraway/faraway.pdf).
+The first experiment we are going to analyze was done to address whether sexual activity affects the longevity of male fruit flies. To assess this, we will use a modified version of the fruitfly data from the [faraway R package](https://cran.r-project.org/web/packages/faraway/faraway.pdf).
 
 Our hypotheses for this experiment are as follows:
+-   Null hypothesis $H_0$: Sexual activity does not affect the population mean longevity of male fruit flies.
+-   Alternative hypothesis $H_A$: Sexual activity affects the population mean longevity of male fruit flies.
 
-Null hypothesis, $H_0$: Sexual activity has no effect on the population mean longevity of male fruit flies.
-Alternative hypothesis, $H_A$: Sexual activity has an effect on population mean longevity of male fruit flies.
-
-Let's now load the `fruitfly` dataset from the faraway package and assign it to a variable called `df_fly`. We haven't loaded this package, so we have to explicitly write the name of the package in front of the dataset's name (separated by a double colon operator: `faraway::fruitfly`), so that R knows where to find it. Run the code box below to load and inspect the first few rows of the data. You will have to replace the `<placeholder>` by the name of the variable you have created:
+Let's now load the `fruitfly` dataset from the faraway package and assign it to a variable called `df_fly`. We haven't loaded this package, so we have to explicitly write the name of the package in front of the dataset's name (separated by a double colon operator: `faraway::fruitfly`) so that R knows where to find it. Run the code box below to load and inspect the first few rows of the data. You will have to replace the `<placeholder>` by the name of the variable you have created:
 
 ```{r load-faraway, exercise = TRUE}
 df_fly <- faraway::fruitfly
@@ -133,7 +135,7 @@ df_fly <- faraway::fruitfly
 
 The first two columns are continuous variables representing the fruit fly's thorax length and longevity. The final column, `activity`, is a categorical variable that encodes the fly's sexual activity. If the male was kept solitary (`isolated`) or with pregnant females (either `one` or `many`), he was not sexually active. On the other hand, the male may have been kept with virgin females, in which case he was sexually active (`low` = one virgin female; `high` = eight virgin females).
 
-The next step is to create two-level categorical groups from the numerical variables. We will also subset the data set to equal group sizes (by randomly selecting twenty observations from each group) If you are unfamiliar with the functions below, see our "Introduction to the R tidyverse" tutorial. Use the code box below to create the modified data frame and examine its first few rows:
+The next step is to create two-level categorical groups from the numerical variables. We will also subset the data set to equal group sizes (by randomly selecting twenty observations from each group). If you are unfamiliar with the functions below, see our "Introduction to the R tidyverse" tutorial. Use the code box below to create the modified data frame and examine its first few rows:
  
 ```{r fly-2-groups, exercise = TRUE, exercise.setup = "setup-fly"}
 fly_2_groups <- df_fly %>% 
@@ -187,7 +189,7 @@ dim(<variable_name>)
 summary(<variable_name>)
 ``` 
 
-Now, we should visualize the data to understand its basic properties, find patterns, and explore modeling strategies. Exploratory graphs are usually made really quickly. We simply want to get a better understanding of the data at this point.
+Now, we should visualize the data to understand its basic properties, find patterns, and explore modelling strategies. Exploratory graphs are usually made really quickly. We simply want to get a better understanding of the data at this point.
 
 Modify the code box below to explore the effect of the explanatory variable, `longevity` on the response variable, `activity`:
 
@@ -206,22 +208,24 @@ fly_2_groups %>%
   labs(x = "Sexually Active", y = "Longevity (days)")
 ```
 
-
 #### Formula notation in R
 
-To perform an ANOVA in R, we need to understand R's formula notation, as this is the first argument we give to the ANOVA function (`aov()`). The formula notation stars with providing the response variable, then a special character, `~` which can be read as "as a function of", and then the explanatory/independent variable(s). Thus, the formula notation for this experiment is:
+To perform an ANOVA in R, we need to understand R's formula notation, as this is the first argument we give to the ANOVA function (`aov()`). The formula notation starts with providing the response variable, then a special character, `~`, which can be read as "as a function of," and then the explanatory/independent variable(s). Thus, the formula notation for this experiment is:
+
 ```
 longevity ~ activity
 ```
-The formula notation can get more complex, such as including additional explanatory/independent variables or interaction terms. We will introduce these as we attempt more complex analyses later on.
+
+The formula notation can get more complex, including additional explanatory/independent variables or interaction terms. We will introduce these as we attempt more complex analyses later on.
 
 #### ANOVA in R
-We want to know if sexual activity has an effect on population mean longevity of male fruit flies. 
-The `aov()` function can be used to create a model that answers this question. 
-As stated above, the first argument to this function is the formula. 
+
+We want to know if the sexual activity affects the population mean longevity of male fruit flies. 
+The `aov()` function creates a model that answers this question. 
+As stated above, the first argument for this function is the formula. 
 The second argument is the name of the data frame variable, in our case  `fly_2_groups`.
 
-Create an ANOVA model object called `fly_2_groups_model`:
+Create an ANOVA model object called `fly_2_groups_model`. The `aov()` function returns a "model" object. You can examine the results of the model with the `summary()` function:
 
 ```{r two-group, exercise = TRUE}
 # The response variable is on the left and explanatory variable on the right
