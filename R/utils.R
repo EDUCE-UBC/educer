@@ -23,12 +23,13 @@
 #' @seealso \code{\link[shiny]{addResourcePath}()}
 #'
 #' @export
-setup_resources <- function(css     = "resources/css",
-                            images  = "resources/images",
-                            scripts = "resources/scripts") {
-  shiny::addResourcePath("images",  system.file(images,  package = "educer"))
-  shiny::addResourcePath("css",     system.file(css,     package = "educer"))
-  shiny::addResourcePath("scripts", system.file(scripts, package = "educer"))
+setup_resources <- function() {
+  shiny::addResourcePath("images",  system.file("resources", "images",
+                                                package = "educer"))
+  shiny::addResourcePath("css",     system.file("resources", "css",
+                                                package = "educer"))
+  shiny::addResourcePath("scripts", system.file("resources", "scripts",
+                                                package = "educer"))
 }
 
 #' List tutorials in the educer package

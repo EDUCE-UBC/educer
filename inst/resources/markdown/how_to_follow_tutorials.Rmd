@@ -4,7 +4,17 @@ If you haven't done so yet, click on the "Show in new window" button ![](images/
 
 ![](images/running_tutorial.png){width=100%}
 
-Throughout this tutorial, you will encounter text paragraphs such as this one, containing explanations and instructions. In text-paragraphs, R code is always formatted with a monospace font and surrounded by a box, like `this`.
+Throughout this tutorial, you will encounter text paragraphs such as this one, containing explanations and instructions. In text-paragraphs, code is always formatted with a monospace font and surrounded by a box, like `this`. Longer examples of code will be in their own separate box.
+
+    First line of code
+    Second line of code
+    ...
+
+In many cases the output for code in these boxes will be below them.
+
+Replace any placeholder indicated by angular brackets `<placeholder>` with your own code.
+
+Pressing a <kbd>Key</kbd> on the keyboard is formatted like that.
 
 You will also encounter coding exercises in interactive windows, such as the one pictured below. You can write and run code directly inside these interactive window ![](images/one.png){width=20} and then click on the "Run Code" button to see the results ![](images/two.png){width=20}. You can reset the exercise if you get stuck ![](images/three.png){width=20}, or can get hints or the solution ![](images/four.png){width=20}.
 

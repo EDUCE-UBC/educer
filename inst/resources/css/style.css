@@ -1,0 +1,57 @@
+:root {
+  /* colors must given for use with rgb() */
+  --exercise: 255, 153, 51;
+  --instructions: 0, 255, 204;
+  --question: 153, 51, 102;
+}
+
+body {
+  counter-reset: exercise 0 question 0;
+}
+
+.exercise, .instructions, .question {
+  position: relative;
+  margin: 2em;
+  padding: 2em 20px 1em 20px;
+}
+
+.exercise {
+  counter-increment: exercise;
+  background: rgba(var(--exercise), 0.2);
+}
+
+.instructions {
+  background: rgba(var(--instructions), 0.1);
+}
+
+.question {
+  counter-increment: question;
+  background: rgba(var(--question), 0.2);
+}
+
+.exercise::before, .instructions::before, .question::before {
+  position: absolute;
+  top: -1em;
+  left: -2em;
+  width: 7em;
+  padding: 5px 0;
+  color: #ffffff;
+    font-weight: bold;
+  font-family: "Century Gothic", Arial, sans-serif;
+  text-align: center;
+}
+
+.exercise::before {
+  content: "Exercise " counter(exercise);
+  background: rgb(var(--exercise));
+}
+
+.instructions::before {
+  content: "Instructions";
+  background: rgb(var(--instructions));
+}
+
+.question::before {
+  content: "Question " counter(question);
+  background: rgb(var(--question));
+}
